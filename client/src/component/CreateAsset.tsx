@@ -2,13 +2,13 @@ import { uploadFile } from '../helper/fileUpload';
 import { readFile } from '../helper/fileReader';
 import { CREATE_ASSET } from '../repo/graph';
 import { client } from '../apollo-client';
-import { useStore } from '../repo/state';
+import { useAssetsStore } from '../store/assets';
+import { useUserStore } from '../store/user';
 import { useMutation } from '@apollo/client';
 
 export const CreateAsset = () => {
-  const user = useStore((state) => state.user);
-  const assets = useStore((state) => state.assets);
-  const setAssets = useStore((state) => state.setAssets);
+  const { user } = useUserStore();
+  const { assets, setAssets }  = useAssetsStore();
   const [createAsset] = useMutation(CREATE_ASSET, { client });
   const onClickAddLottie = async () => {
     const files = await uploadFile({

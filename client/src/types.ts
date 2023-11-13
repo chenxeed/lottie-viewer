@@ -8,8 +8,3 @@ export interface Lottie {
   title: string;
   file: Record<string, any>;
 }
-
-export enum LottieStorage {
-  USER = 'lottie-user',
-  ASSETS = 'lottie-assets',
-}
