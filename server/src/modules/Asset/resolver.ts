@@ -1,3 +1,4 @@
+import { SyncStatus } from "../SyncStatus/entity";
 import { User } from "../User/entity";
 import { Asset } from "./entity";
 
@@ -8,7 +9,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  createAsset(userId: Int!, title: String!, description: String): Asset!
+  createAsset(userId: Int!, title: String!, file: String!): Asset!
 }
 
 type Asset {
@@ -60,7 +61,11 @@ export const AssetMutationResolver = {
         user: user,
       });
       await asset.save();
-      return Asset;
+
+      // Everytime asset is created, we log the last update to the SyncStatus
+      const newStatus = await SyncStatus.save({ user });
+
+      return asset;
     }  
   }
 };

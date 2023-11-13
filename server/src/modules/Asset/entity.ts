@@ -22,6 +22,5 @@ export class Asset extends BaseEntity {
   createdAt: Date
 
   @ManyToOne(() => User, user => user.assets)
-  @JoinColumn({ name: 'userId' })
   user: Relation<User>
 }

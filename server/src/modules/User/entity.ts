@@ -13,5 +13,4 @@ export class User extends BaseEntity {
   @OneToMany(() => Asset, asset => asset.user)
   assets: Relation<Asset>[]
 }
-export { Asset }
 

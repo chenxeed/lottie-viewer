@@ -1,4 +1,5 @@
-import { Asset, User } from "./entity";
+import { User } from "./entity";
+import { Asset } from "../Asset/entity";
 
 export const UserSchema = `
 extend type Query {
@@ -36,14 +37,16 @@ export const UserQueryResolver = {
   },
   Asset: {
     async user(parent) {
-      const asset = await Asset.findOneBy({ id: parent.id });
+      const asset = await Asset.findOne({
+        where: {
+          id: parent.id 
+        },
+        relations: ['user']
+      });
       return asset.user;
     }  
   }
 };
-
-export const UserAssetResolver = {
-}
 
 export const UserMutationResolver = {
   Mutation: {
