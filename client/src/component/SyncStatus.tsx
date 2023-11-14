@@ -14,9 +14,9 @@ export const SyncStatus = () => {
   const [isLoading, setIsLoading] = useState(false);
   const lastSyncMessage = useMemo(() => {
     if (localSyncStatus.lastUpdate) {
-      return `Last sync: ${ formatRelative(parseISO(localSyncStatus.lastUpdate), new Date()) } by ${localSyncStatus.name}`;
+      return `Last Update ${ formatRelative(parseISO(localSyncStatus.lastUpdate), new Date()) } by ${localSyncStatus.name}`;
     } else {
-      return 'No sync yet.';
+      return 'No update yet.';
     }
   }, [localSyncStatus]);
 
@@ -63,10 +63,10 @@ export const SyncStatus = () => {
     <div className='text-right'>
       <div className="text-sm text-blue-500 italic">{lastSyncMessage}</div>
       <button
-        className="button-shadow blue"
+        className="button-shadow emerald"
         onClick={synchronize}
         disabled={isLoading}>
-        { isLoading ? 'Processing...' : 'Sync' }
+        { isLoading ? '...' : 'Sync' }
       </button>
     </div>
   )

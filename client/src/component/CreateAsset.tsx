@@ -20,7 +20,7 @@ export const CreateAsset = () => {
 
   return (
     <button
-      className="button-shadow blue"
+      className="button-shadow emerald"
       onClick={onClickAddLottie}>
       Add Lottie
     </button>
