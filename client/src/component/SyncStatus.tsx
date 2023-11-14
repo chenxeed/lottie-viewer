@@ -20,8 +20,8 @@ export const SyncStatus = () => {
     }
   }, [localSyncStatus]);
 
-  const refreshStatus = () => {
-    return client.query({
+  const refreshStatus = async () => {
+    const result = await client.query({
       query: GET_LAST_SYNC_STATUS,
       fetchPolicy: 'no-cache',
     }).then(async ({ data }) => {
@@ -38,10 +38,8 @@ export const SyncStatus = () => {
         // TODO: Notify the user that they are already sync to the latest
         console.log('Already sync to the latest');
       }
-    }).catch(err => {
-      // TODO: Notify the user
-      console.error('Fail to sync the status', err);
-    }).finally(() => setIsLoading(false));
+    });
+    return result;
   };
 
   const synchronize = async () => {

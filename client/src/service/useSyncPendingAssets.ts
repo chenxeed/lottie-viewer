@@ -18,14 +18,16 @@ export function useSyncPendingAssets () {
     // If success, remove the asset from pendingAssets
     // If fail, do nothing
     try {
-      await uploadAsset(pendingAsset.title, JSON.stringify(pendingAsset.file));
+      const result = await uploadAsset(pendingAsset.title, JSON.stringify(pendingAsset.file));
+      if (result.errors) {
+        throw result.errors;
+      }
       setPendingAssets(pendingAssets.filter((asset) => asset.id !== pendingAsset.id));
       // Recursive to upload the next one
       recursiveUploadPendingAsset(pendingAssets.slice(0, -1));
     } catch (error) {
       console.error('Failed to upload pending asset', error);
       // TODO: Notify the user
-
       throw error;
     }
   }
