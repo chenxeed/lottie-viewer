@@ -1,10 +1,19 @@
-import { User, Lottie } from "../types";
+import { User, Lottie, SyncStatus } from "../types";
 import { create } from 'zustand'
-import { State, StateAction } from "./types";
+import { PendingLottie, State, StateAction } from "./types";
 
 export const useStore = create<State>((set) => ({
   user: null,
   assets: [],
+  pendingAssets: [],
+  localSyncStatus: {
+    lastUpdate: '',
+    name: '',
+  },
+  serverSyncStatus: {
+    lastUpdate: '',
+    name: '',
+  },
   action: null,
   setUser: (user: User | null) => {
     set({ user, action: StateAction.SET_USER });
@@ -12,4 +21,13 @@ export const useStore = create<State>((set) => ({
   setAssets: (assets: Lottie[]) => {
     set({ assets, action: StateAction.SET_ASSETS });
   },
+  setPendingAssets: (pendingAssets: PendingLottie[]) => {
+    set({ pendingAssets, action: StateAction.SET_PENDING_ASSETS });
+  },
+  setLocalSyncStatus: (localSyncStatus: SyncStatus) => {
+    set({ localSyncStatus, action: StateAction.SET_LOCAL_SYNC_STATUS });
+  },
+  setServerSyncStatus: (serverSyncStatus: SyncStatus) => {
+    set({ serverSyncStatus, action: StateAction.SET_SERVER_SYNC_STATUS });
+  }
 }));

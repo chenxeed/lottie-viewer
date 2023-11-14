@@ -16,6 +16,7 @@ type Asset {
   id: ID!
   title: String!
   file: String!
+  createdAt: Date!
   user: User
 }
 `;
@@ -25,7 +26,7 @@ export const AssetQueryResolver = {
     async assets() {
       const result = await Asset.find({
         order: {
-          id: "DESC"
+          createdAt: "DESC"
         }
       });
       return result;

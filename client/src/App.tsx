@@ -1,14 +1,13 @@
 import React from 'react';
-import { Player } from '@lottiefiles/react-lottie-player';
 import { CreateUserModal } from './component/CreateUserModal';
 import { AccountDropdown } from './component/AccountDropdown';
 import { CreateAsset } from './component/CreateAsset';
 import { useUserStore } from './store/user';
-import { useAssetsStore } from './store/assets';
+import { SyncStatus } from './component/SyncStatus';
+import { AssetViewer } from './component/AssetViewer';
 
 function App() {
   const { user } = useUserStore();
-  const { assets } = useAssetsStore();
   
   return (
     <div className="bg-gray-300 container h-screen mx-auto px-4 shadow-md">
@@ -21,18 +20,9 @@ function App() {
       <div className='bg-slate-50 shadow p-4 mt-2 h-[calc(100vh-6rem)] overflow-y-auto'>
         <div className='flex'>
           <CreateAsset />
-
+          <SyncStatus />
         </div>
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4'>
-          {assets.map(asset => (
-            <button key={asset.id} className="max-w-sm rounded overflow-hidden shadow-lg">
-              <Player src={asset.file} />
-              <div className="px-6 py-4">
-                <div className="font-bold text-base mb-2">{asset.title}</div>
-              </div>
-            </button>
-          ))}
-        </div>
+        <AssetViewer />
       </div>
       {!user && <CreateUserModal />}
     </div>

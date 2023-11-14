@@ -8,12 +8,24 @@ query GetAssets {
   }
 }`
 
+export const GET_LAST_SYNC_STATUS = gql`
+query LastSyncStatus {
+  lastSyncStatus {
+    id
+    lastUpdate
+    user {
+      name
+    }
+  }
+}`
+
 export const CREATE_ASSET = gql`
 mutation CreateAsset($userId: Int!, $title: String!, $file: String!) {
   createAsset(userId: $userId, title: $title, file: $file) {
     id
     title
     file
+    createdAt
   }
 }
 `;

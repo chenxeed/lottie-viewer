@@ -4,11 +4,11 @@ import { CREATE_ASSET } from '../repo/graph';
 import { client } from '../apollo-client';
 import { useAssetsStore } from '../store/assets';
 import { useUserStore } from '../store/user';
-import { useMutation } from '@apollo/client';
+import { ApolloError, useMutation } from '@apollo/client';
 
 export const CreateAsset = () => {
   const { user } = useUserStore();
-  const { assets, setAssets }  = useAssetsStore();
+  const { assets, pendingAssets, setAssets, setPendingAssets }  = useAssetsStore();
   const [createAsset] = useMutation(CREATE_ASSET, { client });
   const onClickAddLottie = async () => {
     const files = await uploadFile({
@@ -37,8 +37,27 @@ export const CreateAsset = () => {
           id: newAsset.id,
           title: newAsset.title,
           file: newAsset.file,
+          createdAt: newAsset.createdAt,
         }]);
-      }
+      },
+      onError(error, clientOptions) {
+        console.log(error, clientOptions);
+        // If the error is due to failure to save to server, we can still save it locally.
+        if (!navigator.onLine || error instanceof ApolloError) {
+          console.log('Failed to save to server, saving locally');
+          
+          setPendingAssets([...pendingAssets, {
+            id: Date.now(), // Random ID since it'll be replaced with the server ID later on sync
+            title: files[0].name,
+            file: JSON.parse(json),
+            createdAt: new Date().toISOString(),
+            isPending: true,
+          }]);
+        } else {
+          // TODO: Show notification to user
+          console.error('Failed to upload the file!');
+        }
+      },
     })
   }
 

@@ -1,5 +1,6 @@
 import { User } from "./entity";
 import { Asset } from "../Asset/entity";
+import { SyncStatus } from "../SyncStatus/entity";
 
 export const UserSchema = `
 extend type Query {
@@ -45,7 +46,18 @@ export const UserQueryResolver = {
       });
       return asset.user;
     }  
-  }
+  },
+  SyncStatus: {
+    async user(parent) {
+      const syncStatus = await SyncStatus.findOne({
+        where: {
+          id: parent.id 
+        },
+        relations: ['user']
+      });
+      return syncStatus.user;
+    }
+  },
 };
 
 export const UserMutationResolver = {
