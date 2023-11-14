@@ -83,27 +83,32 @@ self.addEventListener('message', (event) => {
 
 // Cache GraphQL API
 const store = createStore('lottieGraphQL', 'PostResponses');
-self.addEventListener('fetch', async (ev) => {
+self.addEventListener('fetch', (ev) => {
   const request = ev.request;
   const { url, method } = request;
-  const queryString = await request.clone().json();
   const validateUrl = new RegExp('/graphql(/)?');
-  if (validateUrl.test(url) && method === 'POST' && (queryString.query as string).startsWith('query')) {
+  if (validateUrl.test(url) && method === 'POST') {
     ev.respondWith(cacheGraphQLResponse(ev));
   }
 });
 
-// Using the strategy "Network First", to retrieve the latest data from the API,
-// else if the connection is offline or not responding, fallback to cache.
+// Using the strategy "Network First", to retrieve the latest data from the API.
+// If the connection is offline or not responding, fallback to cache.
 async function cacheGraphQLResponse(event: FetchEvent) {
   return fetch(event.request.clone())
     .then((response) => {
       setCache(event.request.clone(), response.clone());
       return response;
     })
-    .catch((err) => {
+    .catch(async (err) => {
       console.error('Failed to get the GraphQL API', err);
-      return getCache(event.request.clone());
+      const cache = await getCache(event.request.clone());
+      // If there's no cache, throw the error to the client to preserve the natural behavior
+      if (cache) {
+        return cache;
+      } else {
+        throw err;
+      }
     }) as Promise<Response>;
 }
 
@@ -123,6 +128,10 @@ async function serializeResponse(response: Response) {
 
 async function setCache(request: Request, response: Response) {
   const body = await request.json();
+  // Only cache query requests. Do not cache mutation requests.
+  if (!(body.query as string).startsWith('query')) {
+    return;
+  }
   const id = md5(body.query).toString();
 
   var entry = {
