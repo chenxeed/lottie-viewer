@@ -8,6 +8,7 @@
 // You can also remove this file if you'd prefer not to use a
 // service worker, and the Workbox build step will be skipped.
 
+import md5 from 'md5';
 import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
@@ -78,3 +79,81 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+
+// Cache GraphQL API
+self.addEventListener('fetch', async (ev) => {
+  const request = ev.request;
+  const { url, method } = request;
+  // Return the cache while requesting the 
+  const validateUrl = new RegExp('/graphql(/)?');
+  if (validateUrl.test(url) && method === 'POST') {
+    ev.respondWith(staleWhileRevalidate(ev));
+  }
+});
+
+async function staleWhileRevalidate(event: FetchEvent) {
+  const cachedResponse = await getCache(event.request.clone());
+  const fetchPromise = fetch(event.request.clone())
+    .then((response) => {
+      setCache(event.request.clone(), response.clone());
+      return response;
+    })
+    .catch((err) => {
+      console.error(err);
+    }) as Promise<Response>;
+  return cachedResponse ? Promise.resolve(cachedResponse) : fetchPromise;
+}
+
+async function serializeResponse(response: Response) {
+  const serializedHeaders: Record<string, string> = {};
+  response.headers.forEach((value, key) => {
+    serializedHeaders[key] = value;
+  })
+  const serialized = {
+    headers: serializedHeaders,
+    status: response.status,
+    statusText: response.statusText,
+    body: await response.json(),
+  };
+  return serialized;
+}
+
+async function setCache(request: Request, response: Response) {
+  const body = await request.json();
+  const id = md5(body.query).toString();
+
+  var entry = {
+    query: body.query,
+    response: await serializeResponse(response),
+    timestamp: Date.now()
+  };
+
+  console.log('################## SET CACHE', body, entry, id);
+  // idbKeyval.set(id, entry, store);
+}
+
+async function getCache(request: Request) {
+  try {
+    let data;
+    let body = await request.json();
+    let id = md5(body.query).toString();
+    
+    console.log('################### GETTING CACHE', body, id);
+    // data = await idbKeyval.get(id, store);
+    // if (!data) return null;
+
+    // // Check cache max age.
+    // let cacheControl = request.headers.get('Cache-Control');
+    // let maxAge = cacheControl ? parseInt(cacheControl.split('=')[1]) : 3600;
+    // if (Date.now() - data.timestamp > maxAge * 1000) {
+    //   console.log(`Cache expired. Load from API endpoint.`);
+    //   return null;
+    // }
+
+    console.log(`Load response from cache.`);
+    return new Response();
+    // return new Response(JSON.stringify(data.response.body), data.response);
+  } catch (err) {
+    return null;
+  }
+}

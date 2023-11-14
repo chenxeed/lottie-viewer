@@ -5,6 +5,8 @@ query GetAssets {
   assets {
     id
     title
+    file
+    createdAt
   }
 }`
 

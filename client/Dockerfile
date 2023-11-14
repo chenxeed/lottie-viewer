@@ -5,9 +5,10 @@ COPY ./package* /client/
 WORKDIR /client
 
 RUN npm ci --unsafe-perm=true
+RUN npm i -g serve
 
 WORKDIR /
 COPY . /client
 WORKDIR /client
 
-CMD npm start
+CMD npm run build && serve -l 3000 -s build

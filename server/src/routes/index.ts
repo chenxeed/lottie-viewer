@@ -7,11 +7,11 @@ export const getRouter = (app: Express): Router => {
   const router = express.Router();
 
   // NOTE: We don't need any REST API for now, as everything goes thru graphql API
-  // router.get('/', (_req, res) => {
-  //   res.json({
-  //     data: 'Success!',
-  //   });
-  // });
+  router.get('/', (_req, res) => {
+    res.json({
+      data: 'Success!',
+    });
+  });
 
   app.use(apiPrefix, router);
 

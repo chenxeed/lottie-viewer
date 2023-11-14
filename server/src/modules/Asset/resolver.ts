@@ -4,7 +4,7 @@ import { Asset } from "./entity";
 
 export const AssetSchema = `
 extend type Query {
-  assets: [Asset]
+  assets: [Asset]!
   asset(id: Int!): Asset!
 }
 
