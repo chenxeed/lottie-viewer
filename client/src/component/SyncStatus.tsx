@@ -60,10 +60,10 @@ export const SyncStatus = () => {
   }, []);
 
   return (
-    <div className='flex'>
-      <div>{lastSyncMessage}</div>
+    <div className='text-right'>
+      <div className="text-sm text-blue-500 italic">{lastSyncMessage}</div>
       <button
-        className="bg-blue-500 hover:bg-blue-400 w-32 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+        className="button-shadow blue"
         onClick={synchronize}
         disabled={isLoading}>
         { isLoading ? 'Processing...' : 'Sync' }
