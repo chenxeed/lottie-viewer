@@ -11,4 +11,8 @@ WORKDIR /
 COPY . /client
 WORKDIR /client
 
-CMD npm run build && serve -l 3000 -s build
+# Use this to test PWA
+# CMD npm run build && serve -l 3000 -s build
+
+# Use this to hot-reload (cannot test PWA)
+CMD npm start

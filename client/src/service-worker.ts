@@ -14,6 +14,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
+import { set, get, createStore } from 'idb-keyval';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -81,27 +82,29 @@ self.addEventListener('message', (event) => {
 // Any other custom service worker logic can go here.
 
 // Cache GraphQL API
+const store = createStore('lottieGraphQL', 'PostResponses');
 self.addEventListener('fetch', async (ev) => {
   const request = ev.request;
   const { url, method } = request;
-  // Return the cache while requesting the 
+  const queryString = await request.clone().json();
   const validateUrl = new RegExp('/graphql(/)?');
-  if (validateUrl.test(url) && method === 'POST') {
-    ev.respondWith(staleWhileRevalidate(ev));
+  if (validateUrl.test(url) && method === 'POST' && (queryString.query as string).startsWith('query')) {
+    ev.respondWith(cacheGraphQLResponse(ev));
   }
 });
 
-async function staleWhileRevalidate(event: FetchEvent) {
-  const cachedResponse = await getCache(event.request.clone());
-  const fetchPromise = fetch(event.request.clone())
+// Using the strategy "Network First", to retrieve the latest data from the API,
+// else if the connection is offline or not responding, fallback to cache.
+async function cacheGraphQLResponse(event: FetchEvent) {
+  return fetch(event.request.clone())
     .then((response) => {
       setCache(event.request.clone(), response.clone());
       return response;
     })
     .catch((err) => {
-      console.error(err);
+      console.error('Failed to get the GraphQL API', err);
+      return getCache(event.request.clone());
     }) as Promise<Response>;
-  return cachedResponse ? Promise.resolve(cachedResponse) : fetchPromise;
 }
 
 async function serializeResponse(response: Response) {
@@ -127,32 +130,28 @@ async function setCache(request: Request, response: Response) {
     response: await serializeResponse(response),
     timestamp: Date.now()
   };
-
-  console.log('################## SET CACHE', body, entry, id);
-  // idbKeyval.set(id, entry, store);
+  set(id, entry, store);
 }
 
 async function getCache(request: Request) {
   try {
-    let data;
-    let body = await request.json();
-    let id = md5(body.query).toString();
-    
-    console.log('################### GETTING CACHE', body, id);
-    // data = await idbKeyval.get(id, store);
-    // if (!data) return null;
+    const body = await request.json();
+    const id = md5(body.query).toString();
+    const data = await get(id, store);
+    if (!data) {
+      return null;
+    }
 
-    // // Check cache max age.
-    // let cacheControl = request.headers.get('Cache-Control');
-    // let maxAge = cacheControl ? parseInt(cacheControl.split('=')[1]) : 3600;
-    // if (Date.now() - data.timestamp > maxAge * 1000) {
-    //   console.log(`Cache expired. Load from API endpoint.`);
-    //   return null;
-    // }
+    // Check cache max age.
+    const cacheControl = request.headers.get('Cache-Control');
+    const maxAge = cacheControl ? parseInt(cacheControl.split('=')[1]) : 3600;
+    if (Date.now() - data.timestamp > maxAge * 1000) {
+      console.log(`Cache expired. Load from API endpoint.`);
+      return null;
+    }
 
     console.log(`Load response from cache.`);
-    return new Response();
-    // return new Response(JSON.stringify(data.response.body), data.response);
+    return new Response(JSON.stringify(data.response.body), data.response);
   } catch (err) {
     return null;
   }
