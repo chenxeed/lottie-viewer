@@ -6,6 +6,7 @@ import { useStateUser } from './store/user';
 import { SyncStatus } from './component/SyncStatus';
 import { AssetViewer } from './component/AssetViewer';
 import clsx from 'clsx';
+import { AssetDetail } from './component/AssetDetail';
 
 function App() {
   const user = useStateUser();
@@ -47,6 +48,7 @@ function App() {
           <SyncStatus />
         </div>
         <AssetViewer />
+        <AssetDetail />
       </div>
       {!user && <CreateUserModal />}
     </div>

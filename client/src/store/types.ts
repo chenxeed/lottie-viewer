@@ -8,10 +8,12 @@ export interface State {
   user: User | null;
   assets: Lottie[];
   pendingAssets: PendingLottie[];
+  viewAsset: Lottie | null;
   localSyncStatus: SyncStatus;
   action: StateAction | null;
   setUser: (user: User | null) => void;
   setAssets: (assets: Lottie[]) => void;
+  setViewAsset: (asset: Lottie | null) => void;
   setPendingAssets: (assets: PendingLottie[]) => void;
   setLocalSyncStatus: (data: SyncStatus) => void;
 }
@@ -19,6 +21,7 @@ export interface State {
 export enum StateAction {
   SET_USER = 'setUser',
   SET_ASSETS = 'setAssets',
+  SET_VIEW_ASSET = 'setViewAssets',
   SET_PENDING_ASSETS = 'setPendingAssets',
   SET_LOCAL_SYNC_STATUS = 'setLocalSyncStatus',
 }

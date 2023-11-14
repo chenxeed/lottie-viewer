@@ -6,6 +6,7 @@ export const useStore = create<State>((set) => ({
   user: null,
   assets: [],
   pendingAssets: [],
+  viewAsset: null,
   localSyncStatus: {
     lastUpdate: '',
     name: '',
@@ -19,6 +20,9 @@ export const useStore = create<State>((set) => ({
   },
   setPendingAssets: (pendingAssets: PendingLottie[]) => {
     set({ pendingAssets, action: StateAction.SET_PENDING_ASSETS });
+  },
+  setViewAsset: (asset: Lottie | null) => {
+    set({ viewAsset: asset, action: StateAction.SET_ASSETS });
   },
   setLocalSyncStatus: (localSyncStatus: SyncStatus) => {
     set({ localSyncStatus, action: StateAction.SET_LOCAL_SYNC_STATUS });
