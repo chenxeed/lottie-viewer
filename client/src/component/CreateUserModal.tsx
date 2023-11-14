@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { client } from '../apollo-client';
 import { CREATE_USER } from '../repo/graph';
 import { useMutation } from '@apollo/client';
-import { useUserStore } from '../store/user';
+import { useStateSetUser } from '../store/user';
 
 export const CreateUserModal = () => {
 
   const [name, setName] = useState('');
-  const { setUser } = useUserStore();
+  const setUser = useStateSetUser();
   const [createUser] = useMutation(CREATE_USER, { client });
 
   function onChangeUsername (e: React.ChangeEvent<HTMLInputElement>) {

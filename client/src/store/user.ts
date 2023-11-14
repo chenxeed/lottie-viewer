@@ -14,13 +14,5 @@ useStore.subscribe((state) => {
   }
 });
 
-export const useUserStore = () => {
-  const user = useStore((state) => state.user);
-  const setUser = useStore((state) => state.setUser);
-
-  return {
-    user,
-    setUser
-  }
-}
-
+export const useStateUser = () => useStore((state) => state.user);
+export const useStateSetUser = () => useStore((state) => state.setUser);

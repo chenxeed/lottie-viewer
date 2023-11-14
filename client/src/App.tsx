@@ -2,12 +2,12 @@ import React from 'react';
 import { CreateUserModal } from './component/CreateUserModal';
 import { AccountDropdown } from './component/AccountDropdown';
 import { CreateAsset } from './component/CreateAsset';
-import { useUserStore } from './store/user';
+import { useStateUser } from './store/user';
 import { SyncStatus } from './component/SyncStatus';
 import { AssetViewer } from './component/AssetViewer';
 
 function App() {
-  const { user } = useUserStore();
+  const user = useStateUser();
   
   return (
     <div className="bg-gray-300 container h-screen mx-auto px-4 shadow-md">

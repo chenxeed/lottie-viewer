@@ -15,17 +15,8 @@ useStore.subscribe((state) => {
   }
 });
 
-export const useAssetsStore = () => {
-  const assets = useStore((state) => state.assets);
-  const setAssets = useStore((state) => state.setAssets);
+export const useStateAssets = () => useStore((state) => state.assets);
+export const useStateSetAssets = () => useStore((state) => state.setAssets);
+export const useStatePendingAssets = () => useStore((state) => state.pendingAssets);
+export const useStateSetPendingAssets = () => useStore((state) => state.setPendingAssets);
 
-  const pendingAssets = useStore((state) => state.pendingAssets);
-  const setPendingAssets = useStore((state) => state.setPendingAssets);
-
-  return {
-    assets,
-    setAssets,
-    pendingAssets,
-    setPendingAssets,
-  }
-}

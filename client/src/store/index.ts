@@ -10,10 +10,6 @@ export const useStore = create<State>((set) => ({
     lastUpdate: '',
     name: '',
   },
-  serverSyncStatus: {
-    lastUpdate: '',
-    name: '',
-  },
   action: null,
   setUser: (user: User | null) => {
     set({ user, action: StateAction.SET_USER });
@@ -27,7 +23,4 @@ export const useStore = create<State>((set) => ({
   setLocalSyncStatus: (localSyncStatus: SyncStatus) => {
     set({ localSyncStatus, action: StateAction.SET_LOCAL_SYNC_STATUS });
   },
-  setServerSyncStatus: (serverSyncStatus: SyncStatus) => {
-    set({ serverSyncStatus, action: StateAction.SET_SERVER_SYNC_STATUS });
-  }
 }));
