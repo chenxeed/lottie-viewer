@@ -18,7 +18,7 @@ export function useSyncPendingAssets () {
     // If fail, do nothing
     try {
       const file = new File([pendingAsset.jsonString], pendingAsset.title, { type: 'application/json' });
-      const result = await uploadAsset(file);
+      const result = await uploadAsset(file, pendingAsset.criteria);
       if (!result) {
         throw new Error('Failed to upload pending asset');
       }

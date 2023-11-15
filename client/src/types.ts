@@ -1,3 +1,5 @@
+import { Criteria } from "./store/types";
+
 export interface User {
   id: number;
   name: string;
@@ -8,6 +10,7 @@ export interface Lottie {
   id: number;
   title: string;
   file: string;
+  criteria: Criteria;
   createdAt: string;
 }
 

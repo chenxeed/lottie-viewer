@@ -6,7 +6,8 @@
       "start": "nodemon src/index.ts -L",
       "build": "tsc",
       "serve": "node dist/app.js",
-      "typeorm": "typeorm-ts-node-commonjs"
+      "typeorm": "typeorm-ts-node-commonjs -d ./src/data-source.ts",
+      "codegen": "graphql-codegen --config graphql-codegen.ts"
    },
    "dependencies": {
       "@graphql-tools/merge": "^9.0.0",
@@ -31,6 +32,9 @@
       "typeorm": "0.3.17"
    },
    "devDependencies": {
+      "@graphql-codegen/cli": "5.0.0",
+      "@graphql-codegen/typescript": "4.0.1",
+      "@graphql-codegen/typescript-resolvers": "4.0.1",
       "@types/express": "^4.17.21",
       "@types/morgan": "^1.9.9",
       "@types/multer": "^1.4.10",

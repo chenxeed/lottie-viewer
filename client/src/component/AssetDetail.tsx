@@ -5,20 +5,14 @@ import { Player, Controls, PlayerEvent } from '@lottiefiles/react-lottie-player'
 import { JsonViewer } from '@textea/json-viewer';
 import { downloadObjectAsJson } from '../helper/fileDownload';
 
-const KeyRenderer = ({ path }: any) => {
-  return <div className='bg-slate-700 text-slate-200'>&quot;{path.slice(-1)}&quot;</div>;
-};
-KeyRenderer.when = (props: any) => {
-  return props.value === 120;
-};
-
 export const AssetDetail = () => {
 
   const viewAsset = useStateViewAsset();
   const setViewAsset = useStateSetViewAsset();
-  const [frame, setFrame] = useState(0);
   const controls = useRef<Controls>(null);
   const jsonObj = useMemo(() => viewAsset ? JSON.parse(viewAsset?.jsonString) : {}, [viewAsset]);
+  // Track the current frame on play
+  const [frame, setFrame] = useState(0);
 
   function onClose () {
     setViewAsset(null);

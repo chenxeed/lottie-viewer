@@ -1,11 +1,12 @@
 import { gql } from "@apollo/client";
 
 export const GET_ASSETS = gql`
-query GetAssets {
-  assets {
+query GetAssets($after: Int, $criteria: String) {
+  assets(after: $after, criteria: $criteria) {
     id
     title
     file
+    criteria
     createdAt
   }
 }`
@@ -22,11 +23,12 @@ query LastSyncStatus {
 }`
 
 export const CREATE_ASSET = gql`
-mutation CreateAsset($userId: Int!, $title: String!, $file: String!) {
-  createAsset(userId: $userId, title: $title, file: $file) {
+mutation CreateAsset($userId: Int!, $title: String!, $file: String!, $criteria: String!) {
+  createAsset(userId: $userId, title: $title, file: $file, criteria: $criteria) {
     id
     title
     file
+    criteria
     createdAt
   }
 }

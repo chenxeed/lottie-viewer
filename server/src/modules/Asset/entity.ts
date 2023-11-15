@@ -7,15 +7,15 @@ export class Asset extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column()
+  @Column({
+    nullable: false
+  })
   title: string
 
-  // NOTE: This is a text field because we're storing the file as a base64 string.
-  // This is not the best solution due to the potentially huge size of the file.
-  // TODO: Upload to S3 instead and store the file key here
-  @Column({
-    type: 'text'
-  })
+  @Column()
+  criteria: string
+
+  @Column()
   file: string
 
   @CreateDateColumn()

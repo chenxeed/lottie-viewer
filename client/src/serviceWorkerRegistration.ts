@@ -42,7 +42,7 @@ export function register(config?: Config) {
   
         if (isLocalhost) {
           // This is running on localhost. Let's check if a service worker still exists or not.
-          checkValidServiceWorker(swUrl, config);
+          checkValidServiceWorker(swUrl, config).then(() => resolve());
   
           // Add some additional logging to localhost, pointing developers to the
           // service worker/PWA documentation.
@@ -59,6 +59,8 @@ export function register(config?: Config) {
           registerValidSW(swUrl, config).then(() => resolve());
         }
       });
+    } else {
+      resolve();
     }
   });
 }
@@ -111,7 +113,7 @@ function registerValidSW(swUrl: string, config?: Config) {
 
 function checkValidServiceWorker(swUrl: string, config?: Config) {
   // Check if the service worker can be found. If it can't reload the page.
-  fetch(swUrl, {
+  return fetch(swUrl, {
     headers: { 'Service-Worker': 'script' },
   })
     .then((response) => {
@@ -129,7 +131,7 @@ function checkValidServiceWorker(swUrl: string, config?: Config) {
         });
       } else {
         // Service worker found. Proceed as normal.
-        registerValidSW(swUrl, config);
+        return registerValidSW(swUrl, config);
       }
     })
     .catch(() => {

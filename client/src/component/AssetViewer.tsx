@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { ChangeEvent, useEffect } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { clsx } from 'clsx';
-import { useStateAssets, useStatePendingAssets, useStateSetViewAsset } from '../store/assets';
+import { useStateAssets, useStateSetAssets, useStateCriteria, useStatePendingAssets, useStateSetCriteria, useStateSetViewAsset } from '../store/assets';
 import { useLoadAssets } from '../service/useLoadAssets';
 import { fetchFileContentFromBucket, getFilePath } from '../service/fileBucket';
-import { PendingLottie } from '../store/types';
+import { Criteria, PendingLottie } from '../store/types';
 import { Lottie } from '../types';
+import { Dropdown } from '../atom/Dropdown';
 
 // NOTE: Separate the pending & asset list component so upon adding a new asset,
 // it won't re-render the whole list.
@@ -59,17 +60,78 @@ const AssetList = () => {
   </>
 }
 
+const criteriaOption = [
+  Criteria.ALL,
+  Criteria.GAME,
+  Criteria.NATURE,
+  Criteria.PEOPLE,
+  Criteria.SCIENCE,
+  Criteria.SHAPE,
+  Criteria.TECH,
+]
+
 export const AssetViewer = () => {
   const loadAssets = useLoadAssets();
+  const criteria = useStateCriteria();
+  const setCriteria = useStateSetCriteria();
+  const setAssets = useStateSetAssets();
+
+  const loadAssetsByCriteria = async (criteria: Criteria) => {
+    const result = await loadAssets({
+      criteria,
+      after: 0,
+    });
+    if (result.error) {
+      // TODO: Notify user
+    } else if (result.data) {
+      const assets = result.data.assets;
+      if (assets) {
+        setAssets(assets.map((asset: any) => ({
+          id: asset.id,
+          title: asset.title,
+          file: asset.file,
+          createdAt: asset.createdAt,
+        })));  
+      }
+    }
+  }
+
+  const onChangeCriteria = async (ev: ChangeEvent) => {
+    ev.preventDefault();
+    const target = ev.target as HTMLSelectElement;
+    const value = target.value as Criteria;
+
+    await loadAssetsByCriteria(value);
+
+    setCriteria(value);
+  }
 
   useEffect(() => {
-    loadAssets();
-  }, []);
+    loadAssetsByCriteria(Criteria.ALL);
+  })
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4'>
-      <PendingAssetList />
-      <AssetList />
-    </div>
+    <>
+      <div className="flex flex-wrap -mx-3 mb-2">
+        <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-2" htmlFor="grid-state">
+            Criteria
+          </label>
+          <div className="relative mt-2">
+            <Dropdown
+              value={criteria}
+              options={criteriaOption}
+              onChange={onChangeCriteria} />
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4'>
+        <PendingAssetList />
+        <AssetList />
+      </div>
+    </>
   );
 }

@@ -6,7 +6,7 @@ extend type Query {
 }
 
 type SyncStatus {
-  id: ID!
+  id: Int!
   lastUpdate: Date!
   user: User!
 }

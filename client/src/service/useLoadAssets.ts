@@ -1,24 +1,22 @@
 import { GET_ASSETS } from '../repo/graph';
 import { client } from '../apollo-client';
 import { useStateSetAssets } from '../store/assets';
+import { Criteria } from '../store/types';
+
+interface LoadAssetOption {
+  criteria: Criteria;
+  after: number;
+}
 
 export const useLoadAssets = () => {
-  const setAssets = useStateSetAssets();
-  return () => {
-    console.log("fetching query");
-    client.query({
+  return ({ criteria, after }: LoadAssetOption) => {
+    return client.query({
       query: GET_ASSETS,
+      variables: {
+        criteria: criteria === Criteria.ALL ? '' : criteria,
+        after
+      },
       fetchPolicy: 'network-only',
-    }).then(({ data }) => {
-      const assets = data.assets;
-      if (assets) {
-        setAssets(assets.map((asset: any) => ({
-          id: asset.id,
-          title: asset.title,
-          file: asset.file,
-          createdAt: asset.createdAt,
-        })));  
-      }
     });
   }
 }

@@ -13,7 +13,7 @@ extend type Mutation {
 }
 
 type User {
-  id: ID!
+  id: Int!
   name: String!
   assets: [Asset]!
 }
