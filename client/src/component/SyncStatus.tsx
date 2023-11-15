@@ -1,51 +1,82 @@
 import { GET_LAST_SYNC_STATUS } from '../repo/graph';
 import { client } from '../apollo-client';
 import { useStateLocalSyncStatus, useStateSetLocalSyncStatus } from '../store/syncStatus';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { formatRelative, parseISO } from 'date-fns';
 import { useSyncPendingAssets } from '../service/useSyncPendingAssets';
+import { useSyncUser } from '../service/useSyncUser';
 import { useLoadAssets } from '../service/useLoadAssets';
+import { useStateUser } from '../store/user';
+import { useStatePendingAssets } from '../store/assets';
+import clsx from 'clsx';
+
+enum SyncState {
+  NO_SYNC = 'no-sync',
+  UP_TO_DATE = 'up-to-date',
+  SYNCING = 'syncing',
+  FAIL_TO_SYNC = 'fail-to-sync',
+}
 
 export const SyncStatus = () => {
   const localSyncStatus = useStateLocalSyncStatus();
+  const user = useStateUser();
+  const pendingAssets = useStatePendingAssets();
   const setLocalSyncStatus = useStateSetLocalSyncStatus();
+  const syncUser = useSyncUser();
   const syncPendingAssets = useSyncPendingAssets();
   const loadAssets = useLoadAssets();
   const [isLoading, setIsLoading] = useState(false);
+  const [syncState, setSyncState] = useState<SyncState>(SyncState.NO_SYNC);
   const lastSyncMessage = useMemo(() => {
-    if (localSyncStatus.lastUpdate) {
+    if (syncState === SyncState.SYNCING) {
+      return `Synching... Please wait`;
+    } else if (syncState === SyncState.UP_TO_DATE) {
       return `Last Update ${ formatRelative(parseISO(localSyncStatus.lastUpdate), new Date()) } by ${localSyncStatus.name}`;
-    } else {
+    } else if (syncState === SyncState.NO_SYNC) {
       return 'No update yet.';
+    } else if (syncState === SyncState.FAIL_TO_SYNC) {
+      return 'Fail to sync. Please try again.';
+    } else {
+      return 'Unknown status';
     }
-  }, [localSyncStatus]);
+  }, [syncState, localSyncStatus]);
 
   const refreshStatus = async () => {
-    const result = await client.query({
+    const { data, errors } = await client.query({
       query: GET_LAST_SYNC_STATUS,
       fetchPolicy: 'no-cache',
-    }).then(async ({ data }) => {
+    })
+    if (data) {
       const syncStatus = data.lastSyncStatus[0];
       if (syncStatus) {
         if (syncStatus.lastUpdate !== localSyncStatus.lastUpdate) {
+          setSyncState(SyncState.SYNCING);
           await loadAssets();
           setLocalSyncStatus({
             lastUpdate: syncStatus.lastUpdate,
             name: syncStatus.user.name,
           });
+          setSyncState(SyncState.UP_TO_DATE);
         }
       } else {
+        setSyncState(SyncState.UP_TO_DATE);
         // TODO: Notify the user that they are already sync to the latest
         console.log('Already sync to the latest');
-      }
-    });
-    return result;
+      };  
+    } else if (errors) {
+      setSyncState(SyncState.FAIL_TO_SYNC);
+    }
   };
 
   const synchronize = async () => {
     setIsLoading(true);
     try {
-      await syncPendingAssets();
+      if (user) {
+        await syncUser(user);
+      }
+      if (pendingAssets.length > 0) {
+        await syncPendingAssets(pendingAssets);
+      }
       await refreshStatus();  
     } catch (e) {
       // TODO: Notify the user
@@ -59,7 +90,7 @@ export const SyncStatus = () => {
     <div className='text-right'>
       <div className="text-sm text-blue-500 italic">{lastSyncMessage}</div>
       <button
-        className="button-shadow emerald"
+        className={clsx("button-shadow emerald", isLoading && 'animate-pulse')}
         onClick={synchronize}
         disabled={isLoading}>
         { isLoading ? '...' : 'Sync' }

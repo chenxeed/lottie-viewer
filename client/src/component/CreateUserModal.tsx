@@ -1,31 +1,26 @@
 import React, { useState } from 'react';
-import { client } from '../apollo-client';
-import { CREATE_USER } from '../repo/graph';
-import { useMutation } from '@apollo/client';
 import { useStateSetUser } from '../store/user';
+import { useSyncUser } from '../service/useSyncUser';
 
 export const CreateUserModal = () => {
 
   const [name, setName] = useState('');
   const setUser = useStateSetUser();
-  const [createUser] = useMutation(CREATE_USER, { client });
+  const syncUser = useSyncUser();
 
   function onChangeUsername (e: React.ChangeEvent<HTMLInputElement>) {
     setName(e.target.value);
   }
 
   function onClickContinue () {
-    createUser({
-      variables: {
-        name,
-      },
-      onCompleted(data) {
-        setUser({
-          id: Number(data.createUser.id),
-          name: data.createUser.name,
-        });
-      },
-    });
+    // Do optimistic sync by saving the user state locally first before sync to the server
+    const user = {
+      id: Date.now(), // Random ID, to be replaced with real ID once the user is sync
+      name: name,
+      isSync: false,
+    };
+    setUser(user);
+    syncUser(user);
   }
 
   return (

@@ -1,6 +1,7 @@
 export interface User {
   id: number;
   name: string;
+  isSync: boolean;
 }
 
 export interface Lottie {

@@ -1,9 +1,8 @@
 import { PendingLottie } from "../store/types";
 import { useUploadAsset } from "./useUploadAsset";
-import { useStatePendingAssets, useStateSetPendingAssets } from "../store/assets";
+import { useStateSetPendingAssets } from "../store/assets";
 
 export function useSyncPendingAssets () {
-  const pendingAssets = useStatePendingAssets();
   const setPendingAssets = useStateSetPendingAssets();
   const uploadAsset = useUploadAsset();
 
@@ -36,5 +35,5 @@ export function useSyncPendingAssets () {
     }
   }
 
-  return () => recursiveUploadPendingAsset(pendingAssets);
+  return (pendingAssets: PendingLottie[]) => recursiveUploadPendingAsset(pendingAssets);
 }
