@@ -24,6 +24,15 @@ services:
     depends_on:
       - db
 
+  bucket:
+    build:
+      context: ./bucket
+    volumes:
+      - ./bucket/src:/app/src
+      - ./bucket/uploads:/app/uploads
+    ports:
+      - "3002:3002"
+
   db:
     image: postgres:13
     environment:

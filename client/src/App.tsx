@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CreateUserModal } from './component/CreateUserModal';
 import { AccountDropdown } from './component/AccountDropdown';
 import { CreateAsset } from './component/CreateAsset';

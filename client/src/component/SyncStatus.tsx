@@ -55,10 +55,6 @@ export const SyncStatus = () => {
     }
   };
 
-  useEffect(() => {
-    synchronize()
-  }, []);
-
   return (
     <div className='text-right'>
       <div className="text-sm text-blue-500 italic">{lastSyncMessage}</div>

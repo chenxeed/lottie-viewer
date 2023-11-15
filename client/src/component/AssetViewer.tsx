@@ -9,10 +9,17 @@ import { useLoadAssets } from '../service/useLoadAssets';
 
 const PendingAssetList = () => {
   const pendingAssets = useStatePendingAssets();
+  const setViewAsset = useStateSetViewAsset();
   return <>
     {pendingAssets.map(asset => (
-    <button key={asset.id} className="max-w-sm rounded overflow-hidden shadow-lg bg-slate-300">
-      <Player src={asset.file} className='h-40' />
+    <button
+      key={asset.id}
+      className="max-w-sm rounded overflow-hidden shadow-lg bg-slate-300"
+      onClick={() => setViewAsset({
+        title: asset.title,
+        jsonString: asset.jsonString,
+      })}>
+      <Player src={asset.jsonString} className='h-40' />
       <div className="px-6 py-4">
         <div className={clsx('font-bold text-base mb-2 italic text-gray-600')}>
           {asset.title}
@@ -25,14 +32,12 @@ const PendingAssetList = () => {
 
 const AssetList = () => {
   const assets = useStateAssets();
-  const setViewAsset = useStateSetViewAsset();
 
   return <>
     {assets.map(asset => (
       <button
         key={asset.id}
-        className="max-w-sm h-60 rounded overflow-hidden shadow-lg border-r-2 border-b-2 border-gray-600 hover:border-b-4 hover:h-[calc(15rem-2px)] transition-all"
-        onClick={() => setViewAsset(asset)}>
+        className="max-w-sm h-60 rounded overflow-hidden shadow-lg border-r-2 border-b-2 border-gray-600 hover:border-b-4 hover:h-[calc(15rem-2px)] transition-all">
         <Player src={asset.file} className='h-40' />
         <div className="px-6 py-4">
           <div className="text-left text-base mb-2 border-t-2 border-emerald-600">

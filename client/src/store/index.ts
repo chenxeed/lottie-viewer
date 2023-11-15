@@ -1,6 +1,6 @@
 import { User, Lottie, SyncStatus } from "../types";
 import { create } from 'zustand'
-import { PendingLottie, State, StateAction } from "./types";
+import { PendingLottie, State, StateAction, ViewLottie } from "./types";
 
 export const useStore = create<State>((set) => ({
   user: null,
@@ -21,7 +21,7 @@ export const useStore = create<State>((set) => ({
   setPendingAssets: (pendingAssets: PendingLottie[]) => {
     set({ pendingAssets, action: StateAction.SET_PENDING_ASSETS });
   },
-  setViewAsset: (asset: Lottie | null) => {
+  setViewAsset: (asset: ViewLottie | null) => {
     set({ viewAsset: asset, action: StateAction.SET_ASSETS });
   },
   setLocalSyncStatus: (localSyncStatus: SyncStatus) => {

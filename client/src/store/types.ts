@@ -1,19 +1,28 @@
 import { User, Lottie, SyncStatus } from "../types";
 
-export interface PendingLottie extends Lottie {
+export interface PendingLottie {
+  id: number;
+  title: string;
+  jsonString: string;
   isPending: boolean;
+  createdAt: string;
+}
+
+export interface ViewLottie {
+  title: string;
+  jsonString: string;
 }
 
 export interface State {
   user: User | null;
   assets: Lottie[];
   pendingAssets: PendingLottie[];
-  viewAsset: Lottie | null;
+  viewAsset: ViewLottie | null;
   localSyncStatus: SyncStatus;
   action: StateAction | null;
   setUser: (user: User | null) => void;
   setAssets: (assets: Lottie[]) => void;
-  setViewAsset: (asset: Lottie | null) => void;
+  setViewAsset: (asset: ViewLottie | null) => void;
   setPendingAssets: (assets: PendingLottie[]) => void;
   setLocalSyncStatus: (data: SyncStatus) => void;
 }

@@ -18,7 +18,11 @@ export function useSyncPendingAssets () {
     // If success, remove the asset from pendingAssets
     // If fail, do nothing
     try {
-      const result = await uploadAsset(pendingAsset.title, JSON.stringify(pendingAsset.file));
+      const file = new File([pendingAsset.jsonString], pendingAsset.title, { type: 'application/json' });
+      const result = await uploadAsset(file);
+      if (!result) {
+        throw new Error('Failed to upload pending asset');
+      }
       if (result.errors) {
         throw result.errors;
       }

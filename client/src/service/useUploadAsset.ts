@@ -3,6 +3,8 @@ import { client } from '../apollo-client';
 import { ApolloError, useMutation } from '@apollo/client';
 import { useStateUser } from '../store/user';
 import { useStateAssets, useStatePendingAssets, useStateSetAssets, useStateSetPendingAssets } from '../store/assets';
+import { uploadFileToBucket } from './uploadFileToBucket';
+import { readFile } from '../helper/fileReader';
 
 
 /**
@@ -18,38 +20,53 @@ export function useUploadAsset (fallback = false) {
   const setPendingAssets = useStateSetPendingAssets();
   const [createAsset] = useMutation(CREATE_ASSET, { client });
 
-  return (fileName: string, jsonString: string) => {
-    return createAsset({
-      variables: {
-        userId: user?.id,
-        title: fileName,
-        file: jsonString,
-      },
-      onCompleted(data) {
-        const newAsset = data.createAsset;
-        setAssets([{
-          id: newAsset.id,
-          title: newAsset.title,
-          file: newAsset.file,
-          createdAt: newAsset.createdAt,
-        }, ...assets]);
-      },
-      onError(error) {
-        // If the error is due to failure to save to server, we can still save it locally.
-        if (fallback && (!navigator.onLine || error instanceof ApolloError)) {
-          console.warn('Failed to save to server, saving locally');
-          setPendingAssets([{
-            id: Date.now(), // Random ID since it'll be replaced with the server ID later on sync
-            title: fileName,
-            file: JSON.parse(jsonString),
-            createdAt: new Date().toISOString(),
-            isPending: true,
-          }, ...pendingAssets]);
-        } else {
-          // TODO: Show notification to user
-          console.error('Failed to upload the file!', error);
+  async function fallbackPendingAsset (file: File) {
+    const jsonString = await readFile(file);
+    setPendingAssets([{
+      id: Date.now(), // Random ID since it'll be replaced with the server ID later on sync
+      title: file.name,
+      jsonString,
+      createdAt: new Date().toISOString(),
+      isPending: true,
+    }, ...pendingAssets]);
+  }
+
+  return async (file: File) => {
+
+    // Upload the file to the server bucket, to retrieve the URL.
+    // Once done, we'll use it as the pointer of the asset URL.
+    // In case where the user failed to upload, we can fallback to local storage
+    // temporarily for user to sync back once they're online again.
+    try {
+      const uploadedFile = await uploadFileToBucket(file);
+      const { filename, originalname } = uploadedFile;
+
+      const result = await createAsset({
+        variables: {
+          userId: user?.id,
+          title: originalname,
+          file: filename,
+        },
+        onCompleted(data) {
+          const newAsset = data.createAsset;
+          setAssets([{
+            id: newAsset.id,
+            title: newAsset.title,
+            file: newAsset.file,
+            createdAt: newAsset.createdAt,
+          }, ...assets]);
         }
-      },
-    })
+      })
+      if (result.errors) {
+        throw new ApolloError({ graphQLErrors: result.errors });
+      }
+      return result;
+    } catch (e) {
+      if (fallback) {
+        await fallbackPendingAsset(file);
+      } else {
+        throw e;
+      }
+    }
   } 
 }

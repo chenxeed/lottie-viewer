@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useStateSetViewAsset, useStateViewAsset } from '../store/assets';
 import clsx from 'clsx';
 import { Player, Controls, PlayerEvent } from '@lottiefiles/react-lottie-player';
@@ -18,6 +18,7 @@ export const AssetDetail = () => {
   const setViewAsset = useStateSetViewAsset();
   const [frame, setFrame] = useState(0);
   const controls = useRef<Controls>(null);
+  const jsonObj = useMemo(() => viewAsset ? JSON.parse(viewAsset?.jsonString) : {}, [viewAsset]);
 
   function onClose () {
     setViewAsset(null);
@@ -31,7 +32,7 @@ export const AssetDetail = () => {
     if (!viewAsset) {
       return
     }
-    downloadObjectAsJson(viewAsset.file, viewAsset.title)
+    downloadObjectAsJson(viewAsset.jsonString, viewAsset.title)
   }
 
   return (
@@ -63,13 +64,13 @@ export const AssetDetail = () => {
                     </div>
                     <div className='lg:flex'>
                       <div className="mt-2 w-full">
-                        <Player style={{ height: 320 }} autoplay loop src={viewAsset.file} onEvent={onPlayerEvent}>
+                        <Player style={{ height: 320 }} autoplay loop src={viewAsset.jsonString} onEvent={onPlayerEvent}>
                           <Controls ref={controls} visible={true} buttons={['play', 'repeat', 'frame', 'debug']} />
                         </Player>
                       </div>
                       <div className='mt-2 w-full min-h-[150px] max-h-48 lg:max-h-96 text-left overflow-auto'>
                         <JsonViewer
-                          value={viewAsset.file}
+                          value={jsonObj}
                           displayDataTypes={false}
                           rootName={'Animation'}
                           defaultInspectDepth={1}

@@ -14,7 +14,7 @@ export const useLoadAssets = () => {
       setAssets(assets.map((asset: any) => ({
         id: asset.id,
         title: asset.title,
-        file: JSON.parse(asset.file),
+        file: asset.file,
         createdAt: asset.createdAt,
       })));  
     }
