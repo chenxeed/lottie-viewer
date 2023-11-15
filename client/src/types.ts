@@ -6,7 +6,7 @@ export interface User {
 export interface Lottie {
   id: number;
   title: string;
-  file: Record<string, any>;
+  file: string;
   createdAt: string;
 }
 

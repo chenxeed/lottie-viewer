@@ -5,8 +5,7 @@
    "scripts": {
       "start": "nodemon src/index.ts -L",
       "build": "tsc",
-      "serve": "node dist/app.js",
-      "typeorm": "typeorm-ts-node-commonjs"
+      "serve": "node dist/app.js"
    },
    "dependencies": {
       "body-parser": "^1.20.2",

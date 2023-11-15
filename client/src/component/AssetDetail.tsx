@@ -74,6 +74,7 @@ export const AssetDetail = () => {
                           displayDataTypes={false}
                           rootName={'Animation'}
                           defaultInspectDepth={1}
+                          enableClipboard={false}
                         />
                       </div>
                     </div>

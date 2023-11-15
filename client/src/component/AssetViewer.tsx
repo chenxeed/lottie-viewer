@@ -3,6 +3,9 @@ import { Player } from '@lottiefiles/react-lottie-player';
 import { clsx } from 'clsx';
 import { useStateAssets, useStatePendingAssets, useStateSetViewAsset } from '../store/assets';
 import { useLoadAssets } from '../service/useLoadAssets';
+import { fetchFileContentFromBucket, getFilePath } from '../service/fileBucket';
+import { PendingLottie } from '../store/types';
+import { Lottie } from '../types';
 
 // NOTE: Separate the pending & asset list component so upon adding a new asset,
 // it won't re-render the whole list.
@@ -10,15 +13,16 @@ import { useLoadAssets } from '../service/useLoadAssets';
 const PendingAssetList = () => {
   const pendingAssets = useStatePendingAssets();
   const setViewAsset = useStateSetViewAsset();
+  const onClickDetail = (asset: PendingLottie) => setViewAsset({
+    title: asset.title,
+    jsonString: asset.jsonString,
+  });
   return <>
     {pendingAssets.map(asset => (
     <button
       key={asset.id}
       className="max-w-sm rounded overflow-hidden shadow-lg bg-slate-300"
-      onClick={() => setViewAsset({
-        title: asset.title,
-        jsonString: asset.jsonString,
-      })}>
+      onClick={() => onClickDetail(asset)}>
       <Player src={asset.jsonString} className='h-40' />
       <div className="px-6 py-4">
         <div className={clsx('font-bold text-base mb-2 italic text-gray-600')}>
@@ -32,13 +36,19 @@ const PendingAssetList = () => {
 
 const AssetList = () => {
   const assets = useStateAssets();
+  const setViewAsset = useStateSetViewAsset();
+  const onClickDetail = async (asset: Lottie) => setViewAsset({
+    title: asset.title,
+    jsonString: await fetchFileContentFromBucket(asset.file),
+  });
 
   return <>
     {assets.map(asset => (
       <button
         key={asset.id}
+        onClick={() => onClickDetail(asset)}
         className="max-w-sm h-60 rounded overflow-hidden shadow-lg border-r-2 border-b-2 border-gray-600 hover:border-b-4 hover:h-[calc(15rem-2px)] transition-all">
-        <Player src={asset.file} className='h-40' />
+        <Player src={getFilePath(asset.file)} className='h-40' />
         <div className="px-6 py-4">
           <div className="text-left text-base mb-2 border-t-2 border-emerald-600">
             {asset.title}

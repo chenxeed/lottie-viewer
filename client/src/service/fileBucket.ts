@@ -9,6 +9,8 @@ interface UploadFile {
   size: number;
 }
 
+export const getFilePath = (filename: string) => `/bucket/uploads/${filename}`;
+
 export async function uploadFileToBucket (file: File): Promise<UploadFile> {
   // Try to upload
   const formData = new FormData();
@@ -21,4 +23,9 @@ export async function uploadFileToBucket (file: File): Promise<UploadFile> {
   
   const response = await result.json();
   return response.data as UploadFile;
+}
+
+export async function fetchFileContentFromBucket (filename: string): Promise<string> {
+  const result = await fetch(getFilePath(filename));
+  return result.text();
 }

@@ -7,7 +7,7 @@ export const getRouter = (app: Express): Router => {
   const apiPrefix = env.parsed?.API_PREFIX || '/'
   const router = express.Router()
   
-  app.use('/uploads/', express.static(uploadPath));
+  app.use('/bucket/uploads/', express.static(uploadPath));
 
   router.post('/upload', upload.single('file'), (_req, res) => {
     res.json({

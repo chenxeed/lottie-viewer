@@ -3,7 +3,7 @@ import { client } from '../apollo-client';
 import { ApolloError, useMutation } from '@apollo/client';
 import { useStateUser } from '../store/user';
 import { useStateAssets, useStatePendingAssets, useStateSetAssets, useStateSetPendingAssets } from '../store/assets';
-import { uploadFileToBucket } from './uploadFileToBucket';
+import { uploadFileToBucket } from './fileBucket';
 import { readFile } from '../helper/fileReader';
 
 
