@@ -29,7 +29,7 @@ services:
       context: ./bucket
     volumes:
       - ./bucket/src:/app/src
-      - ./bucket/uploads:/app/uploads
+      - /app/uploads
     ports:
       - "3002:3002"
 
