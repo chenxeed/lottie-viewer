@@ -13,7 +13,7 @@ import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { StaleWhileRevalidate, CacheFirst } from 'workbox-strategies';
 import { set, get, createStore } from 'idb-keyval';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -55,8 +55,15 @@ registerRoute(
   createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
 
-// An example runtime caching route for requests that aren't handled by the
-// precache, in this case same-origin .png requests like those from in public/
+// Cache any retrieved JSON files, to be accessible again during offline mode
+registerRoute(
+  ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.json'),
+  new CacheFirst({
+    cacheName: 'assetsJSON',
+  })
+);
+
+// Cache any PNG file that's being used for the web styling
 registerRoute(
   // Add in any other file extensions or routing criteria as needed.
   ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.png'),
