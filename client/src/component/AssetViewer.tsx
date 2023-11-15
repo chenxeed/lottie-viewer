@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect } from 'react';
+import React, { ChangeEvent, useCallback, useEffect } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { clsx } from 'clsx';
 import { useStateAssets, useStateSetAssets, useStateCriteria, useStatePendingAssets, useStateSetCriteria, useStateSetViewAsset } from '../store/assets';
@@ -76,7 +76,7 @@ export const AssetViewer = () => {
   const setCriteria = useStateSetCriteria();
   const setAssets = useStateSetAssets();
 
-  const loadAssetsByCriteria = async (criteria: Criteria) => {
+  const loadAssetsByCriteria = useCallback(async (criteria: Criteria) => {
     const result = await loadAssets({
       criteria,
       after: 0,
@@ -94,7 +94,7 @@ export const AssetViewer = () => {
         })));  
       }
     }
-  }
+  }, []);
 
   const onChangeCriteria = async (ev: ChangeEvent) => {
     ev.preventDefault();
@@ -108,7 +108,7 @@ export const AssetViewer = () => {
 
   useEffect(() => {
     loadAssetsByCriteria(Criteria.ALL);
-  })
+  }, [])
 
   return (
     <>

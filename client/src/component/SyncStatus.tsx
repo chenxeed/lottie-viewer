@@ -1,5 +1,5 @@
 import { GET_LAST_SYNC_STATUS } from '../repo/graph';
-import { client } from '../apollo-client';
+import { client } from '../service/apolloClient';
 import { useStateLocalSyncStatus, useStateSetLocalSyncStatus } from '../store/syncStatus';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { formatRelative, parseISO } from 'date-fns';
@@ -57,23 +57,23 @@ export const SyncStatus = () => {
             setSyncState(SyncState.SYNCING);
             // Upon sync, we just request the newer assets from the currently loaded assets
             // by passing the last asset ID as the cursor
+            const afterId = assets.length ? assets[0].id : 0;
             const { data, error } = await loadAssets({
-              after: assets.length ? assets[0].id : 0,
+              after: afterId,
               criteria,
             });
             if (error) {
               setSyncState(SyncState.FAIL_TO_SYNC);
             } else if (data) {
-              const assets = data.assets;
               setAssets(
                 [
-                  ...assets.map((asset: any) => ({
+                  ...data.assets.map((asset: any) => ({
                     id: asset.id,
                     title: asset.title,
                     file: asset.file,
                     createdAt: asset.createdAt,
                   })),
-                  ...assets
+                  ...(afterId > 0 ? assets : []),
                 ]);  
               setLocalSyncStatus({
                 lastUpdate: syncStatus.lastUpdate,

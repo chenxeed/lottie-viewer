@@ -20,7 +20,7 @@ export const CreateAsset = () => {
   const [openModal, setOpenModal] = useState(false);
   const [chosenFile, setChosenFile] = useState<File | null>(null);
   const [jsonString, setJsonString] = useState<string | null>(null);
-  const [selectedCriteria, setSelectedCriteria] = useState<Criteria | undefined>(undefined);
+  const [selectedCriteria, setSelectedCriteria] = useState<Criteria>(Criteria.TECH);
   const [loading, setLoading] = useState(false);
   const uploadAsset = useUploadAsset(true);
   

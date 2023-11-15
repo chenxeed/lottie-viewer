@@ -1,5 +1,5 @@
 import { useStateSetUser } from "../store/user";
-import { client } from '../apollo-client';
+import { client } from './apolloClient';
 import { CREATE_USER } from '../repo/graph';
 import { useMutation } from '@apollo/client';
 import { User } from "../types";

@@ -1,5 +1,5 @@
 import { CREATE_ASSET } from '../repo/graph';
-import { client } from '../apollo-client';
+import { client } from './apolloClient';
 import { ApolloError, useMutation } from '@apollo/client';
 import { useStateUser } from '../store/user';
 import { useStateAssets, useStatePendingAssets, useStateSetAssets, useStateSetPendingAssets } from '../store/assets';
