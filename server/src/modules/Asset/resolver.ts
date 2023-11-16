@@ -1,8 +1,12 @@
-import { MutationResolvers, QueryResolvers, UserResolvers } from "../../schema/types";
+import {
+  MutationResolvers,
+  QueryResolvers,
+  UserResolvers,
+} from "../../schema/types";
 import { SyncStatus } from "../SyncStatus/entity";
 import { User } from "../User/entity";
 import { Asset } from "./entity";
-import { MoreThan } from 'typeorm';
+import { MoreThan } from "typeorm";
 
 export const AssetSchema = `
 extend type Query {
@@ -26,31 +30,31 @@ type Asset {
 
 type AssetQueryResolver = {
   Query: {
-    assets: QueryResolvers['assets'],
-    asset: QueryResolvers['asset'],
-  },
+    assets: QueryResolvers["assets"];
+    asset: QueryResolvers["asset"];
+  };
   User: {
-    assets: UserResolvers['assets'],
-  }
-}
+    assets: UserResolvers["assets"];
+  };
+};
 
 export const AssetQueryResolver: AssetQueryResolver = {
   Query: {
     async assets(_, { after = 0, criteria = "" }) {
       const result = await Asset.find({
         where: {
-          ...( criteria ? { criteria } : {}),
+          ...(criteria ? { criteria } : {}),
           id: MoreThan(after),
         },
         order: {
-          id: "DESC"
-        }
+          id: "DESC",
+        },
       });
       return result;
     },
     async asset(_, { id }) {
       const result = await Asset.findOneBy({
-        id
+        id,
       });
       return result;
     },
@@ -62,18 +66,18 @@ export const AssetQueryResolver: AssetQueryResolver = {
           user: {
             id: parent.id,
           },
-        }
-      })
+        },
+      });
       return result;
-    }
-  }
+    },
+  },
 };
 
 type AssetMutationResolver = {
   Mutation: {
-    createAsset: MutationResolvers['createAsset'],
-  }
-}
+    createAsset: MutationResolvers["createAsset"];
+  };
+};
 
 export const AssetMutationResolver: AssetMutationResolver = {
   Mutation: {
@@ -91,6 +95,6 @@ export const AssetMutationResolver: AssetMutationResolver = {
       const newStatus = await SyncStatus.save({ user });
 
       return asset;
-    }  
-  }
+    },
+  },
 };

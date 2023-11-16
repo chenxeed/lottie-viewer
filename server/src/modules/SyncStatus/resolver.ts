@@ -17,11 +17,11 @@ export const SyncStatusQueryResolver = {
     async lastSyncStatus() {
       const result = await SyncStatus.find({
         order: {
-          id: "DESC"
+          id: "DESC",
         },
-        take: 1
+        take: 1,
       });
       return result;
     },
-  }
+  },
 };

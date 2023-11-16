@@ -89,6 +89,6 @@ export function useUploadAsset(option?: UploadAssetOption) {
         }
       }
     },
-    [createAsset, fallback, setPendingAssets],
+    [createAsset, fallback, setNotification, setPendingAssets],
   );
 }

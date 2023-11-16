@@ -1,26 +1,34 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, Relation, JoinColumn, CreateDateColumn } from "typeorm"
-import { User } from "../User/entity"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  ManyToOne,
+  Relation,
+  JoinColumn,
+  CreateDateColumn,
+} from "typeorm";
+import { User } from "../User/entity";
 
 @Entity()
 export class Asset extends BaseEntity {
-
   @PrimaryGeneratedColumn()
-  id: number
+  id: number;
 
   @Column({
-    nullable: false
+    nullable: false,
   })
-  title: string
+  title: string;
 
   @Column()
-  criteria: string
+  criteria: string;
 
   @Column()
-  file: string
+  file: string;
 
   @CreateDateColumn()
-  createdAt: Date
+  createdAt: Date;
 
-  @ManyToOne(() => User, user => user.assets)
-  user: Relation<User>
+  @ManyToOne(() => User, (user) => user.assets)
+  user: Relation<User>;
 }

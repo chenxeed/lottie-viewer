@@ -1,16 +1,23 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, Relation, CreateDateColumn, ManyToOne } from "typeorm"
-import { User } from "../User/entity"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  OneToMany,
+  Relation,
+  CreateDateColumn,
+  ManyToOne,
+} from "typeorm";
+import { User } from "../User/entity";
 
 @Entity()
 export class SyncStatus extends BaseEntity {
-
   @PrimaryGeneratedColumn()
-  id: number
+  id: number;
 
   @CreateDateColumn()
-  lastUpdate: Date
+  lastUpdate: Date;
 
-  @ManyToOne(() => User, user => user.assets)
-  user: Relation<User>  
+  @ManyToOne(() => User, (user) => user.assets)
+  user: Relation<User>;
 }
-

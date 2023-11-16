@@ -24,14 +24,14 @@ export const UserQueryResolver = {
     async users() {
       const result = await User.find({
         order: {
-          id: "DESC"
-        }
+          id: "DESC",
+        },
       });
       return result;
     },
     async user(_, { id }) {
       const result = await User.findOneBy({
-        id
+        id,
       });
       return result;
     },
@@ -40,23 +40,23 @@ export const UserQueryResolver = {
     async user(parent) {
       const asset = await Asset.findOne({
         where: {
-          id: parent.id 
+          id: parent.id,
         },
-        relations: ['user']
+        relations: ["user"],
       });
       return asset.user;
-    }  
+    },
   },
   SyncStatus: {
     async user(parent) {
       const syncStatus = await SyncStatus.findOne({
         where: {
-          id: parent.id 
+          id: parent.id,
         },
-        relations: ['user']
+        relations: ["user"],
       });
       return syncStatus.user;
-    }
+    },
   },
 };
 
@@ -64,10 +64,10 @@ export const UserMutationResolver = {
   Mutation: {
     async createUser(_, { name }) {
       const user = User.create({
-        name
+        name,
       });
       await user.save();
       return user;
-    }  
-  }
+    },
+  },
 };
