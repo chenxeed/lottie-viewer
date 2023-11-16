@@ -42,3 +42,23 @@ mutation CreateUser($name: String!) {
   }
 }
 `;
+
+export const FeaturedPublicAnimations = gql`
+query FeaturedPublicAnimations {
+  featuredPublicAnimations {
+    edges {
+      node {
+        id
+        slug
+        jsonUrl
+        name
+        imageUrl
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+`;

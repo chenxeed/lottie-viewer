@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { useStateAssets, useStateSetAssets, useStateCriteria, useStatePendingAssets, useStateSetViewAsset } from '../store/assets';
 import { fetchFileContentFromBucket, getFilePath } from '../service/fileBucket';
@@ -18,9 +18,13 @@ interface LottieCardProps {
   onClick: () => void
 }
 const LottieCard = (props: LottieCardProps) => {
+  const ref = useRef<Player>(null);
+  useEffect(() => {
+    ref.current?.setSeeker(50);
+  }, []);
   return (
     <Card className='hover:bg-slate-100 cursor-pointer' onClick={props.onClick}>
-      <Player src={props.playerSrc} className='h-20 md:h-40' />
+      <Player ref={ref} src={props.playerSrc} className='h-20 md:h-40' />
       <CardContent className={clsx(props.isOffline && 'bg-red-200')}>
         <div className={clsx('text-left text-xs md:text-sm lg:text-base mb-2', props.isOffline && 'text-red-950')}>
           {props.title}

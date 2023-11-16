@@ -29,3 +29,8 @@ export async function fetchFileContentFromBucket (filename: string): Promise<str
   const result = await fetch(getFilePath(filename));
   return result.text();
 }
+
+export async function fetchFileContentFromPublicURL (publicUrl: string): Promise<string> {
+  const result = await fetch(publicUrl);
+  return result.text();
+}

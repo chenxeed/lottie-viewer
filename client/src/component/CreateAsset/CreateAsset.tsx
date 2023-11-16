@@ -1,19 +1,22 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import { uploadFile } from '../helper/fileUpload';
-import { useUploadAsset } from '../service/useUploadAsset';
+import { useEffect, useState } from 'react';
+import { uploadFile } from '../../helper/fileUpload';
+import { useUploadAsset } from '../../service/useUploadAsset';
 import clsx from 'clsx';
-import { Controls, Player } from '@lottiefiles/react-lottie-player';
-import { readFile } from '../helper/fileReader';
-import { Criteria } from '../store/types';
-import { useSyncAssets } from '../service/useSyncAssets';
+import { readFile } from '../../helper/fileReader';
+import { Criteria } from '../../store/types';
+import { useSyncAssets } from '../../service/useSyncAssets';
+import { Button } from '@mui/material';
+import { createPortal } from 'react-dom';
+import { useSyncUser } from '../../service/useSyncUser';
+import { useStateSetNotification } from '../../store/notification';
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { Button } from '@mui/material';
-import { createPortal } from 'react-dom';
-import { useSyncUser } from '../service/useSyncUser';
-import { useStateSetNotification } from '../store/notification';
+import { Preview } from './Preview';
+import { Curated } from './Curated';
+import { fetchFileContentFromPublicURL } from '../../service/fileBucket';
+import { useStateCriteria } from '../../store/assets';
 
 const criteriaOption = [
   Criteria.GAME,
@@ -26,14 +29,24 @@ const criteriaOption = [
 
 export const CreateAsset = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [showCurated, setShowCurated] = useState(false);
   const [chosenFile, setChosenFile] = useState<File | null>(null);
   const [jsonString, setJsonString] = useState<string | null>(null);
-  const [selectedCriteria, setSelectedCriteria] = useState<Criteria>(Criteria.TECH);
+  const criteria = useStateCriteria();
+  const [selectedCriteria, setSelectedCriteria] = useState<Criteria>(Criteria.SHAPE);
+  const [loadingLottie, setLoadingLottie] = useState(false);
   const [loading, setLoading] = useState(false);
   const syncUser = useSyncUser();
   const uploadAsset = useUploadAsset({ fallback: true });
   const syncAssets = useSyncAssets();
   const setNotification = useStateSetNotification();
+
+  // Responsively choose the criteria based on the selected criteria in the asset viewer
+  useEffect(() => {
+    if (criteria !== Criteria.ALL) {
+      setSelectedCriteria(criteria);
+    }
+  }, [criteria]);
   
   const onClickChooseFile = async () => {
     const files = await uploadFile({
@@ -43,6 +56,21 @@ export const CreateAsset = () => {
       return;
     }
     setChosenFile(files[0]);
+  }
+
+  const onClickCurate = () => {
+    setJsonString(null);
+    setShowCurated(true);
+  }
+
+  const onChooseJSONUrl = async (jsonUrl: string, slugName: string) => {
+    setShowCurated(false);
+    setLoadingLottie(true);
+    // Generate the file from the JSON URL
+    const textContent = await fetchFileContentFromPublicURL(jsonUrl);
+    const file = new File([textContent], `${slugName}.json`, { type: 'application/json' });
+    setChosenFile(file);
+    setLoadingLottie(false);
   }
 
   const onClickSubmit = async () => {
@@ -91,6 +119,8 @@ export const CreateAsset = () => {
 
 
   const onClose = () => {
+    setShowCurated(false);
+    setLoading(false);
     setChosenFile(null);
     setJsonString(null);
     setOpenModal(false);
@@ -104,7 +134,7 @@ export const CreateAsset = () => {
         className='w-24 text-xs md:w-32 md:text-base'
         onClick={() => setOpenModal(true)}
         disabled={loading}>
-        { loading ? 'Adding...' : 'Add Lottie' }
+        { loading ? 'Adding...' : 'Add New Lottie' }
       </Button>
       {createPortal(
         <div
@@ -120,7 +150,7 @@ export const CreateAsset = () => {
                       <span className="sr-only">Close</span>
                       <svg className="h-6 w-6 text-gray-400 hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>                  
+                      </svg>
                     </button>
                   </div>
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
@@ -128,21 +158,48 @@ export const CreateAsset = () => {
                       <div className="flex items-center border-b-2 border-emerald-300 pb-2">
                         <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Upload new asset</h3>
                       </div>
-                      <div className='lg:flex'>
-                        <div className="mt-2 w-full">
+                      <div>
+                        <div className="mt-2 w-full grid grid-cols-3 gap-4 items-center">
                           <Button
                             variant='outlined'
                             onClick={onClickChooseFile}
                             disabled={loading}>
                             Choose File
                           </Button>
-                          {jsonString && (<>
+                          {!showCurated && (
+                            <>
+                              <div className='text-center'>OR</div>
+                              <Button
+                                variant='outlined'
+                                onClick={onClickCurate}
+                                disabled={showCurated}>
+                                Find Lottie
+                              </Button>                            
+                            </>
+                          )}
+                        </div>
+                        <div className='mt-2 w-full'>
+
+                          {/* Show Curated List from LottieFiles Featured Public Animations */}
+
+                          {showCurated && !jsonString && (<>
+                            <Curated onChooseJSONUrl={onChooseJSONUrl} />
+                          </>)}
+
+                          {/* Show message to the user that we're processing the files */}
+                          {loadingLottie && (<>
                             <div className="flex items-center border-b-2 mt-2">
-                              <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Preview your animation</h3>
+                              <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Processing the file</h3>
                             </div>
-                            <Player style={{ height: 320 }} autoplay loop src={jsonString}>
-                              <Controls visible={true} buttons={['play', 'repeat', 'frame', 'debug']} />
-                            </Player>
+                            <div className='text-center mt-2'>
+                              <div className='text-xs md:text-base'>Please wait...</div>
+                            </div>
+                          </>)}
+
+                          {/* Show the Animation Preview and Category to choose before deciding to submit */}
+
+                          {!showCurated && jsonString && (<>
+                            <Preview jsonString={jsonString} />
                             <div className="flex items-center border-b-2 mt-2">
                               <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Select the category</h3>
                             </div>
@@ -161,13 +218,16 @@ export const CreateAsset = () => {
                                 </Select>
                               </FormControl>
                             </Box>
-                            <Button
-                              variant='contained'
-                              onClick={onClickSubmit}
-                              disabled={loading}>
-                              { loading ? 'Uploading...' : 'Submit!' }
-                            </Button>
-                        </>)}
+                            <div className='mt-4'>
+                              <Button
+                                variant='contained'
+                                onClick={onClickSubmit}
+                                disabled={loading}>
+                                { loading ? 'Uploading...' : 'Submit!' }
+                              </Button>
+                            </div>
+                          </>)}
+
                         </div>
                       </div>
                     </div>
