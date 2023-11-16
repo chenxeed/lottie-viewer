@@ -1,19 +1,12 @@
 import { useQuery } from "@apollo/client";
 import { FeaturedPublicAnimations } from "../../repo/graph";
 import { lottieClient } from "../../service/apolloClient";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Skeleton,
-} from "@mui/material";
+import { Button, Card, CardContent, CardMedia, Skeleton } from "@mui/material";
 
 export const Curated = (props: {
   onChooseJSONUrl: (jsonUrl: string, slugName: string) => void;
 }) => {
-  const { data, loading } = useQuery(FeaturedPublicAnimations, {
+  const { data, loading, error, refetch } = useQuery(FeaturedPublicAnimations, {
     client: lottieClient,
     fetchPolicy: "cache-first",
   });
@@ -37,8 +30,19 @@ export const Curated = (props: {
               ))}
             </>
           )}
+
+          {!loading && error && (
+            <div className="text-red-500">
+              Fail to load featured public animations. Please check your
+              internet connection and try again.
+              <Button variant="contained" onClick={() => refetch()}>
+                Retry
+              </Button>
+            </div>
+          )}
+
           {!loading &&
-            data.featuredPublicAnimations.edges.map((edge: any) => (
+            data?.featuredPublicAnimations.edges.map((edge: any) => (
               <Card
                 key={edge.node.id}
                 sx={{ maxWidth: 345 }}
