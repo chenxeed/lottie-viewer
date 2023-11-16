@@ -6,7 +6,7 @@ import { useStatePendingAssets, useStateSetPendingAssets } from '../store/assets
 import { uploadFileToBucket } from './fileBucket';
 import { readFile } from '../helper/fileReader';
 import { Criteria } from '../store/types';
-
+import { useRef } from 'react';
 
 /**
  * Hook to upload a new asset to the server.
@@ -15,7 +15,13 @@ import { Criteria } from '../store/types';
  */
 export function useUploadAsset (fallback = false) {
   const user = useStateUser();
+  const userRef = useRef(user);
+  userRef.current = user;
+
   const pendingAssets = useStatePendingAssets();
+  const pendingAssetsRef = useRef(pendingAssets);
+  pendingAssetsRef.current = pendingAssets;
+
   const setPendingAssets = useStateSetPendingAssets();
   const [createAsset] = useMutation(CREATE_ASSET, { client });
 
@@ -28,7 +34,7 @@ export function useUploadAsset (fallback = false) {
       criteria,
       createdAt: new Date().toISOString(),
       isPending: true,
-    }, ...pendingAssets]);
+    }, ...pendingAssetsRef.current]);
   }
 
   return async (file: File, criteria: Criteria) => {
@@ -43,7 +49,7 @@ export function useUploadAsset (fallback = false) {
 
       const result = await createAsset({
         variables: {
-          userId: user?.id,
+          userId: userRef.current?.id,
           title: originalname,
           file: filename,
           criteria,

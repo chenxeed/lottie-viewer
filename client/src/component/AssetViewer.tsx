@@ -75,6 +75,7 @@ const criteriaOption = [
 export const AssetViewer = () => {
   const criteria = useStateCriteria();
   const setCriteria = useStateSetCriteria();
+  const assets = useStateAssets();
   const setAssets = useStateSetAssets();
 
   const { data, error } = useQuery(GET_ASSETS, {

@@ -6,7 +6,7 @@ import { useSyncUser } from '../service/useSyncUser';
 import clsx from 'clsx';
 import { useStateUser } from '../store/user';
 import { useSyncAssets } from '../service/useSyncAssets';
-import { useStateSyncState } from '../store/assets';
+import { useStateSyncState } from '../store/syncStatus';
 import { SyncState } from '../store/types';
 
 export const SyncStatus = () => {

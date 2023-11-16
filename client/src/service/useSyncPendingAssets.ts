@@ -1,9 +1,13 @@
 import { PendingLottie } from "../store/types";
 import { useUploadAsset } from "./useUploadAsset";
 import { useStatePendingAssets, useStateSetPendingAssets } from "../store/assets";
+import { useRef } from "react";
 
 export function useSyncPendingAssets () {
   const pendingAssets = useStatePendingAssets();
+  const pendingAssetsRef = useRef(pendingAssets);
+  pendingAssetsRef.current = pendingAssets;
+
   const setPendingAssets = useStateSetPendingAssets();
   const uploadAsset = useUploadAsset();
 
@@ -36,5 +40,5 @@ export function useSyncPendingAssets () {
     }
   }
 
-  return () => recursiveUploadPendingAsset(pendingAssets);
+  return () => recursiveUploadPendingAsset(pendingAssetsRef.current);
 }

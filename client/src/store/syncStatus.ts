@@ -1,4 +1,4 @@
-import { StateAction, LottieStorage } from './types';
+import { StateAction, LottieStorage, SyncState } from './types';
 import { useStore } from '.';
 
 // Initialize the syncStatus state with the syncStatus from localStorage
@@ -9,6 +9,7 @@ useStore.setState((state) => ({
     lastUpdate: 0,
     name: '',
   },
+  syncState: initialLocalSyncStatus ? SyncState.UP_TO_DATE : SyncState.NO_SYNC,
 }));
 
 useStore.subscribe((state) => {
@@ -19,3 +20,5 @@ useStore.subscribe((state) => {
 
 export const useStateLocalSyncStatus = () => useStore((state) => state.localSyncStatus);
 export const useStateSetLocalSyncStatus = () => useStore((state) => state.setLocalSyncStatus);
+export const useStateSyncState = () => useStore((state) => state.syncState);
+export const useStateSetSyncState = () => useStore((state) => state.setSyncState);

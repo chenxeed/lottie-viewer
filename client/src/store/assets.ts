@@ -23,5 +23,3 @@ export const useStateViewAsset = () => useStore((state) => state.viewAsset);
 export const useStateSetViewAsset = () => useStore((state) => state.setViewAsset);
 export const useStateCriteria = () => useStore((state) => state.criteria);
 export const useStateSetCriteria = () => useStore((state) => state.setCriteria);
-export const useStateSyncState = () => useStore((state) => state.syncState);
-export const useStateSetSyncState = () => useStore((state) => state.setSyncState);
