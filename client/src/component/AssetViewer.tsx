@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect } from 'react';
+import React, { ChangeEvent, useEffect, useMemo } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { clsx } from 'clsx';
 import { useStateAssets, useStateSetAssets, useStateCriteria, useStatePendingAssets, useStateSetCriteria, useStateSetViewAsset } from '../store/assets';
@@ -24,15 +24,16 @@ const PendingAssetList = () => {
     {pendingAssets.map(asset => (
     <button
       key={asset.id}
-      className="max-w-sm rounded overflow-hidden shadow-lg bg-slate-300"
+      className="max-w-sm h-60 rounded overflow-hidden shadow-lg border-r-2 border-b-2 bg-gray-100 border-gray-600 hover:border-b-4 hover:h-[calc(15rem-2px)] transition-all"
       onClick={() => onClickDetail(asset)}>
       <Player src={asset.jsonString} className='h-40' />
       <div className="px-6 py-4">
-        <div className={clsx('font-bold text-base mb-2 italic text-gray-600')}>
+        <div className="text-left text-base mb-2 border-t-2 border-emerald-600 text-gray-600">
+          <sup className='text-sm text-red-300'>Offline </sup>
           {asset.title}
         </div>
       </div>
-    </button>
+   </button>
   ))}
   </>
 }
@@ -62,6 +63,30 @@ const AssetList = () => {
   </>
 }
 
+const EmptyList = () => {
+  const assets = useStateAssets();
+  const pendingAssets = useStatePendingAssets();
+  const criteria = useStateCriteria();
+  const isEmpty = useMemo(() => assets.length === 0 && pendingAssets.length === 0, [assets, pendingAssets]);
+  const emptyMessage = useMemo(() => {
+    if (!isEmpty) {
+      return '';
+    }
+    if (criteria === Criteria.ALL) {
+      return 'Fresh start! Try to upload one!';
+    } else {
+      return `No assets found on ${criteria}. Try to upload one!`;
+    }
+  }, [criteria, isEmpty]);
+  return <>
+    {isEmpty && (
+      <div className='text-center text-gray-500 text-xl font-semibold mt-4'>
+        {emptyMessage}
+      </div>
+    )}
+  </>
+}
+
 const criteriaOption = [
   Criteria.ALL,
   Criteria.GAME,
@@ -75,10 +100,9 @@ const criteriaOption = [
 export const AssetViewer = () => {
   const criteria = useStateCriteria();
   const setCriteria = useStateSetCriteria();
-  const assets = useStateAssets();
   const setAssets = useStateSetAssets();
 
-  const { data, error } = useQuery(GET_ASSETS, {
+  const { data } = useQuery(GET_ASSETS, {
     variables: {
       criteria: criteria === Criteria.ALL ? undefined : criteria,
       after: 0,
@@ -94,9 +118,9 @@ export const AssetViewer = () => {
         title: asset.title,
         file: asset.file,
         createdAt: asset.createdAt,
-      })));  
+      })));
     } else {
-      setAssets([]);
+      // TODO: Notify user
     }
   }, [data, setAssets]);
 
@@ -128,6 +152,7 @@ export const AssetViewer = () => {
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4'>
         <PendingAssetList />
         <AssetList />
+        <EmptyList />
       </div>
     </>
   );
