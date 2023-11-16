@@ -17,4 +17,4 @@ export interface Lottie {
 export interface SyncStatus {
   lastUpdate: string;
   name: string;
-};
+}

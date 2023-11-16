@@ -1,6 +1,13 @@
 import { User, Lottie, SyncStatus } from "../types";
-import { create } from 'zustand'
-import { Criteria, PendingLottie, State, StateAction, SyncState, ViewLottie } from "./types";
+import { create } from "zustand";
+import {
+  Criteria,
+  PendingLottie,
+  State,
+  StateAction,
+  SyncState,
+  ViewLottie,
+} from "./types";
 
 export const useStore = create<State>((set) => ({
   user: null,
@@ -9,8 +16,8 @@ export const useStore = create<State>((set) => ({
   criteria: Criteria.ALL,
   viewAsset: null,
   localSyncStatus: {
-    lastUpdate: '',
-    name: '',
+    lastUpdate: "",
+    name: "",
   },
   syncState: SyncState.NO_SYNC,
   notification: null,

@@ -1,5 +1,5 @@
-import { StateAction, LottieStorage } from './types';
-import { useStore } from './';
+import { StateAction, LottieStorage } from "./types";
+import { useStore } from "./";
 
 // Initialize the user state with the user from localStorage
 const initialUser = localStorage.getItem(LottieStorage.USER);

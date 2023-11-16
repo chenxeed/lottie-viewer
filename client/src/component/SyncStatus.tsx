@@ -1,18 +1,17 @@
-import { useStateLocalSyncStatus } from '../store/syncStatus';
-import { useCallback, useMemo, useState } from 'react';
-import { formatRelative, parseISO } from 'date-fns';
-import { useSyncPendingAssets } from '../service/useSyncPendingAssets';
-import { useSyncUser } from '../service/useSyncUser';
-import { useSyncAssets } from '../service/useSyncAssets';
-import { useStateSyncState } from '../store/syncStatus';
-import { SyncState } from '../store/types';
-import { Button } from '@mui/material';
-import { useStateSetNotification } from '../store/notification';
+import { useStateLocalSyncStatus } from "../store/syncStatus";
+import { useCallback, useMemo, useState } from "react";
+import { formatRelative, parseISO } from "date-fns";
+import { useSyncPendingAssets } from "../service/useSyncPendingAssets";
+import { useSyncUser } from "../service/useSyncUser";
+import { useSyncAssets } from "../service/useSyncAssets";
+import { useStateSyncState } from "../store/syncStatus";
+import { SyncState } from "../store/types";
+import { Button } from "@mui/material";
+import { useStateSetNotification } from "../store/notification";
 
 export const SyncStatus = () => {
-
   const setNotification = useStateSetNotification();
-  
+
   const syncUser = useSyncUser();
   const syncPendingAssets = useSyncPendingAssets();
 
@@ -35,34 +34,47 @@ export const SyncStatus = () => {
       // Sync the latest assets from the server, by checking the last sync status
       await syncAssets();
     } catch (e) {
-      setNotification({ severity: 'error', message: 'Fail to synchronize. Please try again.' });
-      console.error('Fail to synchronize', e);
+      setNotification({
+        severity: "error",
+        message: "Fail to synchronize. Please try again.",
+      });
+      console.error("Fail to synchronize", e);
     } finally {
-      setIsLoading(false);      
+      setIsLoading(false);
     }
   }, [setNotification, syncAssets, syncPendingAssets, syncUser]);
 
   const lastSyncMessage = useMemo(() => {
     if (syncState === SyncState.SYNCING) {
-      return <span className='text-blue-500'>Synching... Please wait</span>;
+      return <span className="text-blue-500">Synching... Please wait</span>;
     } else if (syncState === SyncState.UP_TO_DATE) {
-      return <span className='text-green-500'>{`Last Update ${ formatRelative(parseISO(localSyncStatus.lastUpdate), new Date()) } by ${localSyncStatus.name}`}</span>;
+      return (
+        <span className="text-green-500">{`Last Update ${formatRelative(
+          parseISO(localSyncStatus.lastUpdate),
+          new Date(),
+        )} by ${localSyncStatus.name}`}</span>
+      );
     } else if (syncState === SyncState.NO_SYNC) {
-      return <span className='text-gray-500'>No update yet.</span>;
+      return <span className="text-gray-500">No update yet.</span>;
     } else if (syncState === SyncState.FAIL_TO_SYNC) {
-      return <span className='text-red-500'>Fail to sync. Please try again.</span>;
+      return (
+        <span className="text-red-500">Fail to sync. Please try again.</span>
+      );
     } else {
-      return <span className='text-yellow-500'>Unknown status</span>;
+      return <span className="text-yellow-500">Unknown status</span>;
     }
   }, [syncState, localSyncStatus]);
 
-
   return (
-    <div className='text-right'>
+    <div className="text-right">
       <div className="text-xs md:text-sm italic">{lastSyncMessage}</div>
-      <Button variant='outlined'
+      <Button
+        variant="outlined"
         onClick={handleSynchronize}
-        disabled={isLoading}>{ isLoading ? '...' : 'Sync' }</Button>
+        disabled={isLoading}
+      >
+        {isLoading ? "..." : "Sync"}
+      </Button>
     </div>
-  )
-}
+  );
+};

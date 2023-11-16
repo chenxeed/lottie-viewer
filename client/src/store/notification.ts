@@ -1,4 +1,6 @@
-import { useStore } from '.';
+import { useStore } from ".";
 
-export const useStateNotification = () => useStore((state) => state.notification);
-export const useStateSetNotification = () => useStore((state) => state.setNotification);
+export const useStateNotification = () =>
+  useStore((state) => state.notification);
+export const useStateSetNotification = () =>
+  useStore((state) => state.setNotification);

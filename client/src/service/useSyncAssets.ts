@@ -1,19 +1,27 @@
 import { useLazyQuery } from "@apollo/client";
 import { client } from "./apolloClient";
 import { GET_ASSETS, GET_LAST_SYNC_STATUS } from "../repo/graph";
-import { useStateLocalSyncStatus, useStateSetLocalSyncStatus, useStateSetSyncState } from "../store/syncStatus";
+import {
+  useStateLocalSyncStatus,
+  useStateSetLocalSyncStatus,
+  useStateSetSyncState,
+} from "../store/syncStatus";
 import { Criteria, SyncState } from "../store/types";
-import { useStateAssets, useStateCriteria, useStateSetAssets } from "../store/assets";
+import {
+  useStateAssets,
+  useStateCriteria,
+  useStateSetAssets,
+} from "../store/assets";
 import { useCallback, useRef } from "react";
 
-export function useSyncAssets () {
+export function useSyncAssets() {
   const localSyncStatus = useStateLocalSyncStatus();
   const localSyncStatusRef = useRef(localSyncStatus);
   localSyncStatusRef.current = localSyncStatus;
   const setLocalSyncStatus = useStateSetLocalSyncStatus();
   const [getSyncStatus] = useLazyQuery(GET_LAST_SYNC_STATUS, {
     client,
-    fetchPolicy: 'no-cache',
+    fetchPolicy: "no-cache",
   });
 
   const criteria = useStateCriteria();
@@ -27,7 +35,7 @@ export function useSyncAssets () {
   const setSyncState = useStateSetSyncState();
   const [getAssets] = useLazyQuery(GET_ASSETS, {
     client,
-    fetchPolicy: 'network-only',
+    fetchPolicy: "network-only",
   });
 
   return useCallback(async () => {
@@ -54,9 +62,12 @@ export function useSyncAssets () {
     // Synchronize assets
     const assetsResult = await getAssets({
       variables: {
-        criteria: criteriaRef.current === Criteria.ALL ? undefined : criteriaRef.current,
+        criteria:
+          criteriaRef.current === Criteria.ALL
+            ? undefined
+            : criteriaRef.current,
         after: assetsRef.current.length ? assetsRef.current[0].id : 0,
-      }
+      },
     });
     if (!assetsResult.data) {
       // Fail to get the assets, user might be offline
@@ -64,22 +75,25 @@ export function useSyncAssets () {
       return;
     }
     // At this point, user has successfully sync with the server
-    setAssets(
-      [
-        ...assetsResult.data.assets
-          .filter((asset: any) => criteriaRef.current === Criteria.ALL || asset.criteria === criteriaRef.current)
-          .map((asset: any) => ({
-            id: asset.id,
-            title: asset.title,
-            file: asset.file,
-            createdAt: asset.createdAt,
-          })),
-        ...(assetsRef.current.length ? assetsRef.current : []),
-      ]);
+    setAssets([
+      ...assetsResult.data.assets
+        .filter(
+          (asset: any) =>
+            criteriaRef.current === Criteria.ALL ||
+            asset.criteria === criteriaRef.current,
+        )
+        .map((asset: any) => ({
+          id: asset.id,
+          title: asset.title,
+          file: asset.file,
+          createdAt: asset.createdAt,
+        })),
+      ...(assetsRef.current.length ? assetsRef.current : []),
+    ]);
     setLocalSyncStatus({
       name: syncStatus.user.name,
       lastUpdate: syncStatus.lastUpdate,
-    })
+    });
     setSyncState(SyncState.UP_TO_DATE);
   }, [getAssets, getSyncStatus, setAssets, setLocalSyncStatus, setSyncState]);
 }

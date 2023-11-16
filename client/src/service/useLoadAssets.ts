@@ -1,6 +1,6 @@
-import { GET_ASSETS } from '../repo/graph';
-import { client } from './apolloClient';
-import { Criteria } from '../store/types';
+import { GET_ASSETS } from "../repo/graph";
+import { client } from "./apolloClient";
+import { Criteria } from "../store/types";
 
 interface LoadAssetOption {
   criteria: Criteria;
@@ -12,10 +12,10 @@ export const useLoadAssets = () => {
     return client.query({
       query: GET_ASSETS,
       variables: {
-        criteria: criteria === Criteria.ALL ? '' : criteria,
-        after
+        criteria: criteria === Criteria.ALL ? "" : criteria,
+        after,
       },
-      fetchPolicy: 'network-only',
+      fetchPolicy: "network-only",
     });
-  }
-}
+  };
+};

@@ -21,12 +21,11 @@ export interface Notification {
 }
 
 export enum SyncState {
-  NO_SYNC = 'no-sync',
-  UP_TO_DATE = 'up-to-date',
-  SYNCING = 'syncing',
-  FAIL_TO_SYNC = 'fail-to-sync',
+  NO_SYNC = "no-sync",
+  UP_TO_DATE = "up-to-date",
+  SYNCING = "syncing",
+  FAIL_TO_SYNC = "fail-to-sync",
 }
-
 
 export interface State {
   user: User | null;
@@ -49,28 +48,28 @@ export interface State {
 }
 
 export enum StateAction {
-  SET_USER = 'setUser',
-  SET_ASSETS = 'setAssets',
-  SET_VIEW_ASSET = 'setViewAssets',
-  SET_CRITERIA = 'setCriteria',
-  SET_PENDING_ASSETS = 'setPendingAssets',
-  SET_LOCAL_SYNC_STATUS = 'setLocalSyncStatus',
-  SET_SYNC_STATE = 'setSyncState',
-  SET_NOTIFICATION = 'setNotification',
+  SET_USER = "setUser",
+  SET_ASSETS = "setAssets",
+  SET_VIEW_ASSET = "setViewAssets",
+  SET_CRITERIA = "setCriteria",
+  SET_PENDING_ASSETS = "setPendingAssets",
+  SET_LOCAL_SYNC_STATUS = "setLocalSyncStatus",
+  SET_SYNC_STATE = "setSyncState",
+  SET_NOTIFICATION = "setNotification",
 }
 
 export enum LottieStorage {
-  USER = 'lottie-user',
-  PENDING_ASSETS = 'lottie-pending-assets',
-  LOCAL_SYNC_STATUS = 'lottie-local-sync-status',
+  USER = "lottie-user",
+  PENDING_ASSETS = "lottie-pending-assets",
+  LOCAL_SYNC_STATUS = "lottie-local-sync-status",
 }
 
 export enum Criteria {
-  ALL = 'All',
-  GAME = 'Game',
-  NATURE = 'Nature',
-  PEOPLE = 'People',
-  SCIENCE = 'Science',
-  TECH = 'Tech',
-  SHAPE = 'Shape',
+  ALL = "All",
+  GAME = "Game",
+  NATURE = "Nature",
+  PEOPLE = "People",
+  SCIENCE = "Science",
+  TECH = "Tech",
+  SHAPE = "Shape",
 }
