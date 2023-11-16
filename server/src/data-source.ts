@@ -14,11 +14,11 @@ export const AppDataSource = new DataSource({
   username: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
-  synchronize: true,
+  synchronize: false,
   logging: true,
   migrationsRun: true,
   migrationsTableName: "migrations",
   entities: [Asset, User, SyncStatus],
-  migrations: [],
+  migrations: ["src/migrations/*.ts"],
   subscribers: [],
 });

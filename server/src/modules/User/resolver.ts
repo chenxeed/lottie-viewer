@@ -1,6 +1,12 @@
 import { User } from "./entity";
 import { Asset } from "../Asset/entity";
 import { SyncStatus } from "../SyncStatus/entity";
+import {
+  AssetResolvers,
+  MutationResolvers,
+  QueryResolvers,
+  SyncStatusResolvers,
+} from "../../schema/types";
 
 export const UserSchema = `
 extend type Query {
@@ -19,6 +25,18 @@ type User {
 }
 `;
 
+interface UserQueryResolver {
+  Query: {
+    users: QueryResolvers["users"];
+    user: QueryResolvers["user"];
+  };
+  Asset: {
+    user: AssetResolvers["user"];
+  };
+  SyncStatus: {
+    user: SyncStatusResolvers["user"];
+  };
+}
 export const UserQueryResolver = {
   Query: {
     async users() {
@@ -60,6 +78,11 @@ export const UserQueryResolver = {
   },
 };
 
+interface UserMutationResolver {
+  Mutation: {
+    createUser: MutationResolvers["createUser"];
+  };
+}
 export const UserMutationResolver = {
   Mutation: {
     async createUser(_, { name }) {
