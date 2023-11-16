@@ -7,8 +7,11 @@ import { useSyncAssets } from '../service/useSyncAssets';
 import { useStateSyncState } from '../store/syncStatus';
 import { SyncState } from '../store/types';
 import { Button } from '@mui/material';
+import { useStateSetNotification } from '../store/notification';
 
 export const SyncStatus = () => {
+
+  const setNotification = useStateSetNotification();
   
   const syncUser = useSyncUser();
   const syncPendingAssets = useSyncPendingAssets();
@@ -32,13 +35,12 @@ export const SyncStatus = () => {
       // Sync the latest assets from the server, by checking the last sync status
       await syncAssets();
     } catch (e) {
-      // TODO: Notify the user
+      setNotification({ severity: 'error', message: 'Fail to synchronize. Please try again.' });
       console.error('Fail to synchronize', e);
     } finally {
       setIsLoading(false);      
     }
-
-  }, [syncAssets, syncPendingAssets, syncUser]);
+  }, [setNotification, syncAssets, syncPendingAssets, syncUser]);
 
   const lastSyncMessage = useMemo(() => {
     if (syncState === SyncState.SYNCING) {

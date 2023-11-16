@@ -9,6 +9,7 @@ import { GET_ASSETS } from '../repo/graph';
 import { client } from '../service/apolloClient';
 import { Card, CardContent } from '@mui/material';
 import clsx from 'clsx';
+import { useStateSetNotification } from '../store/notification';
 
 interface LottieCardProps {
   title: string;
@@ -99,8 +100,9 @@ const EmptyList = () => {
 export const AssetViewer = () => {
   const criteria = useStateCriteria();
   const setAssets = useStateSetAssets();
+  const setNotification = useStateSetNotification();
 
-  const { data } = useQuery(GET_ASSETS, {
+  const { data, error } = useQuery(GET_ASSETS, {
     variables: {
       criteria: criteria === Criteria.ALL ? undefined : criteria,
       after: 0,
@@ -117,10 +119,14 @@ export const AssetViewer = () => {
         file: asset.file,
         createdAt: asset.createdAt,
       })));
-    } else {
-      // TODO: Notify user
     }
-  }, [data, setAssets]);
+  }, [data, setAssets, setNotification]);
+
+  useEffect(() => {
+    if (error) {
+      setNotification({ severity: 'error', message: 'Fail to retrieve assets. Please try again.' });      
+    }
+  }, [error, setNotification]);
 
   return (
     <>

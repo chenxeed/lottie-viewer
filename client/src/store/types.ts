@@ -1,3 +1,4 @@
+import { AlertColor } from "@mui/material";
 import { User, Lottie, SyncStatus } from "../types";
 
 export interface PendingLottie {
@@ -12,6 +13,11 @@ export interface PendingLottie {
 export interface ViewLottie {
   title: string;
   jsonString: string;
+}
+
+export interface Notification {
+  severity: AlertColor;
+  message: string;
 }
 
 export enum SyncState {
@@ -30,6 +36,7 @@ export interface State {
   criteria: Criteria;
   localSyncStatus: SyncStatus;
   syncState: SyncState;
+  notification: Notification | null;
   action: StateAction | null;
   setUser: (user: User | null) => void;
   setAssets: (assets: Lottie[]) => void;
@@ -38,6 +45,7 @@ export interface State {
   setPendingAssets: (assets: PendingLottie[]) => void;
   setLocalSyncStatus: (data: SyncStatus) => void;
   setSyncState: (state: SyncState) => void;
+  setNotification: (notification: Notification | null) => void;
 }
 
 export enum StateAction {
@@ -48,6 +56,7 @@ export enum StateAction {
   SET_PENDING_ASSETS = 'setPendingAssets',
   SET_LOCAL_SYNC_STATUS = 'setLocalSyncStatus',
   SET_SYNC_STATE = 'setSyncState',
+  SET_NOTIFICATION = 'setNotification',
 }
 
 export enum LottieStorage {

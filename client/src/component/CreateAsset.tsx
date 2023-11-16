@@ -13,6 +13,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Button } from '@mui/material';
 import { createPortal } from 'react-dom';
 import { useSyncUser } from '../service/useSyncUser';
+import { useStateSetNotification } from '../store/notification';
 
 const criteriaOption = [
   Criteria.GAME,
@@ -32,6 +33,7 @@ export const CreateAsset = () => {
   const syncUser = useSyncUser();
   const uploadAsset = useUploadAsset({ fallback: true });
   const syncAssets = useSyncAssets();
+  const setNotification = useStateSetNotification();
   
   const onClickChooseFile = async () => {
     const files = await uploadFile({
@@ -45,7 +47,7 @@ export const CreateAsset = () => {
 
   const onClickSubmit = async () => {
     if (!chosenFile || !selectedCriteria) {
-      // TODO: Notify user
+      setNotification({ severity: 'info', message: 'Please choose a file and select the category' });
       return;
     }
     setLoading(true);
@@ -54,14 +56,18 @@ export const CreateAsset = () => {
     // If the user hasn't, consider the app is still in offline mode and user can continue
     // uploading it to their local storage temporarily.
 
-    await syncUser();
+    try {
+      await syncUser();
     
-    const data = await uploadAsset(chosenFile, selectedCriteria);
-    if (!data?.errors) {
-      // TODO: Notify user
-      onClose();
-      // Sync the latest assets from the server, by checking the last sync status
-      await syncAssets();
+      const data = await uploadAsset(chosenFile, selectedCriteria);
+      if (!data?.errors) {
+        onClose();
+        // Sync the latest assets from the server, by checking the last sync status
+        await syncAssets();
+      }  
+    } catch (e) {
+      console.error('Fail to upload', e);
+      setNotification({ severity: 'error', message: 'Fail to upload. Please try again.' });
     }
     setLoading(false);
   }

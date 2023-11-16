@@ -3,10 +3,12 @@ import { client } from './apolloClient';
 import { CREATE_USER } from '../repo/graph';
 import { useMutation } from '@apollo/client';
 import { useRef } from "react";
+import { useStateSetNotification } from "../store/notification";
 
 export function useSyncUser () {
   const user = useStateUser();
   const userRef = useRef(user);
+  const setNotification = useStateSetNotification();
   userRef.current = user;
 
   const setUser = useStateSetUser();
@@ -43,7 +45,7 @@ export function useSyncUser () {
       });
     } catch (error) {
       console.error('Failed to sync user', error);
-      // TODO: Notify the user
+      setNotification({ severity: 'error', message: 'Failed to sync user, temporarily enter Offline mode' });
       throw error;
     }
   }

@@ -7,6 +7,7 @@ import { uploadFileToBucket } from './fileBucket';
 import { readFile } from '../helper/fileReader';
 import { Criteria } from '../store/types';
 import { useCallback, useRef } from 'react';
+import { useStateSetNotification } from '../store/notification';
 
 interface UploadAssetOption {
   /**
@@ -26,6 +27,8 @@ export function useUploadAsset (option?: UploadAssetOption) {
   const userRef = useRef(user);
   userRef.current = user;
 
+  const setNotification = useStateSetNotification();
+
   const pendingAssets = useStatePendingAssets();
   const pendingAssetsRef = useRef(pendingAssets);
   pendingAssetsRef.current = pendingAssets;
@@ -44,6 +47,7 @@ export function useUploadAsset (option?: UploadAssetOption) {
         createdAt: new Date().toISOString(),
         isPending: true,
       }, ...pendingAssetsRef.current]);
+      setNotification({ severity: 'info', message: 'Your animation uploaded into your device. Please SYNC when you are back online' });
     }
   
     // Upload the file to the server bucket, to retrieve the URL.

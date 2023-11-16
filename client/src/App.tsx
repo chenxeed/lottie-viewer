@@ -8,6 +8,7 @@ import { AssetViewer } from './component/AssetViewer';
 import clsx from 'clsx';
 import { AssetDetail } from './component/AssetDetail';
 import { FilterForm } from './component/FilterForm';
+import { NotificationCard } from './component/NotificationCard';
 
 function App() {
   console.log('app rerendering');
@@ -54,6 +55,7 @@ function App() {
         <AssetDetail />
       </div>
       {!user && <CreateUserModal />}
+      <NotificationCard />
     </div>
   );
 }

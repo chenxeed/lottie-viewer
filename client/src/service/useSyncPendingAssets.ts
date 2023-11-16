@@ -2,11 +2,13 @@ import { LottieStorage, PendingLottie } from "../store/types";
 import { useUploadAsset } from "./useUploadAsset";
 import { useStateSetPendingAssets } from "../store/assets";
 import { useCallback } from "react";
+import { useStateSetNotification } from "../store/notification";
 
 export function useSyncPendingAssets () {
 
   const setPendingAssets = useStateSetPendingAssets();
   const uploadAsset = useUploadAsset();
+  const setNotification = useStateSetNotification();
 
   return useCallback(() => {
     async function recursiveUploadPendingAsset(nextPendingAssets: PendingLottie[]) {
@@ -33,7 +35,7 @@ export function useSyncPendingAssets () {
         recursiveUploadPendingAsset(nextPendingAssets.slice(0, -1));
       } catch (error) {
         console.error('Failed to upload pending asset', error);
-        // TODO: Notify the user
+        setNotification({ severity: 'error', message: 'Failed to upload pending asset' });
         throw error;
       }
     }
