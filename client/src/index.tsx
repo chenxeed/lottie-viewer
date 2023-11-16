@@ -5,11 +5,16 @@ import App from "./App";
 import { Theme } from "./ThemeProvider";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
+import { preloadResources } from "./service/preloadResources";
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://cra.link/PWA
 serviceWorkerRegistration.register().then(() => {
+  // Upon load, preload certain resources needed for the app to function normally.
+  // This is meant for users who are offline right after visit, and have not yet browsed the app further.
+  preloadResources();
+
   const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement,
   );

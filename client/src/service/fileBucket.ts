@@ -9,14 +9,17 @@ interface UploadFile {
   size: number;
 }
 
-export const getFilePath = (filename: string) => `/bucket/uploads/${filename}`;
+const BUCKET_PATH = "/bucket/uploads/";
+const BUCKET_API = "/bucket/upload/";
+
+export const getFilePath = (filename: string) => `${BUCKET_PATH}${filename}`;
 
 export async function uploadFileToBucket(file: File): Promise<UploadFile> {
   // Try to upload
   const formData = new FormData();
   formData.append("file", file);
 
-  const result = await fetch("/bucket/upload", {
+  const result = await fetch(BUCKET_API, {
     method: "POST",
     body: formData,
   });

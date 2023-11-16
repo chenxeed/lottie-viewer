@@ -65,5 +65,5 @@ export function useSyncPendingAssets() {
     );
     setPendingAssets(latestPendingAssets);
     return recursiveUploadPendingAsset(latestPendingAssets);
-  }, [setPendingAssets, uploadAsset]);
+  }, [setNotification, setPendingAssets, uploadAsset]);
 }
