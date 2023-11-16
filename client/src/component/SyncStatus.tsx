@@ -66,7 +66,7 @@ export const SyncStatus = () => {
   }, [syncState, localSyncStatus]);
 
   return (
-    <div className="text-right">
+    <div className="text-right w-28 md:w-52 min-h-[76px]">
       <div className="text-xs md:text-sm italic">{lastSyncMessage}</div>
       <Button
         variant="outlined"

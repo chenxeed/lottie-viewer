@@ -1,13 +1,21 @@
 import { gql } from "@apollo/client";
 
 export const GET_ASSETS = gql`
-  query GetAssets($after: Int, $criteria: String) {
-    assets(after: $after, criteria: $criteria) {
-      id
-      title
-      file
-      criteria
-      createdAt
+  query Assets($before: Int, $limit: Int, $after: Int, $criteria: String) {
+    assets(before: $before, limit: $limit, after: $after, criteria: $criteria) {
+      nodes {
+        createdAt
+        criteria
+        file
+        id
+        title
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
     }
   }
 `;

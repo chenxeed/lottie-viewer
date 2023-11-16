@@ -6,16 +6,21 @@ import {
 import { SyncStatus } from "../SyncStatus/entity";
 import { User } from "../User/entity";
 import { Asset } from "./entity";
-import { MoreThan } from "typeorm";
+import { LessThan, MoreThan } from "typeorm";
 
 export const AssetSchema = `
 extend type Query {
-  assets(after: Int, criteria: String): [Asset]!
+  assets(after: Int, before: Int, limit: Int, criteria: String): PaginatedAsset!
   asset(id: Int!): Asset!
 }
 
 extend type Mutation {
   createAsset(userId: Int!, title: String!, file: String!, criteria: String!): Asset!
+}
+
+type PaginatedAsset {
+  nodes: [Asset]!
+  pageInfo: PageInfo!
 }
 
 type Asset {
@@ -40,17 +45,49 @@ type AssetQueryResolver = {
 
 export const AssetQueryResolver: AssetQueryResolver = {
   Query: {
-    async assets(_, { after = 0, criteria = "" }) {
+    async assets(
+      _,
+      { after = 0, before = 0, limit = undefined, criteria = "" }
+    ) {
+      if (after > 0 && before > 0) {
+        throw new Error("Only one of after or before is allowed");
+      }
+      const where = {
+        ...(criteria ? { criteria } : {}),
+        id: before ? LessThan(before) : MoreThan(after),
+      };
       const result = await Asset.find({
-        where: {
-          ...(criteria ? { criteria } : {}),
-          id: MoreThan(after),
-        },
+        where,
         order: {
           id: "DESC",
         },
+        // Get 1 more to know if there is a next page
+        ...(limit !== undefined ? { take: limit + 1 } : {}),
       });
-      return result;
+      const nodes = result.length > limit ? result.slice(0, -1) : result;
+      const startCursor = nodes[0]?.id;
+      const endCursor = nodes[nodes.length - 1]?.id;
+      const isForwardPagination = after > 0;
+      const isBackwardPagination = before > 0;
+      const hasNextPage = isForwardPagination
+        ? limit !== undefined && result.length > limit
+        : (await Asset.count({
+            where: { ...where, id: MoreThan(startCursor) },
+          })) > 0;
+      const hasPreviousPage = isBackwardPagination
+        ? limit !== undefined && result.length > limit
+        : (await Asset.count({
+            where: { ...where, id: LessThan(endCursor) },
+          })) > 0;
+      return {
+        nodes,
+        pageInfo: {
+          hasNextPage,
+          hasPreviousPage,
+          startCursor,
+          endCursor,
+        },
+      };
     },
     async asset(_, { id }) {
       const result = await Asset.findOneBy({

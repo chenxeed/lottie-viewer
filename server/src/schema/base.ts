@@ -5,6 +5,13 @@ const Base = `
 type Query
 type Mutation
 
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: Int
+  endCursor: Int
+}
+
 scalar Url
 scalar Date
 `;

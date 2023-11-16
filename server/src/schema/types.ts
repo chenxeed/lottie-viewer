@@ -64,10 +64,24 @@ export type MutationCreateUserArgs = {
   name: Scalars["String"]["input"];
 };
 
+export type PageInfo = {
+  __typename?: "PageInfo";
+  endCursor?: Maybe<Scalars["Int"]["output"]>;
+  hasNextPage: Scalars["Boolean"]["output"];
+  hasPreviousPage: Scalars["Boolean"]["output"];
+  startCursor?: Maybe<Scalars["Int"]["output"]>;
+};
+
+export type PaginatedAsset = {
+  __typename?: "PaginatedAsset";
+  nodes: Array<Maybe<Asset>>;
+  pageInfo: PageInfo;
+};
+
 export type Query = {
   __typename?: "Query";
   asset: Asset;
-  assets: Array<Maybe<Asset>>;
+  assets: PaginatedAsset;
   lastSyncStatus: Array<Maybe<SyncStatus>>;
   user: User;
   users?: Maybe<Array<Maybe<User>>>;
@@ -79,7 +93,9 @@ export type QueryAssetArgs = {
 
 export type QueryAssetsArgs = {
   after?: InputMaybe<Scalars["Int"]["input"]>;
+  before?: InputMaybe<Scalars["Int"]["input"]>;
   criteria?: InputMaybe<Scalars["String"]["input"]>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
 export type QueryUserArgs = {
@@ -113,21 +129,21 @@ export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => Promise<TResult> | TResult;
 
 export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => AsyncIterable<TResult> | Promise<AsyncIterable<TResult>>;
 
 export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
 export interface SubscriptionSubscriberObject<
@@ -181,13 +197,13 @@ export type SubscriptionResolver<
 export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
   parent: TParent,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
 export type IsTypeOfResolverFn<T = {}, TContext = {}> = (
   obj: T,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
@@ -202,7 +218,7 @@ export type DirectiveResolverFn<
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -212,6 +228,8 @@ export type ResolversTypes = {
   Date: ResolverTypeWrapper<Scalars["Date"]["output"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
   Mutation: ResolverTypeWrapper<{}>;
+  PageInfo: ResolverTypeWrapper<PageInfo>;
+  PaginatedAsset: ResolverTypeWrapper<PaginatedAsset>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars["String"]["output"]>;
   SyncStatus: ResolverTypeWrapper<SyncStatus>;
@@ -226,6 +244,8 @@ export type ResolversParentTypes = {
   Date: Scalars["Date"]["output"];
   Int: Scalars["Int"]["output"];
   Mutation: {};
+  PageInfo: PageInfo;
+  PaginatedAsset: PaginatedAsset;
   Query: {};
   String: Scalars["String"]["output"];
   SyncStatus: SyncStatus;
@@ -274,6 +294,36 @@ export type MutationResolvers<
   >;
 };
 
+export type PageInfoResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["PageInfo"] = ResolversParentTypes["PageInfo"],
+> = {
+  endCursor?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  hasNextPage?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  hasPreviousPage?: Resolver<
+    ResolversTypes["Boolean"],
+    ParentType,
+    ContextType
+  >;
+  startCursor?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PaginatedAssetResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["PaginatedAsset"] = ResolversParentTypes["PaginatedAsset"],
+> = {
+  nodes?: Resolver<
+    Array<Maybe<ResolversTypes["Asset"]>>,
+    ParentType,
+    ContextType
+  >;
+  pageInfo?: Resolver<ResolversTypes["PageInfo"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<
   ContextType = any,
   ParentType extends
@@ -286,7 +336,7 @@ export type QueryResolvers<
     RequireFields<QueryAssetArgs, "id">
   >;
   assets?: Resolver<
-    Array<Maybe<ResolversTypes["Asset"]>>,
+    ResolversTypes["PaginatedAsset"],
     ParentType,
     ContextType,
     Partial<QueryAssetsArgs>
@@ -344,6 +394,8 @@ export type Resolvers<ContextType = any> = {
   Asset?: AssetResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
+  PageInfo?: PageInfoResolvers<ContextType>;
+  PaginatedAsset?: PaginatedAssetResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   SyncStatus?: SyncStatusResolvers<ContextType>;
   Url?: GraphQLScalarType;

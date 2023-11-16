@@ -1,30 +1,47 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useStateSetUser, useStateUser } from "../store/user";
 import { useSyncUser } from "../service/useSyncUser";
 import { Button } from "@mui/material";
 import { Player } from "@lottiefiles/react-lottie-player";
-import animationJSON from "../asset/arrow-down.json";
+import arrowDownJSON from "../asset/arrow-down.json";
+import fingerSnapJSON from "../asset/fingersnap.json";
+import clsx from "clsx";
 
 export const CreateUserModal = () => {
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
   const [shouldSync, setShouldSync] = useState(false);
+  const [playerJSON, setPlayerJSON] =
+    useState<Record<string, any>>(arrowDownJSON);
   const user = useStateUser();
   const setUser = useStateSetUser();
   const syncUser = useSyncUser();
+  const userMessage = useMemo(() => {
+    if (loading) {
+      return "Thank you! Awesomeness is coming...";
+    } else {
+      return "We are so glad that you here to try out the Lottie Viewer. First, share with us your name to proceed.";
+    }
+  }, [loading]);
 
   function onChangeUsername(e: React.ChangeEvent<HTMLInputElement>) {
     setName(e.target.value);
   }
 
   function onClickContinue() {
-    // Do optimistic sync by saving the user state locally first before sync to the server
-    const user = {
-      id: Date.now(), // Random ID, to be replaced with real ID once the user is sync
-      name: name,
-      isSync: false,
-    };
-    setUser(user);
-    setShouldSync(true);
+    setLoading(true);
+    setPlayerJSON(fingerSnapJSON);
+
+    setTimeout(() => {
+      // Do optimistic sync by saving the user state locally first before sync to the server
+      const user = {
+        id: Date.now(), // Random ID, to be replaced with real ID once the user is sync
+        name: name,
+        isSync: false,
+      };
+      setUser(user);
+      setShouldSync(true);
+    }, 2000);
   }
 
   useEffect(() => {
@@ -51,7 +68,15 @@ export const CreateUserModal = () => {
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
               <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                <Player autoplay loop src={animationJSON}></Player>
+                <Player
+                  autoplay
+                  loop
+                  src={playerJSON}
+                  className={clsx(
+                    "scale-100",
+                    loading && "scale-150 duration-[2s]",
+                  )}
+                ></Player>
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <h3
@@ -61,10 +86,7 @@ export const CreateUserModal = () => {
                       Welcome!
                     </h3>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        We are so glad that you here to try out the Lottie
-                        Viewer. First, share with us your name to proceed.
-                      </p>
+                      <p className="text-sm text-gray-500">{userMessage}</p>
                       <div className="mt-2">
                         <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                           <input
@@ -83,7 +105,11 @@ export const CreateUserModal = () => {
                 </div>
               </div>
               <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <Button variant="contained" onClick={onClickContinue}>
+                <Button
+                  variant="contained"
+                  onClick={onClickContinue}
+                  disabled={loading}
+                >
                   Continue!
                 </Button>
               </div>

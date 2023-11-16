@@ -13,9 +13,10 @@ import { Lottie } from "../types";
 import { useQuery } from "@apollo/client";
 import { GET_ASSETS } from "../repo/graph";
 import { client } from "../service/apolloClient";
-import { Card, CardContent } from "@mui/material";
+import { Card, CardContent, Skeleton } from "@mui/material";
 import clsx from "clsx";
 import { useStateSetNotification } from "../store/notification";
+import { IntersectionElement } from "./IntersectionElement";
 
 interface LottieCardProps {
   title: string;
@@ -134,19 +135,34 @@ export const AssetViewer = () => {
   const setAssets = useStateSetAssets();
   const setNotification = useStateSetNotification();
 
-  const { data, error } = useQuery(GET_ASSETS, {
+  const { data, error, loading, fetchMore } = useQuery(GET_ASSETS, {
     variables: {
       criteria: criteria === Criteria.ALL ? undefined : criteria,
       after: 0,
+      limit: 10,
     },
     client,
     fetchPolicy: "network-only", // Always try to retrieve the latest first
   });
 
+  const onScrollToBottom = () => {
+    if (loading) {
+      return;
+    }
+    fetchMore({
+      variables: {
+        criteria: criteria === Criteria.ALL ? undefined : criteria,
+        before: data?.assets.pageInfo.endCursor,
+        limit: 10,
+      },
+    });
+  };
+
   useEffect(() => {
+    console.log("what happen to data??", data?.assets);
     if (data?.assets) {
       setAssets(
-        data.assets.map((asset: any) => ({
+        data.assets.nodes.map((asset: any) => ({
           id: asset.id,
           title: asset.title,
           file: asset.file,
@@ -167,10 +183,13 @@ export const AssetViewer = () => {
 
   return (
     <>
-      <EmptyList />
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-4">
         <PendingAssetList />
         <AssetList />
+        {data?.assets.pageInfo.hasPreviousPage && (
+          <IntersectionElement onIntersect={onScrollToBottom} />
+        )}
+        {loading ? <Skeleton width={"100%"} height={150} /> : <EmptyList />}
       </div>
     </>
   );

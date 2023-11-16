@@ -76,7 +76,7 @@ export function useSyncAssets() {
     }
     // At this point, user has successfully sync with the server
     setAssets([
-      ...assetsResult.data.assets
+      ...assetsResult.data.assets.nodes
         .filter(
           (asset: any) =>
             criteriaRef.current === Criteria.ALL ||

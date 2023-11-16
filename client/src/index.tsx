@@ -10,7 +10,7 @@ import { preloadResources } from "./service/preloadResources";
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://cra.link/PWA
-serviceWorkerRegistration.register().then(() => {
+serviceWorkerRegistration.register().then((isServiceWorker) => {
   // Upon load, preload certain resources needed for the app to function normally.
   // This is meant for users who are offline right after visit, and have not yet browsed the app further.
   preloadResources();
