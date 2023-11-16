@@ -8,12 +8,20 @@ import { readFile } from '../helper/fileReader';
 import { Criteria } from '../store/types';
 import { useCallback, useRef } from 'react';
 
+interface UploadAssetOption {
+  /**
+   * If true, will save the asset locally if the server is not available.
+   */
+  fallback: boolean;
+}
+
 /**
  * Hook to upload a new asset to the server.
  * @param fallback If true, will save the asset locally if the server is not available.
  * @returns A function to upload the asset.
  */
-export function useUploadAsset (fallback = false) {
+export function useUploadAsset (option?: UploadAssetOption) {
+  const { fallback = false } = option || {};
   const user = useStateUser();
   const userRef = useRef(user);
   userRef.current = user;

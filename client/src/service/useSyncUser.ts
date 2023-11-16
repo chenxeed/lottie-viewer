@@ -27,17 +27,19 @@ export function useSyncUser () {
     // If success, update the flag to be true
     // If fail, do nothing and let the user use the "offline" user mode
     try {
-      await createUser({
+      const result = await createUser({
         variables: {
           name: user.name,
         },
-        onCompleted(data) {
-          setUser({
-            id: Number(data.createUser.id),
-            name: data.createUser.name,
-            isSync: true,
-          });
-        }
+      });
+      if (result.errors) {
+        throw result.errors;
+      }
+      const data = result.data;
+      setUser({
+        id: Number(data.createUser.id),
+        name: data.createUser.name,
+        isSync: true,
       });
     } catch (error) {
       console.error('Failed to sync user', error);

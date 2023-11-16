@@ -18,10 +18,10 @@ interface LottieCardProps {
 }
 const LottieCard = (props: LottieCardProps) => {
   return (
-    <Card className={clsx('hover:bg-slate-100', props.isOffline && 'bg-red-200') } onClick={props.onClick}>
+    <Card className='hover:bg-slate-100 cursor-pointer' onClick={props.onClick}>
       <Player src={props.playerSrc} className='h-20 md:h-40' />
-      <CardContent>
-        <div className="text-left text-xs md:text-sm lg:text-base mb-2">
+      <CardContent className={clsx(props.isOffline && 'bg-red-200')}>
+        <div className={clsx('text-left text-xs md:text-sm lg:text-base mb-2', props.isOffline && 'text-red-950')}>
           {props.title}
         </div>
       </CardContent>
@@ -45,7 +45,7 @@ const PendingAssetList = () => {
           <LottieCard
             key={asset.id}
             onClick={() => onClickDetail(asset)}
-            isOffline
+            isOffline={true}
             title={asset.title}
             playerSrc={asset.jsonString} />
         ))

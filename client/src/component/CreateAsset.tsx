@@ -12,6 +12,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Button } from '@mui/material';
 import { createPortal } from 'react-dom';
+import { useSyncUser } from '../service/useSyncUser';
 
 const criteriaOption = [
   Criteria.GAME,
@@ -28,7 +29,8 @@ export const CreateAsset = () => {
   const [jsonString, setJsonString] = useState<string | null>(null);
   const [selectedCriteria, setSelectedCriteria] = useState<Criteria>(Criteria.TECH);
   const [loading, setLoading] = useState(false);
-  const uploadAsset = useUploadAsset(true);
+  const syncUser = useSyncUser();
+  const uploadAsset = useUploadAsset({ fallback: true });
   const syncAssets = useSyncAssets();
   
   const onClickChooseFile = async () => {
@@ -47,6 +49,13 @@ export const CreateAsset = () => {
       return;
     }
     setLoading(true);
+
+    // Before the file gets uploaded, make sure if the user has sync to the server
+    // If the user hasn't, consider the app is still in offline mode and user can continue
+    // uploading it to their local storage temporarily.
+
+    await syncUser();
+    
     const data = await uploadAsset(chosenFile, selectedCriteria);
     if (!data?.errors) {
       // TODO: Notify user
