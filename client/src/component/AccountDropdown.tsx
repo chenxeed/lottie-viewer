@@ -1,16 +1,19 @@
 import { useState } from "react";
-import { useStore } from "../store";
+import { useStateSetUser, useStateUser } from "../store/user";
+import { useStateSetPendingAssets } from "../store/assets";
 
 export const AccountDropdown = () => {
 
-  const user = useStore((state) => state.user);
-  const setUser = useStore((state) => state.setUser);
+  const user = useStateUser();
+  const setUser = useStateSetUser();
+  const setPendingState = useStateSetPendingAssets();
   const [toggle, setToggle] = useState(false);
 
   const signOut = (e: MouseEvent) => {
     e.preventDefault();
     setToggle(false);
     setUser(null);
+    setPendingState([]);
   }
 
   return (

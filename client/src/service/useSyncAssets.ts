@@ -4,7 +4,7 @@ import { GET_ASSETS, GET_LAST_SYNC_STATUS } from "../repo/graph";
 import { useStateLocalSyncStatus, useStateSetLocalSyncStatus, useStateSetSyncState } from "../store/syncStatus";
 import { Criteria, SyncState } from "../store/types";
 import { useStateAssets, useStateCriteria, useStateSetAssets } from "../store/assets";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 
 export function useSyncAssets () {
   const localSyncStatus = useStateLocalSyncStatus();
@@ -30,7 +30,7 @@ export function useSyncAssets () {
     fetchPolicy: 'network-only',
   });
 
-  return async () => {
+  return useCallback(async () => {
     setSyncState(SyncState.SYNCING);
     const syncStatusResult = await getSyncStatus();
     if (!syncStatusResult.data) {
@@ -79,5 +79,5 @@ export function useSyncAssets () {
       lastUpdate: syncStatus.lastUpdate,
     })
     setSyncState(SyncState.UP_TO_DATE);
-  }
+  }, [getAssets, getSyncStatus, setAssets, setLocalSyncStatus, setSyncState]);
 }
