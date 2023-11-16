@@ -1,58 +1,55 @@
-import { useState } from "react";
+import { MouseEvent, useRef, useState } from "react";
 import { useStateSetUser, useStateUser } from "../store/user";
 import { useStateSetPendingAssets } from "../store/assets";
+import { Button, Menu, MenuItem } from "@mui/material";
 
 export const AccountDropdown = () => {
   const user = useStateUser();
   const setUser = useStateSetUser();
   const setPendingState = useStateSetPendingAssets();
-  const [toggle, setToggle] = useState(false);
 
-  const signOut = (e: MouseEvent) => {
+  const anchorEl = useRef<Element | null>(null);
+  const [open, setOpen] = useState(false);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    anchorEl.current = event.currentTarget;
+    setOpen(true);
+  };
+  const handleClose = () => {
+    anchorEl.current = null;
+    setOpen(false);
+  };
+
+  const signOut = (e: MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
-    setToggle(false);
+    setOpen(false);
     setUser(null);
     setPendingState([]);
   };
 
   return (
     <div className="relative">
-      <button
-        className="text-white bg-emerald-700 hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800"
-        type="button"
-        onClick={() => setToggle(!toggle)}
+      <Button
+        id="basic-button"
+        aria-controls={open ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        onClick={handleClick}
       >
-        {user?.name}
-        <svg
-          className="w-2.5 h-2.5 ms-3"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 10 6"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="m1 1 4 4 4-4"
-          />
-        </svg>
-      </button>
-
-      <div
-        id="dropdown"
-        className={`z-10 ${
-          toggle ? "" : "hidden"
-        } absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow w-24 py-2 text-sm text-gray-700 dark:text-gray-200`}
+        <span className="truncate text-left text-ellipsis w-24">
+          {user?.name}
+        </span>
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl.current}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
       >
-        <button
-          onClick={(e) => signOut(e as unknown as MouseEvent)}
-          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-        >
-          Sign out
-        </button>
-      </div>
+        <MenuItem onClick={(e) => signOut(e)}>Logout</MenuItem>
+      </Menu>
     </div>
   );
 };
