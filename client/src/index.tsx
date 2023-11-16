@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { Theme } from './ThemeProvider';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 
@@ -14,7 +15,9 @@ serviceWorkerRegistration.register().then(() => {
   );
   root.render(
     <React.StrictMode>
-      <App />
+      <Theme>
+        <App />
+      </Theme>
     </React.StrictMode>
   );
   

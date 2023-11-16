@@ -6,7 +6,7 @@ import { useSyncUser } from '../service/useSyncUser';
 import { useSyncAssets } from '../service/useSyncAssets';
 import { useStateSyncState } from '../store/syncStatus';
 import { SyncState } from '../store/types';
-import clsx from 'clsx';
+import { Button } from '@mui/material';
 
 export const SyncStatus = () => {
   
@@ -42,28 +42,25 @@ export const SyncStatus = () => {
 
   const lastSyncMessage = useMemo(() => {
     if (syncState === SyncState.SYNCING) {
-      return `Synching... Please wait`;
+      return <span className='text-blue-500'>Synching... Please wait</span>;
     } else if (syncState === SyncState.UP_TO_DATE) {
-      return `Last Update ${ formatRelative(parseISO(localSyncStatus.lastUpdate), new Date()) } by ${localSyncStatus.name}`;
+      return <span className='text-green-500'>{`Last Update ${ formatRelative(parseISO(localSyncStatus.lastUpdate), new Date()) } by ${localSyncStatus.name}`}</span>;
     } else if (syncState === SyncState.NO_SYNC) {
-      return 'No update yet.';
+      return <span className='text-gray-500'>No update yet.</span>;
     } else if (syncState === SyncState.FAIL_TO_SYNC) {
-      return 'Fail to sync. Please try again.';
+      return <span className='text-red-500'>Fail to sync. Please try again.</span>;
     } else {
-      return 'Unknown status';
+      return <span className='text-yellow-500'>Unknown status</span>;
     }
   }, [syncState, localSyncStatus]);
 
 
   return (
     <div className='text-right'>
-      <div className="text-sm text-blue-500 italic">{lastSyncMessage}</div>
-      <button
-        className={clsx("button-shadow emerald", isLoading && 'animate-pulse')}
+      <div className="text-xs md:text-sm italic">{lastSyncMessage}</div>
+      <Button variant='outlined'
         onClick={handleSynchronize}
-        disabled={isLoading}>
-        { isLoading ? '...' : 'Sync' }
-      </button>
+        disabled={isLoading}>{ isLoading ? '...' : 'Sync' }</Button>
     </div>
   )
 }

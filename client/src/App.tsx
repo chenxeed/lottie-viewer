@@ -7,6 +7,7 @@ import { SyncStatus } from './component/SyncStatus';
 import { AssetViewer } from './component/AssetViewer';
 import clsx from 'clsx';
 import { AssetDetail } from './component/AssetDetail';
+import { FilterForm } from './component/FilterForm';
 
 function App() {
   console.log('app rerendering');
@@ -43,9 +44,10 @@ function App() {
         </div>
         <AccountDropdown />
       </header>
-      <div className='container mx-auto bg-slate-50 shadow p-4 mt-2 h-[calc(100vh-6rem)] overflow-y-auto'>
-        <div className='flex justify-between'>
+      <div className='container mx-auto bg-slate-50 shadow px-4 pb-4 mt-2 h-[calc(100vh-6rem)] overflow-y-auto'>
+        <div className='flex justify-between pt-4 pb-2 border-b-2 border-emerald-200 sticky top-0 bg-slate-50 z-10'>
           <CreateAsset />
+          <FilterForm />
           <SyncStatus />
         </div>
         <AssetViewer />

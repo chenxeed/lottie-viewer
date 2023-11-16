@@ -66,12 +66,14 @@ export function useSyncAssets () {
     // At this point, user has successfully sync with the server
     setAssets(
       [
-        ...assetsResult.data.assets.map((asset: any) => ({
-          id: asset.id,
-          title: asset.title,
-          file: asset.file,
-          createdAt: asset.createdAt,
-        })),
+        ...assetsResult.data.assets
+          .filter((asset: any) => criteriaRef.current === Criteria.ALL || asset.criteria === criteriaRef.current)
+          .map((asset: any) => ({
+            id: asset.id,
+            title: asset.title,
+            file: asset.file,
+            createdAt: asset.createdAt,
+          })),
         ...(assetsRef.current.length ? assetsRef.current : []),
       ]);
     setLocalSyncStatus({
