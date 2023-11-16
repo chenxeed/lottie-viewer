@@ -26,7 +26,10 @@ interface LottieCardProps {
 const LottieCard = (props: LottieCardProps) => {
   const ref = useRef<Player>(null);
   useEffect(() => {
-    ref.current?.setSeeker(50);
+    const timeout = setTimeout(() => {
+      ref.current?.setSeeker(50);
+    }, 500);
+    return () => clearTimeout(timeout);
   }, []);
   return (
     <Card className="hover:bg-slate-100 cursor-pointer" onClick={props.onClick}>
