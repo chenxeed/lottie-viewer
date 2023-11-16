@@ -3,15 +3,13 @@ import { useCallback, useMemo, useState } from 'react';
 import { formatRelative, parseISO } from 'date-fns';
 import { useSyncPendingAssets } from '../service/useSyncPendingAssets';
 import { useSyncUser } from '../service/useSyncUser';
-import clsx from 'clsx';
-import { useStateUser } from '../store/user';
 import { useSyncAssets } from '../service/useSyncAssets';
 import { useStateSyncState } from '../store/syncStatus';
 import { SyncState } from '../store/types';
+import clsx from 'clsx';
 
 export const SyncStatus = () => {
   
-  const user = useStateUser();
   const syncUser = useSyncUser();
   const syncPendingAssets = useSyncPendingAssets();
 
@@ -26,9 +24,7 @@ export const SyncStatus = () => {
     setIsLoading(true);
     try {
       // Sync the user state, in case the user was created during offline mode
-      if (user) {
-        await syncUser(user);
-      }
+      await syncUser();
 
       // Sync the pending assets, in case the user created assets during offline mode
       await syncPendingAssets();
@@ -42,7 +38,7 @@ export const SyncStatus = () => {
       setIsLoading(false);      
     }
 
-  }, []);
+  }, [syncAssets, syncPendingAssets, syncUser]);
 
   const lastSyncMessage = useMemo(() => {
     if (syncState === SyncState.SYNCING) {

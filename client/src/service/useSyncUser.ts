@@ -1,14 +1,18 @@
-import { useStateSetUser } from "../store/user";
+import { useStateSetUser, useStateUser } from "../store/user";
 import { client } from './apolloClient';
 import { CREATE_USER } from '../repo/graph';
 import { useMutation } from '@apollo/client';
-import { User } from "../types";
+import { useRef } from "react";
 
 export function useSyncUser () {
+  const user = useStateUser();
+  const userRef = useRef(user);
+  userRef.current = user;
+
   const setUser = useStateSetUser();
   const [createUser] = useMutation(CREATE_USER, { client });
 
-  return async (user: User) => {
+  return async () => {
     if (!user) {
       // There's no user to sync with, skipping the process
       return;

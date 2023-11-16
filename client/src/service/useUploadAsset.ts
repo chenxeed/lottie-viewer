@@ -6,7 +6,7 @@ import { useStatePendingAssets, useStateSetPendingAssets } from '../store/assets
 import { uploadFileToBucket } from './fileBucket';
 import { readFile } from '../helper/fileReader';
 import { Criteria } from '../store/types';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 /**
  * Hook to upload a new asset to the server.
@@ -25,20 +25,19 @@ export function useUploadAsset (fallback = false) {
   const setPendingAssets = useStateSetPendingAssets();
   const [createAsset] = useMutation(CREATE_ASSET, { client });
 
-  async function fallbackPendingAsset (file: File, criteria: Criteria) {
-    const jsonString = await readFile(file);
-    setPendingAssets([{
-      id: Date.now(), // Random ID since it'll be replaced with the server ID later on sync
-      title: file.name,
-      jsonString,
-      criteria,
-      createdAt: new Date().toISOString(),
-      isPending: true,
-    }, ...pendingAssetsRef.current]);
-  }
-
-  return async (file: File, criteria: Criteria) => {
-
+  return useCallback(async (file: File, criteria: Criteria) => {
+    async function fallbackPendingAsset (file: File, criteria: Criteria) {
+      const jsonString = await readFile(file);
+      setPendingAssets([{
+        id: Date.now(), // Random ID since it'll be replaced with the server ID later on sync
+        title: file.name,
+        jsonString,
+        criteria,
+        createdAt: new Date().toISOString(),
+        isPending: true,
+      }, ...pendingAssetsRef.current]);
+    }
+  
     // Upload the file to the server bucket, to retrieve the URL.
     // Once done, we'll use it as the pointer of the asset URL.
     // In case where the user failed to upload, we can fallback to local storage
@@ -66,5 +65,5 @@ export function useUploadAsset (fallback = false) {
         throw e;
       }
     }
-  } 
+  }, [createAsset, fallback, setPendingAssets]); 
 }

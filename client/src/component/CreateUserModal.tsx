@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { useStateSetUser } from '../store/user';
+import React, { useEffect, useState } from 'react';
+import { useStateSetUser, useStateUser } from '../store/user';
 import { useSyncUser } from '../service/useSyncUser';
 
 export const CreateUserModal = () => {
   const [name, setName] = useState('');
+  const [shouldSync, setShouldSync] = useState(false);
+  const user = useStateUser();
   const setUser = useStateSetUser();
   const syncUser = useSyncUser();
 
@@ -19,8 +21,14 @@ export const CreateUserModal = () => {
       isSync: false,
     };
     setUser(user);
-    syncUser(user);
+    setShouldSync(true);
   }
+
+  useEffect(() => {
+    if (user && shouldSync) {
+      syncUser();
+    }
+  }, [user, shouldSync, syncUser]);
 
   return (
     <div className='fixed z-10 inset-0 overflow-hidden' aria-labelledby="modal-title" role="dialog" aria-modal="true">
