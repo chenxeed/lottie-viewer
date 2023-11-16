@@ -14,6 +14,14 @@ export interface ViewLottie {
   jsonString: string;
 }
 
+export enum SyncState {
+  NO_SYNC = 'no-sync',
+  UP_TO_DATE = 'up-to-date',
+  SYNCING = 'syncing',
+  FAIL_TO_SYNC = 'fail-to-sync',
+}
+
+
 export interface State {
   user: User | null;
   assets: Lottie[];
@@ -21,6 +29,7 @@ export interface State {
   viewAsset: ViewLottie | null;
   criteria: Criteria;
   localSyncStatus: SyncStatus;
+  syncState: SyncState;
   action: StateAction | null;
   setUser: (user: User | null) => void;
   setAssets: (assets: Lottie[]) => void;
@@ -28,6 +37,7 @@ export interface State {
   setViewAsset: (asset: ViewLottie | null) => void;
   setPendingAssets: (assets: PendingLottie[]) => void;
   setLocalSyncStatus: (data: SyncStatus) => void;
+  setSyncState: (state: SyncState) => void;
 }
 
 export enum StateAction {
@@ -37,11 +47,11 @@ export enum StateAction {
   SET_CRITERIA = 'setCriteria',
   SET_PENDING_ASSETS = 'setPendingAssets',
   SET_LOCAL_SYNC_STATUS = 'setLocalSyncStatus',
+  SET_SYNC_STATE = 'setSyncState',
 }
 
 export enum LottieStorage {
   USER = 'lottie-user',
-  ASSETS = 'lottie-assets',
   PENDING_ASSETS = 'lottie-pending-assets',
   LOCAL_SYNC_STATUS = 'lottie-local-sync-status',
 }

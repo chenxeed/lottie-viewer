@@ -1,6 +1,6 @@
 import { User, Lottie, SyncStatus } from "../types";
 import { create } from 'zustand'
-import { Criteria, PendingLottie, State, StateAction, ViewLottie } from "./types";
+import { Criteria, PendingLottie, State, StateAction, SyncState, ViewLottie } from "./types";
 
 export const useStore = create<State>((set) => ({
   user: null,
@@ -12,6 +12,7 @@ export const useStore = create<State>((set) => ({
     lastUpdate: '',
     name: '',
   },
+  syncState: SyncState.NO_SYNC,
   action: null,
   setUser: (user: User | null) => {
     set({ user, action: StateAction.SET_USER });
@@ -30,5 +31,8 @@ export const useStore = create<State>((set) => ({
   },
   setLocalSyncStatus: (localSyncStatus: SyncStatus) => {
     set({ localSyncStatus, action: StateAction.SET_LOCAL_SYNC_STATUS });
+  },
+  setSyncState(state) {
+    set({ syncState: state, action: StateAction.SET_SYNC_STATE });
   },
 }));

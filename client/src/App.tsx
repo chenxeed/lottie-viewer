@@ -9,6 +9,7 @@ import clsx from 'clsx';
 import { AssetDetail } from './component/AssetDetail';
 
 function App() {
+  console.log('app rerendering');
   const user = useStateUser();
   const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
   

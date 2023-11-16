@@ -3,7 +3,6 @@ import { useStateSetUser } from '../store/user';
 import { useSyncUser } from '../service/useSyncUser';
 
 export const CreateUserModal = () => {
-
   const [name, setName] = useState('');
   const setUser = useStateSetUser();
   const syncUser = useSyncUser();

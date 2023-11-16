@@ -8,14 +8,14 @@ export function useSyncUser () {
   const setUser = useStateSetUser();
   const [createUser] = useMutation(CREATE_USER, { client });
 
-  return (user: User) => {
+  return async (user: User) => {
     if (!user) {
       // There's no user to sync with, skipping the process
       return;
     }
     
     if (user.isSync) {
-      // When there's no more pending assets, consider the local has been updated
+      // The user has already sync to the server
       return;
     }
 
@@ -23,7 +23,7 @@ export function useSyncUser () {
     // If success, update the flag to be true
     // If fail, do nothing and let the user use the "offline" user mode
     try {
-      createUser({
+      await createUser({
         variables: {
           name: user.name,
         },

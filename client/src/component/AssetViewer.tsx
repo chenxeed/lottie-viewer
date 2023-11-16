@@ -1,12 +1,14 @@
-import React, { ChangeEvent, useCallback, useEffect } from 'react';
+import React, { ChangeEvent, useEffect } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { clsx } from 'clsx';
 import { useStateAssets, useStateSetAssets, useStateCriteria, useStatePendingAssets, useStateSetCriteria, useStateSetViewAsset } from '../store/assets';
-import { useLoadAssets } from '../service/useLoadAssets';
 import { fetchFileContentFromBucket, getFilePath } from '../service/fileBucket';
 import { Criteria, PendingLottie } from '../store/types';
 import { Lottie } from '../types';
 import { Dropdown } from '../atom/Dropdown';
+import { useQuery } from '@apollo/client';
+import { GET_ASSETS } from '../repo/graph';
+import { client } from '../service/apolloClient';
 
 // NOTE: Separate the pending & asset list component so upon adding a new asset,
 // it won't re-render the whole list.
@@ -71,44 +73,38 @@ const criteriaOption = [
 ]
 
 export const AssetViewer = () => {
-  const loadAssets = useLoadAssets();
   const criteria = useStateCriteria();
   const setCriteria = useStateSetCriteria();
   const setAssets = useStateSetAssets();
 
-  const loadAssetsByCriteria = useCallback(async (criteria: Criteria) => {
-    const result = await loadAssets({
-      criteria,
+  const { data, error } = useQuery(GET_ASSETS, {
+    variables: {
+      criteria: criteria === Criteria.ALL ? undefined : criteria,
       after: 0,
-    });
-    if (result.error) {
-      // TODO: Notify user
-    } else if (result.data) {
-      const assets = result.data.assets;
-      if (assets) {
-        setAssets(assets.map((asset: any) => ({
-          id: asset.id,
-          title: asset.title,
-          file: asset.file,
-          createdAt: asset.createdAt,
-        })));  
-      }
+    },
+    client,
+    fetchPolicy: 'network-only', // Always try to retrieve the latest first
+  });
+
+  useEffect(() => {
+    if (data?.assets) {
+      setAssets(data.assets.map((asset: any) => ({
+        id: asset.id,
+        title: asset.title,
+        file: asset.file,
+        createdAt: asset.createdAt,
+      })));  
+    } else {
+      setAssets([]);
     }
-  }, []);
+  }, [data, setAssets]);
 
   const onChangeCriteria = async (ev: ChangeEvent) => {
     ev.preventDefault();
     const target = ev.target as HTMLSelectElement;
     const value = target.value as Criteria;
-
-    await loadAssetsByCriteria(value);
-
     setCriteria(value);
   }
-
-  useEffect(() => {
-    loadAssetsByCriteria(Criteria.ALL);
-  }, [])
 
   return (
     <>

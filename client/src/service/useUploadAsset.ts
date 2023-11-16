@@ -2,7 +2,7 @@ import { CREATE_ASSET } from '../repo/graph';
 import { client } from './apolloClient';
 import { ApolloError, useMutation } from '@apollo/client';
 import { useStateUser } from '../store/user';
-import { useStateAssets, useStatePendingAssets, useStateSetAssets, useStateSetPendingAssets } from '../store/assets';
+import { useStatePendingAssets, useStateSetPendingAssets } from '../store/assets';
 import { uploadFileToBucket } from './fileBucket';
 import { readFile } from '../helper/fileReader';
 import { Criteria } from '../store/types';
@@ -15,9 +15,7 @@ import { Criteria } from '../store/types';
  */
 export function useUploadAsset (fallback = false) {
   const user = useStateUser();
-  const assets = useStateAssets();
   const pendingAssets = useStatePendingAssets();
-  const setAssets = useStateSetAssets();
   const setPendingAssets = useStateSetPendingAssets();
   const [createAsset] = useMutation(CREATE_ASSET, { client });
 
@@ -49,16 +47,6 @@ export function useUploadAsset (fallback = false) {
           title: originalname,
           file: filename,
           criteria,
-        },
-        onCompleted(data) {
-          const newAsset = data.createAsset;
-          setAssets([{
-            id: newAsset.id,
-            title: newAsset.title,
-            file: newAsset.file,
-            criteria: newAsset.criteria,
-            createdAt: newAsset.createdAt,
-          }, ...assets]);
         }
       })
       if (result.errors) {

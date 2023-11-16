@@ -6,6 +6,7 @@ import { Controls, Player } from '@lottiefiles/react-lottie-player';
 import { readFile } from '../helper/fileReader';
 import { Dropdown } from '../atom/Dropdown';
 import { Criteria } from '../store/types';
+import { useSyncAssets } from '../service/useSyncAssets';
 
 const criteriaOption = [
   Criteria.GAME,
@@ -23,6 +24,7 @@ export const CreateAsset = () => {
   const [selectedCriteria, setSelectedCriteria] = useState<Criteria>(Criteria.TECH);
   const [loading, setLoading] = useState(false);
   const uploadAsset = useUploadAsset(true);
+  const syncAssets = useSyncAssets();
   
   const onClickChooseFile = async () => {
     const files = await uploadFile({
@@ -44,6 +46,8 @@ export const CreateAsset = () => {
     if (!data?.errors) {
       // TODO: Notify user
       onClose();
+      // Sync the latest assets from the server, by checking the last sync status
+      await syncAssets();
     }
     setLoading(false);
   }

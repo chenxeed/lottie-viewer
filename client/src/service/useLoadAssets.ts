@@ -1,6 +1,5 @@
 import { GET_ASSETS } from '../repo/graph';
 import { client } from './apolloClient';
-import { useStateSetAssets } from '../store/assets';
 import { Criteria } from '../store/types';
 
 interface LoadAssetOption {
