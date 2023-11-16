@@ -9,9 +9,9 @@ import clsx from 'clsx';
 import { AssetDetail } from './component/AssetDetail';
 import { FilterForm } from './component/FilterForm';
 import { NotificationCard } from './component/NotificationCard';
+import { Button } from '@mui/material';
 
 function App() {
-  console.log('app rerendering');
   const user = useStateUser();
   const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
   
@@ -41,7 +41,7 @@ function App() {
           <h2>Lottie Viewer</h2>
         </div>
         <div className={clsx('mr-4', !installPrompt && 'hidden')}>
-          <button className='button-shadow emerald text-sm' onClick={onInstallApp}>Install</button>
+          <Button variant='contained' onClick={onInstallApp}>Install</Button>
         </div>
         <AccountDropdown />
       </header>

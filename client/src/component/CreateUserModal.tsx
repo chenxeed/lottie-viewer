@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useStateSetUser, useStateUser } from '../store/user';
 import { useSyncUser } from '../service/useSyncUser';
+import { Button } from '@mui/material';
 
 export const CreateUserModal = () => {
   const [name, setName] = useState('');
@@ -54,7 +55,7 @@ export const CreateUserModal = () => {
                 </div>
               </div>
               <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button type="button" className="inline-flex w-full justify-center rounded-md bg-stroke-n-600 px-3 py-2 text-sm font-semibold text-blue-400 shadow-sm hover:bg-stroke-linen-500 sm:ml-3 sm:w-auto" onClick={onClickContinue}>Continue!</button>
+                <Button variant='contained' onClick={onClickContinue}>Continue!</Button>
               </div>
             </div>
           </div>

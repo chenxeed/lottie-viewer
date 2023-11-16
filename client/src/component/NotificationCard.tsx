@@ -6,8 +6,6 @@ export const NotificationCard = () => {
   const notification = useStateNotification();
   const [open, setOpen] = useState(false);
 
-  console.log('mamaa', notification);
-
   useEffect(() => {
     if (notification?.message) {
       setOpen(true);

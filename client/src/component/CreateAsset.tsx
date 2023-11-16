@@ -130,12 +130,12 @@ export const CreateAsset = () => {
                       </div>
                       <div className='lg:flex'>
                         <div className="mt-2 w-full">
-                          <button
-                            className="button-shadow emerald"
+                          <Button
+                            variant='outlined'
                             onClick={onClickChooseFile}
                             disabled={loading}>
                             Choose File
-                          </button>
+                          </Button>
                           {jsonString && (<>
                             <div className="flex items-center border-b-2 mt-2">
                               <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Preview your animation</h3>
@@ -161,12 +161,12 @@ export const CreateAsset = () => {
                                 </Select>
                               </FormControl>
                             </Box>
-                            <button
-                              className="button-shadow emerald mt-4"
+                            <Button
+                              variant='contained'
                               onClick={onClickSubmit}
                               disabled={loading}>
                               { loading ? 'Uploading...' : 'Submit!' }
-                            </button>
+                            </Button>
                         </>)}
                         </div>
                       </div>
