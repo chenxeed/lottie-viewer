@@ -61,6 +61,12 @@ export function useUploadAsset(option?: UploadAssetOption) {
         });
       }
 
+      // If the no user sync yet, we can't upload the asset as it'll trigger NULL on the user relationship query.
+      // Thus, we hold the asset to pending state first.
+      if (!userRef.current?.isSync) {
+        return fallbackPendingAsset(file, criteria);
+      }
+
       // Upload the file to the server bucket, to retrieve the URL.
       // Once done, we'll use it as the pointer of the asset URL.
       // In case where the user failed to upload, we can fallback to local storage

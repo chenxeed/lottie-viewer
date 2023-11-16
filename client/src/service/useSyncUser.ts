@@ -34,9 +34,6 @@ export function useSyncUser() {
           name: user.name,
         },
       });
-      if (result.errors) {
-        throw result.errors;
-      }
       const data = result.data;
       setUser({
         id: Number(data.createUser.id),
@@ -47,9 +44,8 @@ export function useSyncUser() {
       console.error("Failed to sync user", error);
       setNotification({
         severity: "error",
-        message: "Failed to sync user, temporarily enter Offline mode",
+        message: "Failed to sync user, still under Offline mode",
       });
-      throw error;
     }
   };
 }
