@@ -2,10 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useStateSetUser, useStateUser } from "../store/user";
 import { useSyncUser } from "../service/useSyncUser";
 import { Button } from "@mui/material";
-import { Player } from "@lottiefiles/react-lottie-player";
 import arrowDownJSON from "../asset/arrow-down.json";
 import fingerSnapJSON from "../asset/fingersnap.json";
 import clsx from "clsx";
+import { DotLottiePlayer } from "@dotlottie/react-player";
 
 export const CreateUserModal = () => {
   const [name, setName] = useState("");
@@ -68,15 +68,17 @@ export const CreateUserModal = () => {
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
               <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                <Player
-                  autoplay
-                  loop
-                  src={playerJSON}
-                  className={clsx(
-                    "scale-100",
-                    loading && "scale-150 duration-[2s]",
-                  )}
-                ></Player>
+                <div className="h-[300px md:h-[400px]">
+                  <DotLottiePlayer
+                    autoplay
+                    loop
+                    src={playerJSON}
+                    className={clsx(
+                      "scale-100",
+                      loading && "scale-150 duration-[2s]",
+                    )}
+                  ></DotLottiePlayer>
+                </div>
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <h3
