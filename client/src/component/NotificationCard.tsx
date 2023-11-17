@@ -22,6 +22,7 @@ export const NotificationCard = () => {
         <Alert
           variant="filled"
           severity={notification?.severity}
+          onClick={onClose}
           action={
             <IconButton
               aria-label="close"

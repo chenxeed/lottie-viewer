@@ -3,6 +3,7 @@ import { useUploadAsset } from "./useUploadAsset";
 import { useStateSetPendingAssets } from "../store/assets";
 import { useCallback } from "react";
 import { useStateSetNotification } from "../store/notification";
+import { dataURLtoBlob } from "./fileBucket";
 
 export function useSyncPendingAssets() {
   const setPendingAssets = useStateSetPendingAssets();
@@ -22,30 +23,28 @@ export function useSyncPendingAssets() {
       // Upload the pending asset
       // If success, remove the asset from pendingAssets
       // If fail, do nothing
-      try {
-        const file = new File([pendingAsset.jsonString], pendingAsset.title, {
-          type: "application/json",
-        });
-        const result = await uploadAsset(file, pendingAsset.criteria);
-        if (!result) {
-          throw new Error("Failed to upload pending asset");
-        }
-        if (result.errors) {
-          throw result.errors;
-        }
-        setPendingAssets(
-          nextPendingAssets.filter((asset) => asset.id !== pendingAsset.id),
-        );
-        // Recursive to upload the next one
-        recursiveUploadPendingAsset(nextPendingAssets.slice(0, -1));
-      } catch (error) {
-        console.error("Failed to upload pending asset", error);
-        setNotification({
-          severity: "error",
-          message: "Failed to upload pending asset",
-        });
-        throw error;
+      const mimeType = pendingAsset.title.endsWith(".json")
+        ? "application/json"
+        : "";
+      const file = new File(
+        [await dataURLtoBlob(pendingAsset.dataUrl)],
+        pendingAsset.title,
+        {
+          type: mimeType,
+        },
+      );
+      const result = await uploadAsset(file, pendingAsset.criteria);
+      if (!result) {
+        throw new Error("Failed to upload pending asset");
       }
+      if (result.errors) {
+        throw result.errors;
+      }
+      setPendingAssets(
+        nextPendingAssets.filter((asset) => asset.id !== pendingAsset.id),
+      );
+      // Recursive to upload the next one
+      await recursiveUploadPendingAsset(nextPendingAssets.slice(0, -1));
     }
 
     // To sync the pending assets, we have to ensure it's by the current local storage data.
@@ -64,6 +63,15 @@ export function useSyncPendingAssets() {
       latestPendingAssetsRaw,
     );
     setPendingAssets(latestPendingAssets);
-    return recursiveUploadPendingAsset(latestPendingAssets);
+    try {
+      return recursiveUploadPendingAsset(latestPendingAssets);
+    } catch (error) {
+      console.error("syncPendingAssets: Failed to upload pending asset", error);
+      setNotification({
+        severity: "error",
+        message: "Failed to upload pending asset",
+      });
+      throw error;
+    }
   }, [setNotification, setPendingAssets, uploadAsset]);
 }

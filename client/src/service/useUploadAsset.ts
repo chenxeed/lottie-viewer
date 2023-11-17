@@ -42,12 +42,20 @@ export function useUploadAsset(option?: UploadAssetOption) {
   return useCallback(
     async (file: File, criteria: Criteria) => {
       async function fallbackPendingAsset(file: File, criteria: Criteria) {
-        const jsonString = await readFile(file);
+        const dataUrl = await readFile(file, "dataURL");
+        if (!dataUrl) {
+          setNotification({
+            severity: "error",
+            message:
+              "Failed to save your file offline. Please check if it is a valid file.",
+          });
+          throw new Error("Failed to save the file offline");
+        }
         setPendingAssets([
           {
             id: Date.now(), // Random ID since it'll be replaced with the server ID later on sync
             title: file.name,
-            jsonString,
+            dataUrl,
             criteria,
             createdAt: new Date().toISOString(),
             isPending: true,

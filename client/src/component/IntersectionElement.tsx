@@ -1,10 +1,12 @@
-import { useEffect, useRef } from "react";
+import { PropsWithChildren, useEffect, useRef } from "react";
 
 interface IntersectionElementProps {
   onIntersect: () => void;
 }
 
-export const IntersectionElement = (props: IntersectionElementProps) => {
+export const IntersectionElement = (
+  props: PropsWithChildren & IntersectionElementProps,
+) => {
   const observer = useRef<IntersectionObserver | null>(null);
   const elementRef = useRef<HTMLDivElement | null>(null);
   const { onIntersect } = props;
@@ -28,7 +30,7 @@ export const IntersectionElement = (props: IntersectionElementProps) => {
 
   return (
     <div ref={elementRef} className="w-full h-1">
-      Intersect
+      {props.children}
     </div>
   );
 };

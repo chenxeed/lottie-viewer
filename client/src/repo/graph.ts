@@ -70,7 +70,7 @@ export const FeaturedPublicAnimations = gql`
         node {
           id
           slug
-          jsonUrl
+          lottieUrl
           name
           imageUrl
         }

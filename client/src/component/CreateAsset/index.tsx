@@ -15,7 +15,7 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { Preview } from "./Preview";
 import { Curated } from "./Curated";
-import { fetchFileContentFromPublicURL } from "../../service/fileBucket";
+import { fetchFileFromPublicURL } from "../../service/fileBucket";
 import { useStateCriteria } from "../../store/assets";
 
 const criteriaOption = [
@@ -65,14 +65,11 @@ export const CreateAsset = () => {
     setShowCurated(true);
   };
 
-  const onChooseJSONUrl = async (jsonUrl: string, slugName: string) => {
+  const onChooseLottieUrl = async (url: string, slugName: string) => {
     setShowCurated(false);
     setLoadingLottie(true);
-    // Generate the file from the JSON URL
-    const textContent = await fetchFileContentFromPublicURL(jsonUrl);
-    const file = new File([textContent], `${slugName}.json`, {
-      type: "application/json",
-    });
+    // Generate the file from the URL
+    const file = await fetchFileFromPublicURL(url);
     setChosenFile(file);
     setLoadingLottie(false);
   };
@@ -83,8 +80,15 @@ export const CreateAsset = () => {
   useEffect(() => {
     if (chosenFile) {
       if (chosenFile.type === "application/json") {
-        readFile(chosenFile).then((content) => {
-          setLottieSource(content);
+        readFile(chosenFile, "text").then((content) => {
+          if (content) {
+            setLottieSource(content);
+          } else {
+            setNotification({
+              severity: "error",
+              message: "Fail to read the file. Please try again.",
+            });
+          }
         });
       } else if (chosenFile.name.endsWith(".lottie")) {
         setLottieSource(URL.createObjectURL(chosenFile));
@@ -92,7 +96,7 @@ export const CreateAsset = () => {
     } else {
       setLottieSource(null);
     }
-  }, [chosenFile]);
+  }, [chosenFile, setNotification]);
 
   const onClickSubmit = async () => {
     if (!chosenFile || !selectedCriteria) {
@@ -235,7 +239,7 @@ export const CreateAsset = () => {
 
                           {showCurated && !lottieSource && (
                             <>
-                              <Curated onChooseJSONUrl={onChooseJSONUrl} />
+                              <Curated onChooseLottieUrl={onChooseLottieUrl} />
                             </>
                           )}
 

@@ -6,7 +6,7 @@ import { IntersectionElement } from "../IntersectionElement";
 import { useCallback, useRef } from "react";
 
 export const Curated = (props: {
-  onChooseJSONUrl: (jsonUrl: string, slugName: string) => void;
+  onChooseLottieUrl: (lottieUrl: string, slugName: string) => void;
 }) => {
   const { data, loading, error, refetch, fetchMore } = useQuery(
     FeaturedPublicAnimations,
@@ -53,7 +53,7 @@ export const Curated = (props: {
               key={edge.node.id}
               sx={{ maxWidth: 345 }}
               onClick={() =>
-                props.onChooseJSONUrl(edge.node.jsonUrl, edge.node.slug)
+                props.onChooseLottieUrl(edge.node.lottieUrl, edge.node.slug)
               }
             >
               <CardMedia

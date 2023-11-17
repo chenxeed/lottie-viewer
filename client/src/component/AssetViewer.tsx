@@ -31,7 +31,7 @@ const LottieCard = (props: LottieCardProps) => {
       className="hover:bg-slate-100 cursor-pointer md:h-60"
       onClick={props.onClick}
     >
-      <div className="h-20 md:h-40">
+      <div className="h-28 md:h-40">
         <DotLottiePlayer
           renderer="canvas"
           loop
@@ -39,7 +39,9 @@ const LottieCard = (props: LottieCardProps) => {
           src={props.playerSrc}
         />
       </div>
-      <CardContent className={clsx(props.isOffline && "bg-red-200")}>
+      <CardContent
+        className={clsx("h-16 md:h-20", props.isOffline && "bg-red-200")}
+      >
         <div
           className={clsx(
             "text-left text-xs md:text-sm lg:text-base mb-2",
@@ -58,13 +60,9 @@ const PendingAssetList = () => {
   const pendingAssets = useStatePendingAssets();
   const setViewAsset = useStateSetViewAsset();
   const onClickDetail = (asset: PendingLottie) => {
-    const file = new File([asset.jsonString], `${asset.title}.json`, {
-      type: "application/json",
-    });
-    const fileUrl = URL.createObjectURL(file);
     setViewAsset({
       title: asset.title,
-      fileUrl,
+      fileUrl: asset.dataUrl,
     });
   };
   return (
@@ -80,7 +78,7 @@ const PendingAssetList = () => {
             onClick={() => onClickDetail(asset)}
             isOffline={true}
             title={asset.title}
-            playerSrc={asset.jsonString}
+            playerSrc={asset.dataUrl}
           />
         ))}
     </>
@@ -93,7 +91,7 @@ const AssetList = () => {
   const onClickDetail = async (asset: Lottie) =>
     setViewAsset({
       title: asset.title,
-      fileUrl: asset.file,
+      fileUrl: getFilePath(asset.file),
     });
 
   return (
@@ -177,8 +175,15 @@ export const AssetViewer = () => {
         before: dataRef.current?.assets.pageInfo.endCursor,
         limit: ASSET_PER_PAGE,
       },
+    }).catch((e) => {
+      console.error("AssetViewer: Fail to fetch more assets", e);
+      setNotification({
+        severity: "error",
+        message:
+          "Fail to retrieve more assets. Please check your internet connection and try again.",
+      });
     });
-  }, [fetchMore, criteria]);
+  }, [fetchMore, criteria, setNotification]);
 
   useEffect(() => {
     if (data?.assets) {

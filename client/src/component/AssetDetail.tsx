@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useStateSetViewAsset, useStateViewAsset } from "../store/assets";
 import clsx from "clsx";
 import {
@@ -8,15 +8,10 @@ import {
   PlayerEvents,
 } from "@dotlottie/react-player";
 import { JsonViewer } from "@textea/json-viewer";
-import { getFilePath } from "../service/fileBucket";
 
 export const AssetDetail = () => {
   const viewAsset = useStateViewAsset();
   const setViewAsset = useStateSetViewAsset();
-  const fullFilePath = useMemo(
-    () => (viewAsset ? getFilePath(viewAsset.fileUrl) : ""),
-    [viewAsset],
-  );
   const dotLottieRef = useRef<DotLottieCommonPlayer | null>(null);
   const [jsonObj, setJsonObj] = useState<Record<string, any>[]>([]);
 
@@ -89,8 +84,8 @@ export const AssetDetail = () => {
                         {viewAsset.title}
                       </h3>
                       <a
-                        href={fullFilePath}
-                        download={`${viewAsset.fileUrl}`}
+                        href={viewAsset.fileUrl}
+                        download={viewAsset.title}
                         className="ml-4 bg-grey-light hover:bg-grey text-grey-darkest font-bold py-2 px-4 rounded inline-flex items-center shadow"
                       >
                         <svg
@@ -105,12 +100,12 @@ export const AssetDetail = () => {
                     </div>
                     <div className="lg:flex">
                       <div className="mt-2 w-full h-80">
-                        {fullFilePath && (
+                        {viewAsset.fileUrl && (
                           <DotLottiePlayer
                             ref={dotLottieRef}
                             autoplay
                             loop
-                            src={fullFilePath}
+                            src={viewAsset.fileUrl}
                             onEvent={onLottiePlayerEvent}
                           >
                             <Controls />

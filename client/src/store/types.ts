@@ -4,7 +4,7 @@ import { User, Lottie, SyncStatus } from "../types";
 export interface PendingLottie {
   id: number;
   title: string;
-  jsonString: string;
+  dataUrl: string;
   isPending: boolean;
   criteria: Criteria;
   createdAt: string;

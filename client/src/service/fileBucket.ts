@@ -41,3 +41,18 @@ export async function fetchFileContentFromPublicURL(
   const result = await fetch(publicUrl);
   return result.text();
 }
+
+export async function fetchFileFromPublicURL(
+  publicUrl: string,
+  name?: string,
+): Promise<File> {
+  const result = await fetch(publicUrl);
+  const blob = await result.blob();
+  const fileName = name || publicUrl.split("/").pop() || "file";
+  const file = new File([blob], fileName);
+  return file;
+}
+
+export async function dataURLtoBlob(dataURL: string) {
+  return await fetch(dataURL).then((r) => r.blob());
+}
