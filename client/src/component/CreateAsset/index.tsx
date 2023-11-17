@@ -31,7 +31,7 @@ export const CreateAsset = () => {
   const [openModal, setOpenModal] = useState(false);
   const [showCurated, setShowCurated] = useState(false);
   const [chosenFile, setChosenFile] = useState<File | null>(null);
-  const [jsonString, setJsonString] = useState<string | null>(null);
+  const [lottieSource, setLottieSource] = useState<string | null>(null);
   const criteria = useStateCriteria();
   const [selectedCriteria, setSelectedCriteria] = useState<Criteria>(
     Criteria.SHAPE,
@@ -52,7 +52,7 @@ export const CreateAsset = () => {
 
   const onClickChooseFile = async () => {
     const files = await uploadFile({
-      accept: ".json",
+      accept: ".json,.lottie",
     });
     if (!files) {
       return;
@@ -61,7 +61,7 @@ export const CreateAsset = () => {
   };
 
   const onClickCurate = () => {
-    setJsonString(null);
+    setLottieSource(null);
     setShowCurated(true);
   };
 
@@ -76,6 +76,23 @@ export const CreateAsset = () => {
     setChosenFile(file);
     setLoadingLottie(false);
   };
+
+  // Determine how to handle either .json or .lottie files.
+  // For .json, we can straight read the file content and extract it.
+  // For .lottie, we straight pass it to the player and let the player handle it.
+  useEffect(() => {
+    if (chosenFile) {
+      if (chosenFile.type === "application/json") {
+        readFile(chosenFile).then((content) => {
+          setLottieSource(content);
+        });
+      } else if (chosenFile.name.endsWith(".lottie")) {
+        setLottieSource(URL.createObjectURL(chosenFile));
+      }
+    } else {
+      setLottieSource(null);
+    }
+  }, [chosenFile]);
 
   const onClickSubmit = async () => {
     if (!chosenFile || !selectedCriteria) {
@@ -110,16 +127,6 @@ export const CreateAsset = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (chosenFile) {
-      readFile(chosenFile).then((content) => {
-        setJsonString(content);
-      });
-    } else {
-      setJsonString(null);
-    }
-  }, [chosenFile]);
-
   const onChangeCriteria = (ev: SelectChangeEvent) => {
     ev.preventDefault();
     const target = ev.target as HTMLSelectElement;
@@ -131,7 +138,7 @@ export const CreateAsset = () => {
     setShowCurated(false);
     setLoading(false);
     setChosenFile(null);
-    setJsonString(null);
+    setLottieSource(null);
     setOpenModal(false);
   };
 
@@ -226,7 +233,7 @@ export const CreateAsset = () => {
                         <div className="mt-2 w-full">
                           {/* Show Curated List from LottieFiles Featured Public Animations */}
 
-                          {showCurated && !jsonString && (
+                          {showCurated && !lottieSource && (
                             <>
                               <Curated onChooseJSONUrl={onChooseJSONUrl} />
                             </>
@@ -253,9 +260,9 @@ export const CreateAsset = () => {
 
                           {/* Show the Animation Preview and Category to choose before deciding to submit */}
 
-                          {!showCurated && jsonString && (
+                          {!showCurated && lottieSource && (
                             <>
-                              <Preview jsonString={jsonString} />
+                              <Preview source={lottieSource} />
                               <div className="flex items-center border-b-2 mt-2">
                                 <h3
                                   className="text-base font-semibold leading-6 text-gray-900"

@@ -70,6 +70,22 @@ registerRoute(
   }),
 );
 
+// Cache any retrieved dotLottie files, to be accessible again during offline mode
+registerRoute(
+  ({ url }) => {
+    if (
+      url.origin === self.location.origin &&
+      url.pathname.endsWith(".lottie")
+    ) {
+      console.log("ServiceWorker: Cache Lottie file", url);
+      return true;
+    }
+  },
+  new CacheFirst({
+    cacheName: "assetsLottie",
+  }),
+);
+
 // Cache any PNG file that's being used for the web styling
 registerRoute(
   // Add in any other file extensions or routing criteria as needed.

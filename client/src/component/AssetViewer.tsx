@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import { Player } from "@lottiefiles/react-lottie-player";
+import { DotLottiePlayer } from "@dotlottie/react-player";
+import "@dotlottie/react-player/dist/index.css";
 import {
   useStateAssets,
   useStateSetAssets,
@@ -7,7 +8,7 @@ import {
   useStatePendingAssets,
   useStateSetViewAsset,
 } from "../store/assets";
-import { fetchFileContentFromBucket, getFilePath } from "../service/fileBucket";
+import { getFilePath } from "../service/fileBucket";
 import { Criteria, PendingLottie } from "../store/types";
 import { Lottie } from "../types";
 import { useQuery } from "@apollo/client";
@@ -25,16 +26,19 @@ interface LottieCardProps {
   onClick: () => void;
 }
 const LottieCard = (props: LottieCardProps) => {
-  const ref = useRef<Player>(null);
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      ref.current?.setSeeker(50);
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, []);
   return (
-    <Card className="hover:bg-slate-100 cursor-pointer" onClick={props.onClick}>
-      <Player ref={ref} src={props.playerSrc} className="h-20 md:h-40" />
+    <Card
+      className="hover:bg-slate-100 cursor-pointer md:h-60"
+      onClick={props.onClick}
+    >
+      <div className="h-20 md:h-40">
+        <DotLottiePlayer
+          renderer="canvas"
+          loop
+          autoplay
+          src={props.playerSrc}
+        />
+      </div>
       <CardContent className={clsx(props.isOffline && "bg-red-200")}>
         <div
           className={clsx(
@@ -53,11 +57,16 @@ const PendingAssetList = () => {
   const selectedCriteria = useStateCriteria();
   const pendingAssets = useStatePendingAssets();
   const setViewAsset = useStateSetViewAsset();
-  const onClickDetail = (asset: PendingLottie) =>
+  const onClickDetail = (asset: PendingLottie) => {
+    const file = new File([asset.jsonString], `${asset.title}.json`, {
+      type: "application/json",
+    });
+    const fileUrl = URL.createObjectURL(file);
     setViewAsset({
       title: asset.title,
-      jsonString: asset.jsonString,
+      fileUrl,
     });
+  };
   return (
     <>
       {pendingAssets
@@ -84,7 +93,7 @@ const AssetList = () => {
   const onClickDetail = async (asset: Lottie) =>
     setViewAsset({
       title: asset.title,
-      jsonString: await fetchFileContentFromBucket(asset.file),
+      fileUrl: asset.file,
     });
 
   return (

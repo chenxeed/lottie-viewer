@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.8.7",
+    "@dotlottie/react-player": "^1.6.5",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@lottiefiles/react-lottie-player": "^3.5.3",

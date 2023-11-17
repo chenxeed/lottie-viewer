@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CreateUserModal } from "./component/CreateUserModal";
 import { AccountDropdown } from "./component/AccountDropdown";
-import { CreateAsset } from "./component/CreateAsset/CreateAsset";
+import { CreateAsset } from "./component/CreateAsset";
 import { useStateUser } from "./store/user";
 import { SyncStatus } from "./component/SyncStatus";
 import { AssetViewer } from "./component/AssetViewer";

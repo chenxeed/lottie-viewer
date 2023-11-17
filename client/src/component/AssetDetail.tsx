@@ -2,37 +2,35 @@ import React, { useMemo, useRef, useState } from "react";
 import { useStateSetViewAsset, useStateViewAsset } from "../store/assets";
 import clsx from "clsx";
 import {
-  Player,
+  DotLottiePlayer,
   Controls,
-  PlayerEvent,
-} from "@lottiefiles/react-lottie-player";
+  DotLottieCommonPlayer,
+  PlayerEvents,
+} from "@dotlottie/react-player";
 import { JsonViewer } from "@textea/json-viewer";
-import { downloadObjectAsJson } from "../helper/fileDownload";
+import { getFilePath } from "../service/fileBucket";
 
 export const AssetDetail = () => {
   const viewAsset = useStateViewAsset();
   const setViewAsset = useStateSetViewAsset();
-  const controls = useRef<Controls>(null);
-  const jsonObj = useMemo(
-    () => (viewAsset ? JSON.parse(viewAsset?.jsonString) : {}),
+  const fullFilePath = useMemo(
+    () => (viewAsset ? getFilePath(viewAsset.fileUrl) : ""),
     [viewAsset],
   );
-  // Track the current frame on play
-  const [frame, setFrame] = useState(0);
+  const dotLottieRef = useRef<DotLottieCommonPlayer | null>(null);
+  const [jsonObj, setJsonObj] = useState<Record<string, any>[]>([]);
 
   function onClose() {
     setViewAsset(null);
   }
 
-  function onPlayerEvent(e: PlayerEvent) {
-    setFrame(Math.round(controls.current?.props.instance.currentFrame));
-  }
-
-  function downloadJson() {
-    if (!viewAsset) {
-      return;
+  function onLottiePlayerEvent(event: PlayerEvents) {
+    if (event === "ready" && dotLottieRef.current?.animations.size) {
+      const jsonMap = dotLottieRef.current?.animations;
+      if (jsonMap) {
+        setJsonObj([...jsonMap.values()]);
+      }
     }
-    downloadObjectAsJson(viewAsset.jsonString, viewAsset.title);
   }
 
   return (
@@ -90,8 +88,9 @@ export const AssetDetail = () => {
                       >
                         {viewAsset.title}
                       </h3>
-                      <button
-                        onClick={downloadJson}
+                      <a
+                        href={fullFilePath}
+                        download={`${viewAsset.fileUrl}`}
                         className="ml-4 bg-grey-light hover:bg-grey text-grey-darkest font-bold py-2 px-4 rounded inline-flex items-center shadow"
                       >
                         <svg
@@ -102,32 +101,33 @@ export const AssetDetail = () => {
                           <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
                         </svg>
                         <span className="ml-2 hidden sm:inline">Download</span>
-                      </button>
+                      </a>
                     </div>
                     <div className="lg:flex">
-                      <div className="mt-2 w-full">
-                        <Player
-                          style={{ height: 320 }}
-                          autoplay
-                          loop
-                          src={viewAsset.jsonString}
-                          onEvent={onPlayerEvent}
-                        >
-                          <Controls
-                            ref={controls}
-                            visible={true}
-                            buttons={["play", "repeat", "frame", "debug"]}
-                          />
-                        </Player>
+                      <div className="mt-2 w-full h-80">
+                        {fullFilePath && (
+                          <DotLottiePlayer
+                            ref={dotLottieRef}
+                            autoplay
+                            loop
+                            src={fullFilePath}
+                            onEvent={onLottiePlayerEvent}
+                          >
+                            <Controls />
+                          </DotLottiePlayer>
+                        )}
                       </div>
                       <div className="mt-2 w-full min-h-[150px] max-h-48 lg:max-h-96 text-left overflow-auto">
-                        <JsonViewer
-                          value={jsonObj}
-                          displayDataTypes={false}
-                          rootName={"Animation"}
-                          defaultInspectDepth={1}
-                          enableClipboard={false}
-                        />
+                        {jsonObj.length > 0 &&
+                          jsonObj.map((obj) => (
+                            <JsonViewer
+                              value={obj}
+                              displayDataTypes={false}
+                              rootName={"Animation"}
+                              defaultInspectDepth={jsonObj.length > 1 ? 0 : 1}
+                              enableClipboard={false}
+                            />
+                          ))}
                       </div>
                     </div>
                   </div>

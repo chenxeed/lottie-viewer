@@ -12,7 +12,7 @@ export interface PendingLottie {
 
 export interface ViewLottie {
   title: string;
-  jsonString: string;
+  fileUrl: string;
 }
 
 export interface Notification {
