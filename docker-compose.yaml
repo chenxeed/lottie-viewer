@@ -42,7 +42,7 @@ services:
     ports:
       - "3002:3002"
     environment:
-      - ENV=DEV  
+      - ENV=DEV
       - API_PORT=3002
       - API_PREFIX=/bucket
 

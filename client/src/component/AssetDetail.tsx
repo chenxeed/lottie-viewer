@@ -121,7 +121,7 @@ export const AssetDetail = () => {
                               rootName={"Animation"}
                               defaultInspectDepth={jsonObj.length > 1 ? 0 : 1}
                               enableClipboard={false}
-                              key={obj.id}
+                              key={idx}
                             />
                           ))}
                       </div>

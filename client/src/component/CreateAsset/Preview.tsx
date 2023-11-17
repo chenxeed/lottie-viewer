@@ -9,11 +9,9 @@ export const Preview = (props: { source: string }) => {
           Preview your animation
         </h3>
       </div>
-      <div className="h-200px">
-        <DotLottiePlayer renderer="canvas" autoplay loop src={props.source}>
-          <Controls />
-        </DotLottiePlayer>
-      </div>
+      <DotLottiePlayer renderer="canvas" autoplay loop src={props.source}>
+        <Controls />
+      </DotLottiePlayer>
     </>
   );
 };

@@ -1,13 +1,16 @@
 import { useQuery } from "@apollo/client";
 import { FEATURED_PUBLIC_ANIMATIONS } from "../../repo/lottie-graphql/graph";
 import { lottieClient } from "../../repo/lottie-graphql/client";
-import { Button, Card, CardContent, CardMedia, Skeleton } from "@mui/material";
 import { IntersectionElement } from "../IntersectionElement";
 import { useCallback, useRef } from "react";
+import { LottieCard } from "../LottieCard";
+import { Button } from "../../atoms/Button";
+import { Skeleton } from "../../atoms/Skeleton";
 
 export const Curated = (props: {
   onChooseLottieUrl: (lottieUrl: string, slugName: string) => void;
 }) => {
+  // API Hooks
   const { data, loading, error, refetch, fetchMore } = useQuery(
     FEATURED_PUBLIC_ANIMATIONS,
     {
@@ -38,59 +41,42 @@ export const Curated = (props: {
   return (
     <>
       <div className="flex items-center border-b-2 mt-2">
-        <h3
-          className="text-base font-semibold leading-6 text-gray-900"
-          id="modal-title"
-        >
-          Get the best from LottieFiles Featured Public Animation
+        <h3 className="text-base font-semibold leading-6 text-gray-900">
+          Get the best from LottieFiles Featured Animation
         </h3>
       </div>
-      <div className="h-[60vh] lg:h-[70vh] overflow-y-auto">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4">
+
+      <div className="h-[65vh] sm:h-[70vh] overflow-y-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4">
           {data?.featuredPublicAnimations.edges.map((edge) => (
-            <Card
-              className="cursor-pointer"
+            <LottieCard
               key={edge.node.id}
-              sx={{ maxWidth: 345 }}
+              title={edge.node.name}
               onClick={() =>
                 edge.node.lottieUrl &&
                 props.onChooseLottieUrl(edge.node.lottieUrl, edge.node.slug)
               }
             >
               {edge.node.imageUrl && (
-                <CardMedia
-                  sx={{ height: 200 }}
-                  component="img"
-                  image={edge.node.imageUrl}
-                  title={edge.node.name}
-                />
+                <img src={edge.node.imageUrl} alt={edge.node.name} />
               )}
-              <CardContent>
-                <div className="text-left text-xs md:text-sm lg:text-base mb-2">
-                  {edge.node.name}
-                </div>
-              </CardContent>
-            </Card>
+            </LottieCard>
           ))}
 
           {!loading && error && (
-            <div className="text-red-500">
+            <div className="text-danger">
               Fail to load featured public animations. Please check your
               internet connection and try again.
-              <Button variant="contained" onClick={() => refetch()}>
+              <Button variant="info" onClick={() => refetch()}>
                 Retry
               </Button>
             </div>
           )}
 
           {loading ? (
-            <>
-              <Skeleton variant="rounded" width={"100%"} height={150} />
-            </>
+            <Skeleton width={"100%"} height={150} />
           ) : (
-            <>
-              <IntersectionElement onIntersect={onScrollToBottom} />
-            </>
+            <IntersectionElement onIntersect={onScrollToBottom} />
           )}
         </div>
       </div>
