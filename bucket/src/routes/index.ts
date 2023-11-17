@@ -1,10 +1,8 @@
 import express, { type Router, type Express } from "express";
-import dotenv from "dotenv";
 import { upload, uploadPath } from "../middlewares/multer";
 
 export const getRouter = (app: Express): Router => {
-  const env = dotenv.config();
-  const apiPrefix = env.parsed?.API_PREFIX || "/";
+  const apiPrefix = process.env.API_PREFIX || "/";
   const router = express.Router();
 
   app.use("/bucket/uploads/", express.static(uploadPath));
