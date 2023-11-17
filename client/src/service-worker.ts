@@ -115,7 +115,7 @@ self.addEventListener("fetch", (ev) => {
 async function cacheGraphQLResponse(event: FetchEvent) {
   return fetch(event.request.clone())
     .then((response) => {
-      setCache(event.request.clone(), response.clone());
+      setGraphQLCache(event.request.clone(), response.clone());
       return response;
     })
     .catch(async (err) => {
@@ -123,7 +123,7 @@ async function cacheGraphQLResponse(event: FetchEvent) {
         "ServiceWorker: Failed to get the GraphQL API from server",
         err,
       );
-      const cache = await getCache(event.request.clone());
+      const cache = await getGraphQLCache(event.request.clone());
       // If there's no cache, throw the error to the client to preserve the natural behavior
       if (cache) {
         console.error("ServiceWorker: Respond with the GraphQL API from Cache");
@@ -148,7 +148,7 @@ async function serializeResponse(response: Response) {
   return serialized;
 }
 
-async function setCache(request: Request, response: Response) {
+async function setGraphQLCache(request: Request, response: Response) {
   const body = await request.json();
   // Only cache query requests. Do not cache mutation requests.
   if (!(body.query as string).startsWith("query")) {
@@ -176,7 +176,7 @@ async function setCache(request: Request, response: Response) {
   set(id, entry, store);
 }
 
-async function getCache(request: Request) {
+async function getGraphQLCache(request: Request) {
   try {
     const body = await request.json();
     const id = md5(body.query).toString();
