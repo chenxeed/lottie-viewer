@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { uploadFile } from "../../helper/fileUpload";
 import { useUploadAsset } from "../../service/useUploadAsset";
 import clsx from "clsx";
@@ -6,18 +6,14 @@ import { readFile } from "../../helper/fileReader";
 import { Criteria } from "../../store/types";
 import { useSyncAssets } from "../../service/useSyncAssets";
 import { Button } from "../../atoms/Button";
-import { createPortal } from "react-dom";
 import { useSyncUser } from "../../service/useSyncUser";
 import { useStateSetNotification } from "../../store/notification";
-import Box from "@mui/material/Box";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { Preview } from "./Preview";
 import { Curated } from "./Curated";
 import { fetchFileFromPublicURL } from "../../service/fileBucket";
 import { useStateCriteria } from "../../store/assets";
 import { Modal } from "../../atoms/Modal";
+import { Select } from "../../atoms/Select";
 
 const criteriaOption = [
   Criteria.GAME,
@@ -26,7 +22,7 @@ const criteriaOption = [
   Criteria.SCIENCE,
   Criteria.SHAPE,
   Criteria.TECH,
-];
+].map((criteria) => ({ label: criteria, value: criteria }));
 
 export const CreateAsset = () => {
   // Shared state
@@ -114,7 +110,7 @@ export const CreateAsset = () => {
     setLoadingCreate(false);
   };
 
-  const onChangeCriteria = (ev: SelectChangeEvent) => {
+  const onChangeCriteria = (ev: ChangeEvent) => {
     ev.preventDefault();
     const target = ev.target as HTMLSelectElement;
     const value = target.value as Criteria;
@@ -172,6 +168,16 @@ export const CreateAsset = () => {
       >
         {loadingCreate ? "Adding..." : "Add New"}
       </Button>
+
+      {/*
+      There are multiple steps to create an asset:
+
+      1. First, choose the source of the file:
+        a. Choose a file
+        b. Curate from LottieFiles Featured Public Animations
+      2. Second, preview the animation and choose the criteria
+      3. Third, submit the asset to the server
+      */}
 
       <Modal open={openModal} size="lg" onClose={onClose}>
         <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
@@ -242,24 +248,14 @@ export const CreateAsset = () => {
                     <Preview source={lottieSource} />
                     <div className="flex items-center border-b-2 mt-2">
                       <h3 className="text-base font-semibold leading-6 text-gray-900">
-                        Select the category
+                        Select the criteria
                       </h3>
                     </div>
-                    <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth>
-                        <Select
-                          id="filter-criteria"
-                          value={selectedCriteria}
-                          onChange={onChangeCriteria}
-                        >
-                          {criteriaOption.map((criteria, idx) => (
-                            <MenuItem key={idx} value={criteria}>
-                              {criteria}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Box>
+                    <Select
+                      value={selectedCriteria}
+                      onChange={onChangeCriteria}
+                      options={criteriaOption}
+                    />
                     <div className="mt-4">
                       <Button
                         variant="primary"

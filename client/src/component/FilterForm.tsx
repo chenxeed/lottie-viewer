@@ -1,9 +1,7 @@
-import Box from "@mui/material/Box";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { Criteria } from "../store/types";
 import { useStateCriteria, useStateSetCriteria } from "../store/assets";
+import { Select } from "../atoms/Select";
+import { ChangeEvent } from "react";
 
 const criteriaOption = [
   Criteria.ALL,
@@ -13,13 +11,17 @@ const criteriaOption = [
   Criteria.SCIENCE,
   Criteria.SHAPE,
   Criteria.TECH,
-];
+].map((criteria) => ({ label: criteria, value: criteria }));
 
 export const FilterForm = () => {
+  // Shared state
+
   const criteria = useStateCriteria();
   const setCriteria = useStateSetCriteria();
 
-  const onChangeCriteria = async (ev: SelectChangeEvent) => {
+  // Event listener
+
+  const onChangeCriteria = async (ev: ChangeEvent) => {
     ev.preventDefault();
     const target = ev.target as HTMLSelectElement;
     const value = target.value as Criteria;
@@ -28,27 +30,13 @@ export const FilterForm = () => {
 
   return (
     <div className="relative w-[300px]">
-      <div className="md:flex w-full px-3 mb-6 md:mb-0 lg:absolute lg:top-0 lg:left-[">
-        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-2">
-          Criteria
-        </label>
-        <div className="mt-2 md:mt-0 md:ml-2 w-full">
-          <Box sx={{ minWidth: 80, maxWidth: 200, width: "full" }}>
-            <FormControl fullWidth>
-              <Select
-                id="filter-criteria"
-                value={criteria}
-                onChange={onChangeCriteria}
-              >
-                {criteriaOption.map((criteria, idx) => (
-                  <MenuItem key={idx} value={criteria}>
-                    {criteria}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-        </div>
+      <div className="w-full">
+        <Select
+          label="Criteria"
+          value={criteria}
+          options={criteriaOption}
+          onChange={onChangeCriteria}
+        />
       </div>
     </div>
   );
