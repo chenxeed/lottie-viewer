@@ -1,9 +1,9 @@
 import { useStateSetUser, useStateUser } from "../store/user";
-import { client } from "./apolloClient";
-import { CREATE_USER } from "../repo/graph";
+import { CREATE_USER } from "../repo/server-graphql/graph";
 import { useMutation } from "@apollo/client";
 import { useRef } from "react";
 import { useStateSetNotification } from "../store/notification";
+import { client } from "../repo/server-graphql/client";
 
 export function useSyncUser() {
   const user = useStateUser();
@@ -35,6 +35,9 @@ export function useSyncUser() {
         },
       });
       const data = result.data;
+      if (!data) {
+        throw new Error("No created user data returned from the server");
+      }
       setUser({
         id: Number(data.createUser.id),
         name: data.createUser.name,

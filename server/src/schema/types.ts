@@ -74,7 +74,7 @@ export type PageInfo = {
 
 export type PaginatedAsset = {
   __typename?: "PaginatedAsset";
-  nodes: Array<Maybe<Asset>>;
+  nodes: Array<Asset>;
   pageInfo: PageInfo;
 };
 
@@ -82,9 +82,9 @@ export type Query = {
   __typename?: "Query";
   asset: Asset;
   assets: PaginatedAsset;
-  lastSyncStatus: Array<Maybe<SyncStatus>>;
+  lastSyncStatus: Array<SyncStatus>;
   user: User;
-  users?: Maybe<Array<Maybe<User>>>;
+  users: Array<User>;
 };
 
 export type QueryAssetArgs = {
@@ -111,7 +111,7 @@ export type SyncStatus = {
 
 export type User = {
   __typename?: "User";
-  assets: Array<Maybe<Asset>>;
+  assets: Array<Asset>;
   id: Scalars["Int"]["output"];
   name: Scalars["String"]["output"];
 };
@@ -315,11 +315,7 @@ export type PaginatedAssetResolvers<
   ParentType extends
     ResolversParentTypes["PaginatedAsset"] = ResolversParentTypes["PaginatedAsset"],
 > = {
-  nodes?: Resolver<
-    Array<Maybe<ResolversTypes["Asset"]>>,
-    ParentType,
-    ContextType
-  >;
+  nodes?: Resolver<Array<ResolversTypes["Asset"]>, ParentType, ContextType>;
   pageInfo?: Resolver<ResolversTypes["PageInfo"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -342,7 +338,7 @@ export type QueryResolvers<
     Partial<QueryAssetsArgs>
   >;
   lastSyncStatus?: Resolver<
-    Array<Maybe<ResolversTypes["SyncStatus"]>>,
+    Array<ResolversTypes["SyncStatus"]>,
     ParentType,
     ContextType
   >;
@@ -352,11 +348,7 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryUserArgs, "id">
   >;
-  users?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes["User"]>>>,
-    ParentType,
-    ContextType
-  >;
+  users?: Resolver<Array<ResolversTypes["User"]>, ParentType, ContextType>;
 };
 
 export type SyncStatusResolvers<
@@ -380,11 +372,7 @@ export type UserResolvers<
   ParentType extends
     ResolversParentTypes["User"] = ResolversParentTypes["User"],
 > = {
-  assets?: Resolver<
-    Array<Maybe<ResolversTypes["Asset"]>>,
-    ParentType,
-    ContextType
-  >;
+  assets?: Resolver<Array<ResolversTypes["Asset"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

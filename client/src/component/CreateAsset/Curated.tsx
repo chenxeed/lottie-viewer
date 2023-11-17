@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
-import { FeaturedPublicAnimations } from "../../repo/graph";
-import { lottieClient } from "../../service/apolloClient";
+import { FEATURED_PUBLIC_ANIMATIONS } from "../../repo/lottie-graphql/graph";
+import { lottieClient } from "../../repo/lottie-graphql/client";
 import { Button, Card, CardContent, CardMedia, Skeleton } from "@mui/material";
 import { IntersectionElement } from "../IntersectionElement";
 import { useCallback, useRef } from "react";
@@ -9,7 +9,7 @@ export const Curated = (props: {
   onChooseLottieUrl: (lottieUrl: string, slugName: string) => void;
 }) => {
   const { data, loading, error, refetch, fetchMore } = useQuery(
-    FeaturedPublicAnimations,
+    FEATURED_PUBLIC_ANIMATIONS,
     {
       client: lottieClient,
       fetchPolicy: "cache-first",
@@ -47,21 +47,24 @@ export const Curated = (props: {
       </div>
       <div className="h-[60vh] lg:h-[70vh] overflow-y-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4">
-          {data?.featuredPublicAnimations.edges.map((edge: any) => (
+          {data?.featuredPublicAnimations.edges.map((edge) => (
             <Card
               className="cursor-pointer"
               key={edge.node.id}
               sx={{ maxWidth: 345 }}
               onClick={() =>
+                edge.node.lottieUrl &&
                 props.onChooseLottieUrl(edge.node.lottieUrl, edge.node.slug)
               }
             >
-              <CardMedia
-                sx={{ height: 200 }}
-                component="img"
-                image={edge.node.imageUrl}
-                title={edge.node.name}
-              />
+              {edge.node.imageUrl && (
+                <CardMedia
+                  sx={{ height: 200 }}
+                  component="img"
+                  image={edge.node.imageUrl}
+                  title={edge.node.name}
+                />
+              )}
               <CardContent>
                 <div className="text-left text-xs md:text-sm lg:text-base mb-2">
                   {edge.node.name}

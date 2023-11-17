@@ -1,11 +1,11 @@
-import { FeaturedPublicAnimations } from "../repo/graph";
-import { lottieClient } from "./apolloClient";
+import { lottieClient } from "../repo/lottie-graphql/client";
+import { FEATURED_PUBLIC_ANIMATIONS } from "../repo/lottie-graphql/graph";
 
 export const preloadResources = (): void => {
   // Preload the lottie public animations library, mainly on the source URL and image thumbnail
   lottieClient
     .query({
-      query: FeaturedPublicAnimations,
+      query: FEATURED_PUBLIC_ANIMATIONS,
     })
     .then((result) => {
       result.data.featuredPublicAnimations.edges.forEach((edge: any) => {

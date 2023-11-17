@@ -121,7 +121,7 @@ export const CreateAsset = () => {
       await syncUser();
 
       const data = await uploadAsset(chosenFile, selectedCriteria);
-      if (!data?.errors) {
+      if (data) {
         onClose();
         // Sync the latest assets from the server, by checking the last sync status
         await syncAssets();

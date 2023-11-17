@@ -12,12 +12,12 @@ import { getFilePath } from "../service/fileBucket";
 import { Criteria, PendingLottie } from "../store/types";
 import { Lottie } from "../types";
 import { useQuery } from "@apollo/client";
-import { GET_ASSETS } from "../repo/graph";
-import { client } from "../service/apolloClient";
-import { Card, CardContent, Skeleton, Typography } from "@mui/material";
+import { GET_ASSETS } from "../repo/server-graphql/graph";
+import { Card, Skeleton, Typography } from "@mui/material";
 import clsx from "clsx";
 import { useStateSetNotification } from "../store/notification";
 import { IntersectionElement } from "./IntersectionElement";
+import { client } from "../repo/server-graphql/client";
 
 interface LottieCardProps {
   title: string;
@@ -176,10 +176,11 @@ export const AssetViewer = () => {
   useEffect(() => {
     if (data?.assets) {
       setAssets(
-        data.assets.nodes.map((asset: any) => ({
+        data.assets.nodes.map((asset) => ({
           id: asset.id,
           title: asset.title,
           file: asset.file,
+          criteria: asset.criteria as Criteria,
           createdAt: asset.createdAt,
         })),
       );

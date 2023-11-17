@@ -2,7 +2,7 @@ import { SyncStatus } from "./entity";
 
 export const SyncStatusSchema = `
 extend type Query {
-  lastSyncStatus: [SyncStatus]!
+  lastSyncStatus: [SyncStatus!]!
 }
 
 type SyncStatus {

@@ -37,8 +37,8 @@ export function useSyncPendingAssets() {
       if (!result) {
         throw new Error("Failed to upload pending asset");
       }
-      if (result.errors) {
-        throw result.errors;
+      if (!result.data) {
+        throw new Error("No upload assets returned from the server");
       }
       setPendingAssets(
         nextPendingAssets.filter((asset) => asset.id !== pendingAsset.id),

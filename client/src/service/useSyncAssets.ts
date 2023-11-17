@@ -1,6 +1,5 @@
 import { useLazyQuery } from "@apollo/client";
-import { client } from "./apolloClient";
-import { GET_ASSETS, GET_LAST_SYNC_STATUS } from "../repo/graph";
+import { GET_ASSETS, GET_LAST_SYNC_STATUS } from "../repo/server-graphql/graph";
 import {
   useStateLocalSyncStatus,
   useStateSetLocalSyncStatus,
@@ -13,6 +12,7 @@ import {
   useStateSetAssets,
 } from "../store/assets";
 import { useCallback, useRef } from "react";
+import { client } from "../repo/server-graphql/client";
 
 export function useSyncAssets() {
   const localSyncStatus = useStateLocalSyncStatus();
@@ -88,6 +88,7 @@ export function useSyncAssets() {
           id: asset.id,
           title: asset.title,
           file: asset.file,
+          criteria: asset.criteria,
           createdAt: asset.createdAt,
         })),
       ...(assetsRef.current.length ? assetsRef.current : []),

@@ -1,4 +1,5 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { Query } from "./__generated__/graphql";
 
 export const client = new ApolloClient({
   uri: "/api/graphql",
@@ -10,8 +11,14 @@ export const client = new ApolloClient({
           assets: {
             keyArgs: ["criteria"],
             merge(
-              existing = { pageInfo: {}, nodes: [] },
-              incoming: any,
+              existing: Query["assets"] = {
+                pageInfo: {
+                  hasNextPage: false,
+                  hasPreviousPage: false,
+                },
+                nodes: [],
+              },
+              incoming: Query["assets"],
               params: { args: { before: number; limit: number } },
             ) {
               // Handle the merging strategy for the infinite scroll pagination of assets here.
@@ -29,27 +36,6 @@ export const client = new ApolloClient({
               const mergedData = {
                 pageInfo: incoming.pageInfo,
                 nodes: [...existing?.nodes, ...incoming.nodes],
-              };
-              return mergedData;
-            },
-          },
-        },
-      },
-    } as any,
-  }),
-});
-export const lottieClient = new ApolloClient({
-  uri: "https://graphql.lottiefiles.com/2022-08",
-  cache: new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          featuredPublicAnimations: {
-            keyArgs: false,
-            merge(existing = { pageInfo: {}, edges: [] }, incoming: any) {
-              const mergedData = {
-                pageInfo: incoming.pageInfo,
-                edges: [...existing?.edges, ...incoming.edges],
               };
               return mergedData;
             },

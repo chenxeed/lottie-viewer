@@ -10,7 +10,7 @@ import {
 
 export const UserSchema = `
 extend type Query {
-  users: [User]
+  users: [User!]!
   user(id: Int!): User!
 }
 
@@ -21,7 +21,7 @@ extend type Mutation {
 type User {
   id: Int!
   name: String!
-  assets: [Asset]!
+  assets: [Asset!]!
 }
 `;
 

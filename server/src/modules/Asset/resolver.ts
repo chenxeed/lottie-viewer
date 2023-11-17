@@ -19,7 +19,7 @@ extend type Mutation {
 }
 
 type PaginatedAsset {
-  nodes: [Asset]!
+  nodes: [Asset!]!
   pageInfo: PageInfo!
 }
 

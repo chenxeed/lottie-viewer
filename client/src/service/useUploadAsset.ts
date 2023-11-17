@@ -1,6 +1,6 @@
-import { CREATE_ASSET } from "../repo/graph";
-import { client } from "./apolloClient";
-import { ApolloError, useMutation } from "@apollo/client";
+import { CREATE_ASSET } from "../repo/server-graphql/graph";
+import { client } from "../repo/server-graphql/client";
+import { useMutation } from "@apollo/client";
 import { useStateUser } from "../store/user";
 import {
   useStatePendingAssets,
@@ -91,8 +91,8 @@ export function useUploadAsset(option?: UploadAssetOption) {
             criteria,
           },
         });
-        if (result.errors) {
-          throw new ApolloError({ graphQLErrors: result.errors });
+        if (!result.data) {
+          throw new Error("Failed to create asset");
         }
         return result;
       } catch (e) {

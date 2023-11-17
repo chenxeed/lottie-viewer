@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client";
+import { gql } from "./__generated__/gql";
 
-export const GET_ASSETS = gql`
+export const GET_ASSETS = gql(`
   query Assets($before: Int, $limit: Int, $after: Int, $criteria: String) {
     assets(before: $before, limit: $limit, after: $after, criteria: $criteria) {
       nodes {
@@ -18,9 +18,9 @@ export const GET_ASSETS = gql`
       }
     }
   }
-`;
+`);
 
-export const GET_LAST_SYNC_STATUS = gql`
+export const GET_LAST_SYNC_STATUS = gql(`
   query LastSyncStatus {
     lastSyncStatus {
       id
@@ -30,9 +30,9 @@ export const GET_LAST_SYNC_STATUS = gql`
       }
     }
   }
-`;
+`);
 
-export const CREATE_ASSET = gql`
+export const CREATE_ASSET = gql(`
   mutation CreateAsset(
     $userId: Int!
     $title: String!
@@ -52,33 +52,13 @@ export const CREATE_ASSET = gql`
       createdAt
     }
   }
-`;
+`);
 
-export const CREATE_USER = gql`
+export const CREATE_USER = gql(`
   mutation CreateUser($name: String!) {
     createUser(name: $name) {
       id
       name
     }
   }
-`;
-
-export const FeaturedPublicAnimations = gql`
-  query FeaturedPublicAnimations($after: String) {
-    featuredPublicAnimations(after: $after) {
-      edges {
-        node {
-          id
-          slug
-          lottieUrl
-          name
-          imageUrl
-        }
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
-  }
-`;
+`);
