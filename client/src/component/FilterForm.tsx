@@ -29,10 +29,7 @@ export const FilterForm = () => {
   return (
     <div className="relative w-[300px]">
       <div className="md:flex w-full px-3 mb-6 md:mb-0 lg:absolute lg:top-0 lg:left-[">
-        <label
-          className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-2"
-          htmlFor="grid-state"
-        >
+        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mt-2">
           Criteria
         </label>
         <div className="mt-2 md:mt-0 md:ml-2 w-full">

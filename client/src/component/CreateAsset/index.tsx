@@ -65,6 +65,11 @@ export const CreateAsset = () => {
     setShowCurated(true);
   };
 
+  const onClickBack = () => {
+    setShowCurated(false);
+    setLottieSource(null);
+  };
+
   const onChooseLottieUrl = async (url: string, slugName: string) => {
     setShowCurated(false);
     setLoadingLottie(true);
@@ -213,25 +218,37 @@ export const CreateAsset = () => {
                         </h3>
                       </div>
                       <div>
-                        <div className="mt-2 w-full grid grid-cols-3 gap-4 items-center">
-                          <Button
-                            variant="outlined"
-                            onClick={onClickChooseFile}
-                            disabled={loading}
-                          >
-                            Choose File
-                          </Button>
-                          {!showCurated && (
+                        <div
+                          className={clsx(
+                            "mt-2 grid items-center transition-all",
+                            showCurated || lottieSource
+                              ? "h-10 w-full"
+                              : "grid-cols-3 gap-4 h-96 w-64 md:w-96 m-auto",
+                          )}
+                        >
+                          {!showCurated && !lottieSource && (
                             <>
+                              <Button
+                                variant="outlined"
+                                onClick={onClickChooseFile}
+                                disabled={loading}
+                              >
+                                Choose a File
+                              </Button>
                               <div className="text-center">OR</div>
                               <Button
                                 variant="outlined"
                                 onClick={onClickCurate}
                                 disabled={showCurated}
                               >
-                                Find Lottie
+                                Find a Lottie
                               </Button>
                             </>
+                          )}
+                          {(showCurated || lottieSource) && (
+                            <Button variant="outlined" onClick={onClickBack}>
+                              Go Back
+                            </Button>
                           )}
                         </div>
                         <div className="mt-2 w-full">

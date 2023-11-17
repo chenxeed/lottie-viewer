@@ -14,7 +14,7 @@ import { Lottie } from "../types";
 import { useQuery } from "@apollo/client";
 import { GET_ASSETS } from "../repo/graph";
 import { client } from "../service/apolloClient";
-import { Card, CardContent, Skeleton } from "@mui/material";
+import { Card, CardContent, Skeleton, Typography } from "@mui/material";
 import clsx from "clsx";
 import { useStateSetNotification } from "../store/notification";
 import { IntersectionElement } from "./IntersectionElement";
@@ -27,10 +27,7 @@ interface LottieCardProps {
 }
 const LottieCard = (props: LottieCardProps) => {
   return (
-    <Card
-      className="hover:bg-slate-100 cursor-pointer md:h-60"
-      onClick={props.onClick}
-    >
+    <Card className="hover:bg-slate-100 cursor-pointer" onClick={props.onClick}>
       <div className="h-28 md:h-40">
         <DotLottiePlayer
           renderer="canvas"
@@ -39,18 +36,9 @@ const LottieCard = (props: LottieCardProps) => {
           src={props.playerSrc}
         />
       </div>
-      <CardContent
-        className={clsx("h-16 md:h-20", props.isOffline && "bg-red-200")}
-      >
-        <div
-          className={clsx(
-            "text-left text-xs md:text-sm lg:text-base mb-2",
-            props.isOffline && "text-red-950",
-          )}
-        >
-          {props.title}
-        </div>
-      </CardContent>
+      <div className={clsx("p-2 truncate", props.isOffline && "bg-red-200")}>
+        <Typography variant="caption">{props.title}</Typography>
+      </div>
     </Card>
   );
 };
@@ -215,8 +203,8 @@ export const AssetViewer = () => {
         {data?.assets?.pageInfo?.hasPreviousPage && (
           <IntersectionElement onIntersect={onScrollToBottom} />
         )}
-        {loading ? <Skeleton width={"100%"} height={150} /> : <EmptyList />}
       </div>
+      {loading ? <Skeleton width={"100%"} height={200} /> : <EmptyList />}
     </>
   );
 };

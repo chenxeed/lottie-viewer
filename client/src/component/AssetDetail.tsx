@@ -114,13 +114,14 @@ export const AssetDetail = () => {
                       </div>
                       <div className="mt-2 w-full min-h-[150px] max-h-48 lg:max-h-96 text-left overflow-auto">
                         {jsonObj.length > 0 &&
-                          jsonObj.map((obj) => (
+                          jsonObj.map((obj, idx) => (
                             <JsonViewer
                               value={obj}
                               displayDataTypes={false}
                               rootName={"Animation"}
                               defaultInspectDepth={jsonObj.length > 1 ? 0 : 1}
                               enableClipboard={false}
+                              key={obj.id}
                             />
                           ))}
                       </div>

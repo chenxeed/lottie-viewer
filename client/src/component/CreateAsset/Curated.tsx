@@ -57,7 +57,8 @@ export const Curated = (props: {
               }
             >
               <CardMedia
-                sx={{ height: 140 }}
+                sx={{ height: 200 }}
+                component="img"
                 image={edge.node.imageUrl}
                 title={edge.node.name}
               />

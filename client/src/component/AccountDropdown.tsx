@@ -29,13 +29,14 @@ export const AccountDropdown = () => {
   return (
     <div className="relative">
       <Button
+        variant="outlined"
         id="basic-button"
         aria-controls={open ? "basic-menu" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
         onClick={handleClick}
       >
-        <span className="truncate text-left text-ellipsis w-24">
+        <span className="truncate text-left text-ellipsis w-20">
           {user?.name}
         </span>
       </Button>

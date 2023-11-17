@@ -8,6 +8,7 @@ import { useStateSyncState } from "../store/syncStatus";
 import { SyncState } from "../store/types";
 import { Button } from "@mui/material";
 import { useStateSetNotification } from "../store/notification";
+import { ellipsisText } from "../helper/eliipsisText";
 
 export const SyncStatus = () => {
   const setNotification = useStateSetNotification();
@@ -49,10 +50,17 @@ export const SyncStatus = () => {
       return <span className="text-blue-500">Synching... Please wait</span>;
     } else if (syncState === SyncState.UP_TO_DATE) {
       return (
-        <span className="text-green-500">{`Last Update ${formatRelative(
-          parseISO(localSyncStatus.lastUpdate),
-          new Date(),
-        )} by ${localSyncStatus.name}`}</span>
+        <>
+          <span className="text-green-500">{`Last Update ${formatRelative(
+            parseISO(localSyncStatus.lastUpdate),
+            new Date(),
+          )}`}</span>
+          <br />
+          <span className="text-green-500">{`by ${ellipsisText(
+            localSyncStatus.name,
+            10,
+          )}`}</span>
+        </>
       );
     } else if (syncState === SyncState.NO_SYNC) {
       return <span className="text-gray-500">No update yet.</span>;
@@ -66,7 +74,7 @@ export const SyncStatus = () => {
   }, [syncState, localSyncStatus]);
 
   return (
-    <div className="text-right w-28 md:w-52 min-h-[76px]">
+    <div className="text-right w-36 md:w-52 min-h-[76px] grid grid-rows-2 gap-2">
       <div className="text-xs md:text-sm italic">{lastSyncMessage}</div>
       <Button
         variant="outlined"
