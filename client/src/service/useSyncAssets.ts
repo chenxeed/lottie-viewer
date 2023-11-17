@@ -35,7 +35,9 @@ export function useSyncAssets() {
   const setSyncState = useStateSetSyncState();
   const [getAssets] = useLazyQuery(GET_ASSETS, {
     client,
-    fetchPolicy: "network-only",
+    // Prevent cache to ensure the sync with latest data on server.
+    // If the user is offline, expect the sync to fail and notify the user that they're not sync yet
+    fetchPolicy: "no-cache",
   });
 
   return useCallback(async () => {

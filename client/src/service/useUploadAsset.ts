@@ -57,7 +57,7 @@ export function useUploadAsset(option?: UploadAssetOption) {
         setNotification({
           severity: "info",
           message:
-            "Your animation uploaded into your device. Please SYNC when you are back online",
+            "Your animation has uploaded into your device. Once you're online, press SYNC to synchronize to the server.",
         });
       }
 

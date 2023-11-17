@@ -64,8 +64,8 @@ export const CREATE_USER = gql`
 `;
 
 export const FeaturedPublicAnimations = gql`
-  query FeaturedPublicAnimations {
-    featuredPublicAnimations {
+  query FeaturedPublicAnimations($after: String) {
+    featuredPublicAnimations(after: $after) {
       edges {
         node {
           id

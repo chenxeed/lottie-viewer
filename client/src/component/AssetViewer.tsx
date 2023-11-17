@@ -137,6 +137,8 @@ export const AssetViewer = () => {
 
   const ASSET_PER_PAGE = 20;
 
+  // NOTE: Make sure any changes of the variable here is also reflected in the `fetchMore` function
+  // and the `merge` cache strategy in the apolloClient.
   const { data, error, loading, fetchMore } = useQuery(GET_ASSETS, {
     variables: {
       criteria: criteria === Criteria.ALL ? undefined : criteria,
@@ -146,6 +148,7 @@ export const AssetViewer = () => {
     client,
     fetchPolicy: "network-only", // Always try to retrieve the latest first
     notifyOnNetworkStatusChange: true,
+    refetchWritePolicy: "merge",
   });
 
   // NOTE: Since `onScrollToBottom` is a callback function that's used upon intersection,
