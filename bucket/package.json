@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon --ignore ./uploads/ -L src/index.ts",
     "build": "tsc",
-    "serve": "node dist/app.js"
+    "serve": "node build/index.js"
   },
   "dependencies": {
     "body-parser": "^1.20.2",

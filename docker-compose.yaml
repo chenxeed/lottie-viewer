@@ -1,15 +1,16 @@
 version: '3'
 services:
   client:
-    build:
-      context: ./client
     volumes:
       - ./client/src:/client/src
+    build:
+      context: ./client
     ports:
       - "3000:3000"
     depends_on:
       - server
     environment:
+      - ENV=DEV
       - WATCHPACK_POLLING=true
 
   server:
@@ -18,7 +19,15 @@ services:
     volumes:
       - ./server/src:/app/src
     environment:
+      - API_PORT=3001
+      - API_PREFIX=/api
+      - PGHOST=db
+      - PGPORT=5432
       - DATABASE_URL=postgres://postgres:password@db:5432/mydb
+      - ENV=DEV
+      - PGUSER=postgres
+      - PGPASSWORD=password
+      - PGDATABASE=project
     ports:
       - "3001:3001"
     depends_on:
@@ -32,6 +41,10 @@ services:
       - /app/uploads
     ports:
       - "3002:3002"
+    environment:
+      - ENV=DEV  
+      - API_PORT=3002
+      - API_PREFIX=/bucket
 
   db:
     image: postgres:13
@@ -43,14 +56,6 @@ services:
       - /var/lib/postgresql/data
     ports:
       - "5432:5432"
-
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=root
-    ports:
-      - "5050:80"
 
   nginx:
     image: nginx:alpine

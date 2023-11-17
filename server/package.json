@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon src/index.ts -L",
     "build": "tsc",
-    "serve": "node dist/app.js",
+    "serve": "node build/index.js",
     "typeorm": "typeorm-ts-node-commonjs -d ./src/data-source.ts",
     "codegen": "graphql-codegen --config graphql-codegen.ts"
   },

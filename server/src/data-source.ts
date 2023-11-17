@@ -11,7 +11,7 @@ export const AppDataSource = new DataSource({
   type: "postgres",
   host: process.env.PGHOST,
   port: Number(process.env.PGPORT) || 5432,
-  username: process.env.PGUSER,
+  username: process.env.POSTGRES_USER,
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
   synchronize: false,
