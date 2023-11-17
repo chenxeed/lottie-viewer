@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Player } from "@lottiefiles/react-lottie-player";
 import {
   useStateAssets,
@@ -135,31 +135,40 @@ export const AssetViewer = () => {
   const setAssets = useStateSetAssets();
   const setNotification = useStateSetNotification();
 
+  const ASSET_PER_PAGE = 20;
+
   const { data, error, loading, fetchMore } = useQuery(GET_ASSETS, {
     variables: {
       criteria: criteria === Criteria.ALL ? undefined : criteria,
-      after: 0,
-      limit: 10,
+      before: 0,
+      limit: ASSET_PER_PAGE,
     },
     client,
     fetchPolicy: "network-only", // Always try to retrieve the latest first
+    notifyOnNetworkStatusChange: true,
   });
 
-  const onScrollToBottom = () => {
-    if (loading) {
+  // NOTE: Since `onScrollToBottom` is a callback function that's used upon intersection,
+  // it'll get the outdated value from the time it's created.
+  // Thus, we need to use the refs to get the latest state.
+  const dataRef = useRef(data);
+  dataRef.current = data;
+  const loadingRef = useRef(loading);
+  loadingRef.current = loading;
+  const onScrollToBottom = useCallback(() => {
+    if (loadingRef.current) {
       return;
     }
     fetchMore({
       variables: {
         criteria: criteria === Criteria.ALL ? undefined : criteria,
-        before: data?.assets.pageInfo.endCursor,
-        limit: 10,
+        before: dataRef.current?.assets.pageInfo.endCursor,
+        limit: ASSET_PER_PAGE,
       },
     });
-  };
+  }, [fetchMore, criteria]);
 
   useEffect(() => {
-    console.log("what happen to data??", data?.assets);
     if (data?.assets) {
       setAssets(
         data.assets.nodes.map((asset: any) => ({
@@ -186,7 +195,7 @@ export const AssetViewer = () => {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-4">
         <PendingAssetList />
         <AssetList />
-        {data?.assets.pageInfo.hasPreviousPage && (
+        {data?.assets?.pageInfo?.hasPreviousPage && (
           <IntersectionElement onIntersect={onScrollToBottom} />
         )}
         {loading ? <Skeleton width={"100%"} height={150} /> : <EmptyList />}
