@@ -59,7 +59,7 @@ export const Button: FunctionComponent<
   return (
     <button
       className={clsx(
-        "rounded shadow hover:shadow-inner",
+        "rounded shadow hover:shadow-inner transition-shadow",
         "focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         colorClass,

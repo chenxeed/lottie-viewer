@@ -1,5 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import { DotLottiePlayer } from "@dotlottie/react-player";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
+import {
+  DotLottieCommonPlayer,
+  DotLottiePlayer,
+} from "@dotlottie/react-player";
 import "@dotlottie/react-player/dist/index.css";
 import {
   useStateAssets,
@@ -7,45 +17,54 @@ import {
   useStateCriteria,
   useStatePendingAssets,
   useStateSetViewAsset,
+  useStatePendingAssetsByCriteria,
 } from "../store/assets";
 import { getFilePath } from "../service/fileBucket";
 import { Criteria, PendingLottie } from "../store/types";
 import { Lottie } from "../types";
 import { useQuery } from "@apollo/client";
 import { GET_ASSETS } from "../repo/server-graphql/graph";
-import { Card, Skeleton, Typography } from "@mui/material";
-import clsx from "clsx";
 import { useStateSetNotification } from "../store/notification";
 import { IntersectionElement } from "./IntersectionElement";
 import { client } from "../repo/server-graphql/client";
+import { LottieCard } from "./LottieCard";
+import { Skeleton } from "../atoms/Skeleton";
+import { useVisiblePlayer } from "../service/useVisiblePlayer";
+
+const DotLottiePlayerContext = createContext<(DotLottieCommonPlayer | null)[]>(
+  [],
+);
 
 interface LottieCardProps {
   title: string;
   playerSrc: string;
   isOffline?: boolean;
   onClick: () => void;
+  index: number;
 }
-const LottieCard = (props: LottieCardProps) => {
+const Thumbnail = (props: LottieCardProps) => {
+  const dotLottiePlayers = useContext(DotLottiePlayerContext);
+
   return (
-    <Card className="hover:bg-slate-100 cursor-pointer" onClick={props.onClick}>
-      <div className="h-28 md:h-40">
-        <DotLottiePlayer
-          renderer="canvas"
-          loop
-          autoplay
-          src={props.playerSrc}
-        />
-      </div>
-      <div className={clsx("p-2 truncate", props.isOffline && "bg-red-200")}>
-        <Typography variant="caption">{props.title}</Typography>
-      </div>
-    </Card>
+    <LottieCard title={props.title} onClick={props.onClick}>
+      <DotLottiePlayer
+        ref={(player) => {
+          dotLottiePlayers[props.index] = player;
+        }}
+        autoplay={
+          props.index <
+          10 /* Only autoplay the first 10, since the rest will be played upon user scroll */
+        }
+        renderer="canvas"
+        loop
+        src={props.playerSrc}
+      />
+    </LottieCard>
   );
 };
 
 const PendingAssetList = () => {
-  const selectedCriteria = useStateCriteria();
-  const pendingAssets = useStatePendingAssets();
+  const pendingAssets = useStatePendingAssetsByCriteria();
   const setViewAsset = useStateSetViewAsset();
   const onClickDetail = (asset: PendingLottie) => {
     setViewAsset({
@@ -55,25 +74,22 @@ const PendingAssetList = () => {
   };
   return (
     <>
-      {pendingAssets
-        .filter(
-          ({ criteria }) =>
-            selectedCriteria === Criteria.ALL || selectedCriteria === criteria,
-        )
-        .map((asset) => (
-          <LottieCard
-            key={asset.id}
-            onClick={() => onClickDetail(asset)}
-            isOffline={true}
-            title={asset.title}
-            playerSrc={asset.dataUrl}
-          />
-        ))}
+      {pendingAssets.map((asset, index) => (
+        <Thumbnail
+          index={index}
+          key={asset.id}
+          onClick={() => onClickDetail(asset)}
+          isOffline={true}
+          title={asset.title}
+          playerSrc={asset.dataUrl}
+        />
+      ))}
     </>
   );
 };
 
 const AssetList = () => {
+  const pendingAssets = useStatePendingAssetsByCriteria();
   const assets = useStateAssets();
   const setViewAsset = useStateSetViewAsset();
   const onClickDetail = async (asset: Lottie) =>
@@ -84,8 +100,9 @@ const AssetList = () => {
 
   return (
     <>
-      {assets.map((asset) => (
-        <LottieCard
+      {assets.map((asset, index) => (
+        <Thumbnail
+          index={pendingAssets.length + index}
           key={asset.id}
           onClick={() => onClickDetail(asset)}
           title={asset.title}
@@ -125,12 +142,25 @@ const EmptyList = () => {
   );
 };
 
-export const AssetViewer = () => {
+interface AssetViewerProps {
+  scrollDOMRef: React.RefObject<HTMLDivElement>;
+}
+export const AssetViewer = ({ scrollDOMRef }: AssetViewerProps) => {
+  // Constants
+
+  const ASSET_PER_PAGE = 20;
+
+  // Shared state
+
   const criteria = useStateCriteria();
   const setAssets = useStateSetAssets();
   const setNotification = useStateSetNotification();
 
-  const ASSET_PER_PAGE = 20;
+  // Service Hooks
+  const gridDOMRef = useRef<HTMLDivElement>(null);
+  const { dotLottiePlayers } = useVisiblePlayer({ scrollDOMRef, gridDOMRef });
+
+  // API Hooks
 
   // NOTE: Make sure any changes of the variable here is also reflected in the `fetchMore` function
   // and the `merge` cache strategy in the apolloClient.
@@ -173,6 +203,8 @@ export const AssetViewer = () => {
     });
   }, [fetchMore, criteria, setNotification]);
 
+  // Side Effects
+
   useEffect(() => {
     if (data?.assets) {
       setAssets(
@@ -197,8 +229,11 @@ export const AssetViewer = () => {
   }, [error, setNotification]);
 
   return (
-    <>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-4">
+    <DotLottiePlayerContext.Provider value={dotLottiePlayers.current}>
+      <div
+        className="grid grid-cols-2 lg:grid-cols-3 gap-8 mt-4 px-1"
+        ref={gridDOMRef}
+      >
         <PendingAssetList />
         <AssetList />
         {data?.assets?.pageInfo?.hasPreviousPage && (
@@ -206,6 +241,6 @@ export const AssetViewer = () => {
         )}
       </div>
       {loading ? <Skeleton width={"100%"} height={200} /> : <EmptyList />}
-    </>
+    </DotLottiePlayerContext.Provider>
   );
 };

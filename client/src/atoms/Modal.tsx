@@ -54,7 +54,7 @@ export const Modal: FunctionComponent<ModalProps & PropsWithChildren> = ({
   return createPortal(
     <div
       className={clsx(
-        "fixed z-10 inset-0 overflow-hidden transition-all duration-1000",
+        "fixed z-50 inset-0 overflow-hidden transition-all duration-1000",
         openClass,
         hideModalClass,
       )}
@@ -64,8 +64,8 @@ export const Modal: FunctionComponent<ModalProps & PropsWithChildren> = ({
       aria-modal="true"
     >
       <div className="absolute inset-0 overflow-hidden w-full h-full bg-slate-600 opacity-50" />
-      <div className="relative z-10" role="dialog" aria-modal="true">
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div className="relative z-50" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-50 w-screen overflow-y-auto">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <div
               className={clsx(

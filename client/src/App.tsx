@@ -7,25 +7,31 @@ import { AssetDetail } from "./component/AssetDetail";
 import { FilterForm } from "./component/FilterForm";
 import { NotificationCard } from "./component/NotificationCard";
 import { InstallButton } from "./component/InstallButton";
+import { useRef } from "react";
 
 function App() {
+  const assetsContainerRef = useRef<HTMLDivElement>(null);
+
   return (
-    <div className="bg-emerald-100 h-screen shadow-inner">
-      <header className="shadow bg-slate-100 h-20">
+    <div className="bg-dark h-screen shadow-inner">
+      <header className="shadow bg-light h-20">
         <div className="container mx-auto p-4 h-full flex justify-between">
           <CreateAsset />
-          <h2 className="text-xl text-slate-800 drop-shadow text-center">
+          <h2 className="text-xl text-dark drop-shadow text-center">
             Lottie Viewer
           </h2>
           <AccountDropdown />
         </div>
       </header>
-      <div className="container mx-auto bg-slate-50 shadow px-4 pb-4 h-[calc(100vh-4rem)] overflow-y-auto">
-        <div className="flex justify-between items-start pt-4 pb-2 border-b-2 border-emerald-200 bg-slate-50 sticky top-0 z-10">
+      <div
+        className="container mx-auto bg-light shadow px-4 pb-4 h-[calc(100vh-5rem)] overflow-y-auto"
+        ref={assetsContainerRef}
+      >
+        <div className="flex justify-between items-start pt-4 pb-2 px-2 shadow-md bg-light sticky top-0 z-10">
           <FilterForm />
           <SyncStatus />
         </div>
-        <AssetViewer />
+        <AssetViewer scrollDOMRef={assetsContainerRef} />
         <AssetDetail />
       </div>
       <CreateUserModal />

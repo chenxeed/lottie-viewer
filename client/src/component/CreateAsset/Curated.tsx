@@ -47,7 +47,7 @@ export const Curated = (props: {
       </div>
 
       <div className="h-[65vh] sm:h-[70vh] overflow-y-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 pt-4">
           {data?.featuredPublicAnimations.edges.map((edge) => (
             <LottieCard
               key={edge.node.id}

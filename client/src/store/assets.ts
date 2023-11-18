@@ -1,4 +1,4 @@
-import { StateAction, LottieStorage } from "./types";
+import { StateAction, LottieStorage, Criteria } from "./types";
 import { useStore } from ".";
 
 // Initiate the assets state with the assets from localStorage
@@ -22,6 +22,13 @@ export const useStateAssets = () => useStore((state) => state.assets);
 export const useStateSetAssets = () => useStore((state) => state.setAssets);
 export const useStatePendingAssets = () =>
   useStore((state) => state.pendingAssets);
+export const useStatePendingAssetsByCriteria = () =>
+  useStore((state) =>
+    state.pendingAssets.filter(
+      ({ criteria }) =>
+        state.criteria === Criteria.ALL || state.criteria === criteria,
+    ),
+  );
 export const useStateSetPendingAssets = () =>
   useStore((state) => state.setPendingAssets);
 export const useStateViewAsset = () => useStore((state) => state.viewAsset);
