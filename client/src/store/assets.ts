@@ -1,12 +1,18 @@
 import { StateAction, LottieStorage, Criteria } from "./types";
 import { useStore } from ".";
 
+const SEARCH_PARAM_CRITERIA = "criteria";
+
 // Initiate the assets state with the assets from localStorage
 const initialPendingAsset = localStorage.getItem(LottieStorage.PENDING_ASSETS);
+const initialCriteria = new URLSearchParams(window.location.search).get(
+  SEARCH_PARAM_CRITERIA,
+) as Criteria | null;
 useStore.setState((state) => ({
   ...state,
   assets: [],
   pendingAssets: initialPendingAsset ? JSON.parse(initialPendingAsset) : [],
+  criteria: initialCriteria || Criteria.ALL,
 }));
 
 useStore.subscribe((state) => {
@@ -14,6 +20,14 @@ useStore.subscribe((state) => {
     localStorage.setItem(
       LottieStorage.PENDING_ASSETS,
       JSON.stringify(state.pendingAssets),
+    );
+  } else if (state.action === StateAction.SET_CRITERIA) {
+    const searchParam = new URLSearchParams(window.location.search);
+    searchParam.set(SEARCH_PARAM_CRITERIA, state.criteria);
+    window.history.replaceState(
+      {},
+      "",
+      `${window.location.pathname}?${searchParam}`,
     );
   }
 });
