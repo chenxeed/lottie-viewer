@@ -82,6 +82,7 @@ export const AssetDetail = () => {
                     loop
                     src={viewAsset.fileUrl}
                     onEvent={onLottiePlayerEvent}
+                    renderer="svg"
                   >
                     <Controls />
                   </DotLottiePlayer>

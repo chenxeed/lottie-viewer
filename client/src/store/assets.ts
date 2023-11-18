@@ -23,11 +23,17 @@ useStore.subscribe((state) => {
     );
   } else if (state.action === StateAction.SET_CRITERIA) {
     const searchParam = new URLSearchParams(window.location.search);
-    searchParam.set(SEARCH_PARAM_CRITERIA, state.criteria);
+    if (state.criteria === Criteria.ALL) {
+      searchParam.delete(SEARCH_PARAM_CRITERIA);
+    } else {
+      searchParam.set(SEARCH_PARAM_CRITERIA, state.criteria);
+    }
     window.history.replaceState(
       {},
       "",
-      `${window.location.pathname}?${searchParam}`,
+      `${window.location.pathname}${
+        [...searchParam.values()].length ? `?${searchParam}` : ""
+      }`,
     );
   }
 });

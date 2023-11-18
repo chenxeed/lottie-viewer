@@ -78,7 +78,7 @@ export const Curated = (props: {
                     index <
                     10 /* Only autoplay the first 10, since the rest will be played upon user scroll */
                   }
-                  renderer="canvas"
+                  renderer="svg"
                   loop
                   src={edge.node.lottieUrl}
                 />
