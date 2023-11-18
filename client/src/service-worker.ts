@@ -182,7 +182,7 @@ async function setGraphQLCache(request: Request, response: Response) {
       50,
     )}...}`,
   );
-  const id = md5(body.query).toString();
+  const id = md5(body.query + JSON.stringify(body.variables)).toString();
 
   var entry = {
     query: body.query,
@@ -195,7 +195,7 @@ async function setGraphQLCache(request: Request, response: Response) {
 async function getGraphQLCache(request: Request) {
   try {
     const body = await request.json();
-    const id = md5(body.query).toString();
+    const id = md5(body.query + JSON.stringify(body.variables)).toString();
     const data = await get(id, store);
     if (!data) {
       return null;
