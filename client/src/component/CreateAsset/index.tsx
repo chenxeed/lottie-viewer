@@ -218,7 +218,7 @@ export const CreateAsset = () => {
 
                 {/* Show message to the user that we're processing the files */}
                 {loadingLottie && (
-                  <div className="text-center mt-2">
+                  <div className="w-full flex justify-center">
                     <img
                       src="/logo192.png"
                       className="animate-spin w-12 h-12"

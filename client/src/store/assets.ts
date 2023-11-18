@@ -56,3 +56,5 @@ export const useStateSetViewAsset = () =>
   useStore((state) => state.setViewAsset);
 export const useStateCriteria = () => useStore((state) => state.criteria);
 export const useStateSetCriteria = () => useStore((state) => state.setCriteria);
+
+export const ASSET_PER_PAGE = 20;

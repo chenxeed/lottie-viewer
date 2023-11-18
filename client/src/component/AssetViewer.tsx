@@ -18,6 +18,7 @@ import {
   useStatePendingAssets,
   useStateSetViewAsset,
   useStatePendingAssetsByCriteria,
+  ASSET_PER_PAGE,
 } from "../store/assets";
 import { getFilePath } from "../service/fileBucket";
 import { Criteria, Lottie, PendingLottie } from "../store/types";
@@ -46,7 +47,12 @@ const Thumbnail = (props: LottieCardProps) => {
   const dotLottiePlayers = useContext(DotLottiePlayerContext);
 
   return (
-    <LottieCard title={props.title} author={props.user} onClick={props.onClick}>
+    <LottieCard
+      title={props.title}
+      author={props.user}
+      offline={props.isOffline}
+      onClick={props.onClick}
+    >
       <DotLottiePlayer
         ref={(player) => {
           dotLottiePlayers[props.index] = player;
@@ -150,10 +156,6 @@ interface AssetViewerProps {
   scrollDOMRef: React.RefObject<HTMLDivElement>;
 }
 export const AssetViewer = ({ scrollDOMRef }: AssetViewerProps) => {
-  // Constants
-
-  const ASSET_PER_PAGE = 20;
-
   // Shared state
 
   const criteria = useStateCriteria();

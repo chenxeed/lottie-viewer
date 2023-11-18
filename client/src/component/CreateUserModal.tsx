@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { MouseEvent, useEffect, useMemo, useState } from "react";
 import { useStateSetUser, useStateUser } from "../store/user";
 import { useSyncUser } from "../service/useSyncUser";
 import { Button } from "../atoms/Button";
@@ -8,10 +8,14 @@ import clsx from "clsx";
 import { DotLottiePlayer } from "@dotlottie/react-player";
 import "@dotlottie/react-player/dist/index.css";
 import { Modal } from "../atoms/Modal";
+import { useStatePreload, useStateSetPreload } from "../store/preload";
+import { preloadResources } from "../service/preloadResources";
 
 export const CreateUserModal = () => {
   // Shared state
 
+  const preload = useStatePreload();
+  const setPreload = useStateSetPreload();
   const user = useStateUser();
   const setUser = useStateSetUser();
   const syncUser = useSyncUser();
@@ -23,6 +27,8 @@ export const CreateUserModal = () => {
   const [shouldSync, setShouldSync] = useState(false);
   const [playerJSON, setPlayerJSON] =
     useState<Record<string, any>>(arrowDownJSON);
+  const [preloading, setPreloading] = useState(false);
+  const [progress, setProgress] = useState([0, 0]);
 
   // Computed values
 
@@ -55,10 +61,10 @@ export const CreateUserModal = () => {
 
   // Sync the user to the server, once the user has set locally
   useEffect(() => {
-    if (user && shouldSync) {
+    if (shouldSync) {
       syncUser();
     }
-  }, [user, shouldSync, syncUser]);
+  }, [shouldSync]);
 
   // Event Listener
 
@@ -80,6 +86,30 @@ export const CreateUserModal = () => {
       setUser(user);
       setShouldSync(true);
     }, 2000); // Delay 2s to show the animation
+  }
+
+  // On skip preload, just let the user go and free roam... as long as they got internet
+  function onSkipPreload(e: MouseEvent) {
+    e.preventDefault();
+    setPreload(true);
+  }
+
+  // On preload, expect those resources to be precached by Service Workers
+  function onSubmitPreload(e: MouseEvent) {
+    e.preventDefault();
+    // Upon load, preload certain resources needed for the app to function normally.
+    // This is meant for users who are offline right after visit, and have not yet browsed the app further.
+    preloadResources({
+      onStart: () => {
+        setPreloading(true);
+      },
+      onProgress: (progress, total) => {
+        setProgress([progress, total]);
+      },
+      onDone: () => {
+        setPreload(true);
+      },
+    });
   }
 
   return (
@@ -107,33 +137,78 @@ export const CreateUserModal = () => {
                   Welcome!
                 </h3>
                 <div className="mt-2">
-                  <p className="text-sm text-gray-500">{userMessage}</p>
-                  <div className="mt-2">
-                    <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                      <input
-                        type="text"
-                        name="username"
-                        id="username"
-                        autoComplete="username"
-                        className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                        placeholder="Albert Mulia Shintra"
-                        onChange={onChangeUsername}
-                      />
-                    </div>
-                  </div>
+                  {!preload ? (
+                    <>
+                      <h4 className="text-primary">Preload Resource</h4>
+                      <p className="text-sm text-gray-500">
+                        To ensure maximum experience while you are offline, we
+                        would like to predownload the minimum resources
+                        necessary to run the app. Else, you may skip the step
+                        and proceed to the app while staying online.
+                      </p>
+                      <div className="flex justify-evenly items-center mt-2">
+                        {preloading ? (
+                          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                            <div
+                              className="bg-gradient-to-r from-red-500 to-green-500 h-2.5 rounded-full"
+                              style={{
+                                width: `${(progress[0] / progress[1]) * 100}%`,
+                              }}
+                            ></div>
+                          </div>
+                        ) : (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="warning"
+                              onClick={onSkipPreload}
+                            >
+                              Skip
+                            </Button>
+                            <Button
+                              size="lg"
+                              variant="success"
+                              onClick={onSubmitPreload}
+                            >
+                              Download
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm text-gray-500">{userMessage}</p>
+                      <div className="mt-2">
+                        <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                          <input
+                            type="text"
+                            name="username"
+                            autoComplete="username"
+                            maxLength={20}
+                            className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                            placeholder="Albert Mulia Shintra (20 max char)"
+                            onChange={onChangeUsername}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
           </div>
           <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-            <Button
-              variant={canSubmit ? "primary" : "dark"}
-              size="lg"
-              onClick={onContinue}
-              disabled={!canSubmit}
-            >
-              Continue!
-            </Button>
+            {preload && (
+              <Button
+                variant={canSubmit ? "primary" : "dark"}
+                size="lg"
+                onClick={onContinue}
+                disabled={!canSubmit}
+              >
+                Continue!
+              </Button>
+            )}
           </div>
         </form>
       )}
