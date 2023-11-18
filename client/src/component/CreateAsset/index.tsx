@@ -2,7 +2,6 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { uploadFile } from "../../helper/fileUpload";
 import { useUploadAsset } from "../../service/useUploadAsset";
 import clsx from "clsx";
-import { readFile } from "../../helper/fileReader";
 import { Criteria } from "../../store/types";
 import { useSyncAssets } from "../../service/useSyncAssets";
 import { Button } from "../../atoms/Button";
@@ -139,20 +138,7 @@ export const CreateAsset = () => {
   // For .lottie, we directly pass it to the player and let the player handle it.
   useEffect(() => {
     if (chosenFile) {
-      if (chosenFile.type === "application/json") {
-        readFile(chosenFile, "text").then((content) => {
-          if (content) {
-            setLottieSource(content);
-          } else {
-            setNotification({
-              severity: "error",
-              message: "Fail to read the file. Please try again.",
-            });
-          }
-        });
-      } else if (chosenFile.name.endsWith(".lottie")) {
-        setLottieSource(URL.createObjectURL(chosenFile));
-      }
+      setLottieSource(URL.createObjectURL(chosenFile));
     } else {
       setLottieSource(null);
     }
