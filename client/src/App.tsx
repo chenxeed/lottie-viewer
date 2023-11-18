@@ -27,7 +27,7 @@ function App() {
         className="container mx-auto bg-light shadow px-4 pb-4 h-[calc(100vh-5rem)] overflow-y-auto"
         ref={assetsContainerRef}
       >
-        <div className="flex justify-between items-start pt-4 pb-2 px-2 shadow-md bg-light sticky top-0 z-10">
+        <div className="flex justify-between items-start pt-4 pb-2 px-2 shadow-md h-24 bg-light sticky top-0 z-10">
           <FilterForm />
           <SyncStatus />
         </div>

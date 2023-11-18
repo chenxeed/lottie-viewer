@@ -97,10 +97,13 @@ export const SyncStatus = () => {
   }, [setNotification, syncAssets, syncPendingAssets, syncUser]);
 
   return (
-    <div className="text-right w-36 md:w-52 min-h-[76px] flex flex-col justify-between items-end">
-      <div className="text-xs md:text-sm italic">{lastSyncMessage}</div>
+    <div className="text-right w-52 md:w-60 min-h-[70px] flex flex-col justify-between items-end">
+      <div className="text-[10px] md:text-sm italic truncate">
+        {lastSyncMessage}
+      </div>
       <Button
         variant="warning"
+        size="sm"
         onClick={handleSynchronize}
         disabled={isLoading}
       >
