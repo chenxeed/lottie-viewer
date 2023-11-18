@@ -59,14 +59,23 @@ export const AssetQueryResolver: AssetQueryResolver = {
       const result = await Asset.find({
         where,
         order: {
-          id: "DESC",
+          id: after ? "ASC" : "DESC",
         },
         // Get 1 more to know if there is a next page
         ...(limit !== undefined ? { take: limit + 1 } : {}),
       });
+
+      // If the result is more than the limit, we need to remove the last element
+      // before determining the start and end cursor
+
       const nodes = result.length > limit ? result.slice(0, -1) : result;
       const startCursor = nodes[0]?.id;
       const endCursor = nodes[nodes.length - 1]?.id;
+
+      // We need to run a query for determining the opposite direction because it is possible that
+      // the previous page is already the first page or the next page is already the last page.
+      // The only wat to tell it is by running a count query of the cursor.
+
       const isForwardPagination = after > 0;
       const isBackwardPagination = before > 0;
       const hasNextPage = isForwardPagination
@@ -79,6 +88,7 @@ export const AssetQueryResolver: AssetQueryResolver = {
         : (await Asset.count({
             where: { ...where, id: LessThan(endCursor) },
           })) > 0;
+
       return {
         nodes,
         pageInfo: {
