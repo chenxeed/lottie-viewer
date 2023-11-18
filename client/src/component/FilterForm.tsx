@@ -29,15 +29,13 @@ export const FilterForm = () => {
   };
 
   return (
-    <div className="relative w-[300px]">
-      <div className="w-full">
-        <Select
-          label="Criteria"
-          value={criteria}
-          options={criteriaOption}
-          onChange={onChangeCriteria}
-        />
-      </div>
+    <div className="min-w-[150px]">
+      <Select
+        label="Criteria"
+        value={criteria}
+        options={criteriaOption}
+        onChange={onChangeCriteria}
+      />
     </div>
   );
 };

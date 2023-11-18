@@ -1,16 +1,30 @@
 import { LottieStorage, PendingLottie } from "../store/types";
 import { useUploadAsset } from "./useUploadAsset";
 import { useStateSetPendingAssets } from "../store/assets";
-import { useCallback } from "react";
 import { useStateSetNotification } from "../store/notification";
 import { dataURLtoBlob } from "./fileBucket";
 
+/**
+ * Service to sync the pending assets to the server.
+ * Pending asset will be uploaded one by one, and if it fails, it will stop the sync process.
+ */
 export function useSyncPendingAssets() {
+  // Shared state
+
   const setPendingAssets = useStateSetPendingAssets();
   const uploadAsset = useUploadAsset();
   const setNotification = useStateSetNotification();
 
-  return useCallback(() => {
+  // Service Hooks for the components
+  // Here's the process:
+  // 1. Get the pending assets from the local storage
+  // 2. Upload the pending assets one by one, recursively
+  // 3. If the upload fails, stop the sync process and notify the user
+  return async () => {
+    /**
+     * The recursive function that will loop towards the given `nextPendingAssets` data,
+     * to upload them one by one.
+     */
     async function recursiveUploadPendingAsset(
       nextPendingAssets: PendingLottie[],
     ) {
@@ -20,6 +34,7 @@ export function useSyncPendingAssets() {
       }
 
       const pendingAsset = nextPendingAssets[nextPendingAssets.length - 1];
+
       // Upload the pending asset
       // If success, remove the asset from pendingAssets
       // If fail, do nothing
@@ -33,6 +48,9 @@ export function useSyncPendingAssets() {
           type: mimeType,
         },
       );
+
+      // Chain the pending asset synchronization with the uploadAsset service, for reusability and consistent behavior
+      // as if the user uploads the asset manually
       const result = await uploadAsset(file, pendingAsset.criteria);
       if (!result) {
         throw new Error("Failed to upload pending asset");
@@ -73,5 +91,5 @@ export function useSyncPendingAssets() {
       });
       throw error;
     }
-  }, [setNotification, setPendingAssets, uploadAsset]);
+  };
 }

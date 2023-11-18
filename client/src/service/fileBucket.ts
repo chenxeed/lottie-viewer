@@ -14,6 +14,10 @@ const BUCKET_API = "/bucket/upload/";
 
 export const getFilePath = (filename: string) => `${BUCKET_PATH}${filename}`;
 
+/**
+ * A service that allows the user to upload a file to the bucket,
+ * and access them through public URL
+ */
 export async function uploadFileToBucket(file: File): Promise<UploadFile> {
   // Try to upload
   const formData = new FormData();
@@ -28,6 +32,9 @@ export async function uploadFileToBucket(file: File): Promise<UploadFile> {
   return response.data as UploadFile;
 }
 
+/**
+ * Given the filename, append the path and fetch it from the bucket
+ */
 export async function fetchFileContentFromBucket(
   filename: string,
 ): Promise<string> {
@@ -35,6 +42,9 @@ export async function fetchFileContentFromBucket(
   return result.text();
 }
 
+/**
+ * Given a public URL, fetch the content for the texts
+ */
 export async function fetchFileContentFromPublicURL(
   publicUrl: string,
 ): Promise<string> {
@@ -42,6 +52,9 @@ export async function fetchFileContentFromPublicURL(
   return result.text();
 }
 
+/**
+ * Given a public URL, fetch the content and return it as a file
+ */
 export async function fetchFileFromPublicURL(
   publicUrl: string,
   name?: string,
@@ -53,6 +66,9 @@ export async function fetchFileFromPublicURL(
   return file;
 }
 
+/**
+ * Convert a data URL to a blob
+ */
 export async function dataURLtoBlob(dataURL: string) {
   return await fetch(dataURL).then((r) => r.blob());
 }

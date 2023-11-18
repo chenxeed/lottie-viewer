@@ -13,7 +13,7 @@ function App() {
   const assetsContainerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="bg-dark h-screen shadow-inner">
+    <div className="bg-gradient-to-b from-emerald-200 to-emerald-600 h-screen shadow-inner">
       <header className="shadow bg-light h-20">
         <div className="container mx-auto p-4 h-full flex justify-between">
           <CreateAsset />

@@ -20,8 +20,7 @@ import {
   useStatePendingAssetsByCriteria,
 } from "../store/assets";
 import { getFilePath } from "../service/fileBucket";
-import { Criteria, PendingLottie } from "../store/types";
-import { Lottie } from "../types";
+import { Criteria, Lottie, PendingLottie } from "../store/types";
 import { useQuery } from "@apollo/client";
 import { GET_ASSETS } from "../repo/server-graphql/graph";
 import { useStateSetNotification } from "../store/notification";
@@ -236,10 +235,12 @@ export const AssetViewer = ({ scrollDOMRef }: AssetViewerProps) => {
       >
         <PendingAssetList />
         <AssetList />
+
         {data?.assets?.pageInfo?.hasPreviousPage && (
           <IntersectionElement onIntersect={onScrollToBottom} />
         )}
       </div>
+
       {loading ? <Skeleton width={"100%"} height={200} /> : <EmptyList />}
     </DotLottiePlayerContext.Provider>
   );

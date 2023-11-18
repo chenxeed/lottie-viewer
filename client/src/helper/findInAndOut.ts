@@ -4,9 +4,6 @@
  * // const old = [0, 5]
  * // const newVal = [3, 8]
  * // returns { in: [6, 7, 8], out: [0, 1, 2] }
- * @param old
- * @param newVal
- * @returns
  */
 export function findInAndOut(
   old: [number, number],

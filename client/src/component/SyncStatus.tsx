@@ -7,7 +7,7 @@ import { useSyncAssets } from "../service/useSyncAssets";
 import { useStateSyncState } from "../store/syncStatus";
 import { SyncState } from "../store/types";
 import { useStateSetNotification } from "../store/notification";
-import { ellipsisText } from "../helper/eliipsisText";
+import { ellipsisText } from "../helper/ellipsisText";
 import { Button } from "../atoms/Button";
 
 export const SyncStatus = () => {
@@ -26,28 +26,34 @@ export const SyncStatus = () => {
   const lastSyncMessage = useMemo(() => {
     switch (syncState) {
       case SyncState.SYNCING:
-        return <span className="text-blue-500">Synching... Please wait</span>;
+        return <span className="text-primary">Synching... Please wait</span>;
       case SyncState.UP_TO_DATE:
         return (
           <>
-            <span className="text-green-500">{`Last Update ${formatRelative(
+            <span className="text-success">{`Last Update ${formatRelative(
               parseISO(localSyncStatus.lastUpdate),
               new Date(),
             )}`}</span>
-            <span className="text-green-500">{` by ${ellipsisText(
+            <span className="text-success">{` by ${ellipsisText(
               localSyncStatus.name,
               10,
             )}`}</span>
           </>
         );
       case SyncState.NO_SYNC:
-        return <span className="text-gray-500">No update yet.</span>;
+        return <span className="text-secondary">No update yet.</span>;
       case SyncState.FAIL_TO_SYNC:
         return (
-          <span className="text-red-500">Fail to sync. Please try again.</span>
+          <span className="text-danger">Fail to sync. Please try again.</span>
+        );
+      case SyncState.NEED_UPDATE:
+        return (
+          <span className="text-warning">
+            Incomplete Update. Please sync again.
+          </span>
         );
       default:
-        return <span className="text-yellow-500">Unknown status</span>;
+        return <span className="text-warning">Unknown status</span>;
     }
   }, [syncState, localSyncStatus]);
 

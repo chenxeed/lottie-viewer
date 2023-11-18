@@ -1,19 +1,30 @@
 import { useStateSetUser, useStateUser } from "../store/user";
 import { CREATE_USER } from "../repo/server-graphql/graph";
 import { useMutation } from "@apollo/client";
-import { useRef } from "react";
 import { useStateSetNotification } from "../store/notification";
 import { client } from "../repo/server-graphql/client";
 
+/**
+ * Service to sync the user local ID to the server.
+ * Only once user are sync, they can upload their assets to the server,
+ * otherwise their assets will remain offline. User can still use the app while not sync.
+ *
+ * This service mainly used to keep user data in sync between the client and the server.
+ */
 export function useSyncUser() {
-  const user = useStateUser();
-  const userRef = useRef(user);
-  const setNotification = useStateSetNotification();
-  userRef.current = user;
+  // Shared state
 
+  const user = useStateUser();
   const setUser = useStateSetUser();
   const [createUser] = useMutation(CREATE_USER, { client });
 
+  const setNotification = useStateSetNotification();
+
+  // Service hooks for the components
+  // Here's the process:
+  // 1. Check if the user is already sync or not, based on the `isSync` flag
+  // 2. If already sync, do nothing and user can proceed to their flow
+  // 3. If not sync, create the user to the server
   return async () => {
     if (!user) {
       // There's no user to sync with, skipping the process

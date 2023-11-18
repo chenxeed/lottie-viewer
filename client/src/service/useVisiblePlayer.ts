@@ -31,12 +31,17 @@ export const useVisiblePlayer = ({
   scrollDOMRef,
   gridDOMRef,
 }: UseVisiblePlayerProps) => {
-  const dotLottiePlayers = useRef<(DotLottieCommonPlayer | null)[]>([]);
-  // NOTE: the assets index starts from 0
-  const currentlyPlayingRef = useRef<[number, number]>([-1, -1]);
+  // Local State
 
+  // dotLottiePlayers to be published to the parent component, exposing the player instance
+  const dotLottiePlayers = useRef<(DotLottieCommonPlayer | null)[]>([]);
+  // NOTE: the assets index starts from 0, so -1 means it is not playing anything
+  const currentlyPlayingRef = useRef<[number, number]>([-1, -1]);
   const scrollDOM = scrollDOMRef.current;
   const gridDOM = gridDOMRef.current;
+
+  // Side Effects
+
   useEffect(() => {
     const onScrollEvent = () => {
       if (

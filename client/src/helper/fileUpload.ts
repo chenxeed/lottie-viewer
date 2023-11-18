@@ -2,6 +2,9 @@ interface Option {
   accept?: string;
 }
 
+/**
+ * Upload a file without the need of a form
+ */
 export function uploadFile(option: Option = {}): Promise<FileList | null> {
   const fileInput = document.createElement("input");
   fileInput.setAttribute("type", "file");

@@ -20,46 +20,20 @@ export const Modal: FunctionComponent<ModalProps & PropsWithChildren> = ({
   size = "md",
   onClose,
 }) => {
-  // Local values
-  const [hideModal, setHideModal] = useState(true);
-
   // Style properties
 
   const openClass = useMemo(() => {
     return open
-      ? "opacity-100 translate-y-0"
-      : "h-0 w-0 opacity-0 -translate-y-60";
-  }, [open]);
-
-  const hideModalClass = useMemo(() => {
-    return hideModal ? "hidden" : "";
-  }, [hideModal]);
-
-  // Event Listeners
-
-  const onModalTransitionEnd = () => {
-    if (!open) {
-      setHideModal(true);
-    }
-  };
-
-  // Side Effect
-
-  useEffect(() => {
-    if (open) {
-      setHideModal(false);
-    }
+      ? "h-full opacity-100 translate-y-0"
+      : "h-0 opacity-0 -translate-y-60";
   }, [open]);
 
   return createPortal(
     <div
       className={clsx(
-        "fixed z-50 inset-0 overflow-hidden transition-all duration-1000",
+        "fixed z-50 inset-0 overflow-hidden duration-500 transition-all",
         openClass,
-        hideModalClass,
       )}
-      onTransitionEnd={onModalTransitionEnd}
-      aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"
     >

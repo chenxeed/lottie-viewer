@@ -14,7 +14,15 @@ import {
 import { useCallback, useRef } from "react";
 import { client } from "../repo/server-graphql/client";
 
+/**
+ * Service to synchronize local assets with the server.
+ *
+ * It follows the Cursor Pagination strategy, where the client will
+ * request the newer assets from the currently loaded assets.
+ */
 export function useSyncAssets() {
+  // Shared states
+
   const localSyncStatus = useStateLocalSyncStatus();
   const localSyncStatusRef = useRef(localSyncStatus);
   localSyncStatusRef.current = localSyncStatus;
@@ -40,28 +48,37 @@ export function useSyncAssets() {
     fetchPolicy: "no-cache",
   });
 
-  return useCallback(async () => {
+  // Service Hooks for the components
+  // Here's the process:
+  // 1. Check the local status if it's updated or outdated. If updated, do nothing
+  // 2. If outdated, use the last asset's ID as the cursor to get the newer list.
+  // 3. To limit the response load, we only request 20 items at a time.
+
+  return async () => {
     setSyncState(SyncState.SYNCING);
+
     const syncStatusResult = await getSyncStatus();
     if (!syncStatusResult.data) {
       // User might be offline
       setSyncState(SyncState.FAIL_TO_SYNC);
       return;
     }
+
     const syncStatus = syncStatusResult.data.lastSyncStatus[0];
     if (!syncStatus) {
       // This could be the very first time when there's no sync status yet, thus back to original state
       setSyncState(SyncState.NO_SYNC);
       return;
     }
+
     if (syncStatus.lastUpdate === localSyncStatusRef.current.lastUpdate) {
       // User has already sync with the latest data
       setSyncState(SyncState.UP_TO_DATE);
       return;
     }
-    // Upon sync, we just request the newer assets from the currently loaded assets
-    // by passing the last asset ID as the cursor
-    // Synchronize assets
+
+    // At this point, user has outdated data, so we need to sync with the server.
+
     const assetsResult = await getAssets({
       variables: {
         criteria:
@@ -69,6 +86,7 @@ export function useSyncAssets() {
             ? undefined
             : criteriaRef.current,
         after: assetsRef.current.length ? assetsRef.current[0].id : 0,
+        limit: 20,
       },
     });
     if (!assetsResult.data) {
@@ -76,27 +94,39 @@ export function useSyncAssets() {
       setSyncState(SyncState.FAIL_TO_SYNC);
       return;
     }
-    // At this point, user has successfully sync with the server
+    // At this point, user has updated their data with the server
+
+    const latestAssets = assetsResult.data.assets.nodes.filter(
+      (asset: any) =>
+        criteriaRef.current === Criteria.ALL ||
+        asset.criteria === criteriaRef.current,
+    );
     setAssets([
-      ...assetsResult.data.assets.nodes
-        .filter(
-          (asset: any) =>
-            criteriaRef.current === Criteria.ALL ||
-            asset.criteria === criteriaRef.current,
-        )
-        .map((asset: any) => ({
-          id: asset.id,
-          title: asset.title,
-          file: asset.file,
-          criteria: asset.criteria,
-          createdAt: asset.createdAt,
-        })),
+      ...latestAssets.map((asset: any) => ({
+        id: asset.id,
+        title: asset.title,
+        file: asset.file,
+        criteria: asset.criteria,
+        createdAt: asset.createdAt,
+      })),
       ...(assetsRef.current.length ? assetsRef.current : []),
     ]);
-    setLocalSyncStatus({
-      name: syncStatus.user.name,
-      lastUpdate: syncStatus.lastUpdate,
-    });
-    setSyncState(SyncState.UP_TO_DATE);
-  }, [getAssets, getSyncStatus, setAssets, setLocalSyncStatus, setSyncState]);
+
+    // If there's still more data to sync, let the user to sync again manually.
+    // Reason is to prevent the user to sync too much data at once.
+
+    if (assetsResult.data.assets.pageInfo.hasNextPage) {
+      setLocalSyncStatus({
+        name: syncStatus.user.name,
+        lastUpdate: latestAssets[0].createdAt,
+      });
+      setSyncState(SyncState.NEED_UPDATE);
+    } else {
+      setLocalSyncStatus({
+        name: syncStatus.user.name,
+        lastUpdate: syncStatus.lastUpdate,
+      });
+      setSyncState(SyncState.UP_TO_DATE);
+    }
+  };
 }

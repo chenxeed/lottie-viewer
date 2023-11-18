@@ -10,6 +10,9 @@ interface ReadFileResult {
   arrayBuffer: ArrayBuffer;
 }
 
+/**
+ * Read the file content and return the result based on the readAs option
+ */
 export function readFile<T extends Option["readAs"]>(
   file: File,
   readAs?: T,
