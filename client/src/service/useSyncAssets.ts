@@ -97,17 +97,18 @@ export function useSyncAssets() {
     // At this point, user has updated their data with the server
 
     const latestAssets = assetsResult.data.assets.nodes.filter(
-      (asset: any) =>
+      (asset) =>
         criteriaRef.current === Criteria.ALL ||
         asset.criteria === criteriaRef.current,
     );
     setAssets([
-      ...latestAssets.map((asset: any) => ({
+      ...latestAssets.map((asset) => ({
         id: asset.id,
         title: asset.title,
         file: asset.file,
-        criteria: asset.criteria,
+        criteria: asset.criteria as Criteria,
         createdAt: asset.createdAt,
+        user: asset.user?.name || "",
       })),
       ...(assetsRef.current.length ? assetsRef.current : []),
     ]);

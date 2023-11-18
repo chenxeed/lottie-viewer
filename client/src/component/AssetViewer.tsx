@@ -36,6 +36,7 @@ const DotLottiePlayerContext = createContext<(DotLottieCommonPlayer | null)[]>(
 
 interface LottieCardProps {
   title: string;
+  user: string;
   playerSrc: string;
   isOffline?: boolean;
   onClick: () => void;
@@ -45,7 +46,7 @@ const Thumbnail = (props: LottieCardProps) => {
   const dotLottiePlayers = useContext(DotLottiePlayerContext);
 
   return (
-    <LottieCard title={props.title} onClick={props.onClick}>
+    <LottieCard title={props.title} author={props.user} onClick={props.onClick}>
       <DotLottiePlayer
         ref={(player) => {
           dotLottiePlayers[props.index] = player;
@@ -69,6 +70,7 @@ const PendingAssetList = () => {
     setViewAsset({
       title: asset.title,
       fileUrl: asset.dataUrl,
+      user: asset.user,
     });
   };
   return (
@@ -79,8 +81,9 @@ const PendingAssetList = () => {
           key={asset.id}
           onClick={() => onClickDetail(asset)}
           isOffline={true}
-          title={asset.title}
+          title={`${asset.criteria} - ${asset.title}`}
           playerSrc={asset.dataUrl}
+          user={asset.user}
         />
       ))}
     </>
@@ -95,6 +98,7 @@ const AssetList = () => {
     setViewAsset({
       title: asset.title,
       fileUrl: getFilePath(asset.file),
+      user: asset.user,
     });
 
   return (
@@ -104,8 +108,9 @@ const AssetList = () => {
           index={pendingAssets.length + index}
           key={asset.id}
           onClick={() => onClickDetail(asset)}
-          title={asset.title}
+          title={`${asset.criteria} - ${asset.title}`}
           playerSrc={getFilePath(asset.file)}
+          user={asset.user}
         />
       ))}
     </>
@@ -213,6 +218,7 @@ export const AssetViewer = ({ scrollDOMRef }: AssetViewerProps) => {
           file: asset.file,
           criteria: asset.criteria as Criteria,
           createdAt: asset.createdAt,
+          user: asset.user?.name || "",
         })),
       );
     }

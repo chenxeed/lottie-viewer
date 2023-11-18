@@ -59,6 +59,7 @@ export function useUploadAsset(option?: UploadAssetOption) {
           criteria,
           createdAt: new Date().toISOString(),
           isPending: true,
+          user: user?.name || "",
         },
         ...pendingAssets,
       ]);

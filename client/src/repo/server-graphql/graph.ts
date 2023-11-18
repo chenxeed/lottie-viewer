@@ -9,6 +9,9 @@ export const GET_ASSETS = gql(`
         file
         id
         title
+        user {
+          name
+        }
       }
       pageInfo {
         endCursor

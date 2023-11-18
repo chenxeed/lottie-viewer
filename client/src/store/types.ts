@@ -66,6 +66,7 @@ export interface Lottie {
   file: string;
   criteria: Criteria;
   createdAt: string;
+  user: string;
 }
 
 export interface SyncStatus {
@@ -86,10 +87,12 @@ export interface PendingLottie {
   isPending: boolean;
   criteria: Criteria;
   createdAt: string;
+  user: string;
 }
 
 export interface ViewLottie {
   title: string;
+  user: string;
   fileUrl: string;
 }
 
