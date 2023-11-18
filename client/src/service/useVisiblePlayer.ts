@@ -23,6 +23,7 @@ interface UseVisiblePlayerProps {
  * To be improved:
  * - Support other layout as well like "flex", "float", etc when the need arises
  * - Figure out a better way to determine the number of columns
+ * - Throttle or Debounce it for even better performance
  *
  * Feel free to extend for further use cases.
  */
@@ -108,10 +109,7 @@ export const useVisiblePlayer = ({
 
     if (scrollDOM && gridDOM) {
       scrollDOM.addEventListener("scroll", onScrollEvent);
-    } else {
-      console.warn(
-        "scrollDOM is not defined. Visible Player Optimization is not activated",
-      );
+      console.log("Visible Player Optimization is activated on", scrollDOM);
     }
 
     return () => {

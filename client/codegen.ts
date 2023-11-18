@@ -9,11 +9,11 @@ import { CodegenConfig } from "@graphql-codegen/cli";
  * If you want to use it, please modify the config accordingly based on which schema you want to generate.
  */
 const config: CodegenConfig = {
-  schema: "http://localhost/api/graphql",
+  schema: "https://graphql.lottiefiles.com/2022-08",
   // this assumes that all your source files are in a top-level `src/` directory - you might need to adjust this to your file structure
-  documents: ["src/repo/server-graphql/**/*.{ts,tsx}"],
+  documents: ["src/repo/lottie-graphql/**/*.{ts,tsx}"],
   generates: {
-    "./src/repo/server-graphql/__generated__/": {
+    "./src/repo/lottie-graphql/__generated__/": {
       preset: "client",
       plugins: [],
       presetConfig: {

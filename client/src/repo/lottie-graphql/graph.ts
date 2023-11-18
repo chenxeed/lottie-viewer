@@ -9,7 +9,6 @@ export const FEATURED_PUBLIC_ANIMATIONS = gql(`
           slug
           lottieUrl
           name
-          imageUrl
         }
       }
       pageInfo {

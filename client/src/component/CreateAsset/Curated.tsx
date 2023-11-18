@@ -6,11 +6,20 @@ import { useCallback, useRef } from "react";
 import { LottieCard } from "../LottieCard";
 import { Button } from "../../atoms/Button";
 import { Skeleton } from "../../atoms/Skeleton";
+import { DotLottiePlayer } from "@dotlottie/react-player";
+import { useVisiblePlayer } from "../../service/useVisiblePlayer";
 
 export const Curated = (props: {
   onChooseLottieUrl: (lottieUrl: string, slugName: string) => void;
 }) => {
+  // Service Hooks
+
+  const scrollDOMRef = useRef<HTMLDivElement>(null);
+  const gridDOMRef = useRef<HTMLDivElement>(null);
+  const { dotLottiePlayers } = useVisiblePlayer({ scrollDOMRef, gridDOMRef });
+
   // API Hooks
+
   const { data, loading, error, refetch, fetchMore } = useQuery(
     FEATURED_PUBLIC_ANIMATIONS,
     {
@@ -46,9 +55,12 @@ export const Curated = (props: {
         </h3>
       </div>
 
-      <div className="h-[65vh] sm:h-[70vh] overflow-y-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 pt-4">
-          {data?.featuredPublicAnimations.edges.map((edge) => (
+      <div className="h-[65vh] sm:h-[70vh] overflow-y-auto" ref={scrollDOMRef}>
+        <div
+          className="grid grid-cols-2 sm:grid-cols-3 gap-8 pt-4"
+          ref={gridDOMRef}
+        >
+          {data?.featuredPublicAnimations.edges.map((edge, index) => (
             <LottieCard
               key={edge.node.id}
               title={edge.node.name}
@@ -57,8 +69,21 @@ export const Curated = (props: {
                 props.onChooseLottieUrl(edge.node.lottieUrl, edge.node.slug)
               }
             >
-              {edge.node.imageUrl && (
-                <img src={edge.node.imageUrl} alt={edge.node.name} />
+              {edge.node.lottieUrl ? (
+                <DotLottiePlayer
+                  ref={(player) => {
+                    dotLottiePlayers.current[index] = player;
+                  }}
+                  autoplay={
+                    index <
+                    10 /* Only autoplay the first 10, since the rest will be played upon user scroll */
+                  }
+                  renderer="canvas"
+                  loop
+                  src={edge.node.lottieUrl}
+                />
+              ) : (
+                <div className="text-warning">dotLottie not available</div>
               )}
             </LottieCard>
           ))}
