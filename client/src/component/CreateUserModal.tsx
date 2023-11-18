@@ -6,6 +6,7 @@ import arrowDownJSON from "../asset/arrow-down.json";
 import fingerSnapJSON from "../asset/fingersnap.json";
 import clsx from "clsx";
 import { DotLottiePlayer } from "@dotlottie/react-player";
+import "@dotlottie/react-player/dist/index.css";
 import { Modal } from "../atoms/Modal";
 
 export const CreateUserModal = () => {

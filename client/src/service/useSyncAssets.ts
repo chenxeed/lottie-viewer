@@ -11,7 +11,7 @@ import {
   useStateCriteria,
   useStateSetAssets,
 } from "../store/assets";
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import { client } from "../repo/server-graphql/client";
 
 /**

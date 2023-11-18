@@ -1,11 +1,5 @@
 import clsx from "clsx";
-import {
-  FunctionComponent,
-  PropsWithChildren,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FunctionComponent, PropsWithChildren, useMemo } from "react";
 import { createPortal } from "react-dom";
 
 interface ModalProps {

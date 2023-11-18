@@ -2,7 +2,6 @@ import {
   FunctionComponent,
   MouseEvent,
   PropsWithChildren,
-  useRef,
   useState,
 } from "react";
 import { Button, ButtonProps } from "./Button";

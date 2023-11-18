@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { ComponentProps, FunctionComponent, useRef } from "react";
+import { ComponentProps, FunctionComponent, useRef } from "react";
 
 interface SelectProps {
   label?: string;
