@@ -14,7 +14,7 @@ function App() {
 
   return (
     <div className="bg-gradient-to-b from-emerald-200 to-emerald-600 h-screen shadow-inner">
-      <header className="shadow bg-light h-20">
+      <header className="shadow bg-light h-16 sticky top-0 z-30">
         <div className="container mx-auto p-4 h-full flex justify-between">
           <CreateAsset />
           <h2 className="text-xl text-dark drop-shadow text-center">
@@ -24,10 +24,10 @@ function App() {
         </div>
       </header>
       <div
-        className="container mx-auto bg-light shadow px-4 pb-4 h-[calc(100vh-5rem)] overflow-y-auto"
+        className="container mx-auto bg-light shadow px-4 pb-4 h-[calc(100vh-4rem)] overflow-y-auto"
         ref={assetsContainerRef}
       >
-        <div className="flex justify-between items-start pt-4 pb-2 px-2 shadow-md h-24 bg-light sticky top-0 z-10">
+        <div className="flex justify-between items-start pt-4 pb-2 px-2 shadow-md h-24 bg-light sticky top-0 z-20">
           <FilterForm />
           <SyncStatus />
         </div>
