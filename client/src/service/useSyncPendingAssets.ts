@@ -1,4 +1,4 @@
-import { LottieStorage, PendingLottie } from "../store/types";
+import { LottieStorage, PendingLottie, User } from "../store/types";
 import { useUploadAsset } from "./useUploadAsset";
 import { useStateSetPendingAssets } from "../store/assets";
 import { useStateSetNotification } from "../store/notification";
@@ -20,7 +20,7 @@ export function useSyncPendingAssets() {
   // 1. Get the pending assets from the local storage
   // 2. Upload the pending assets one by one, recursively
   // 3. If the upload fails, stop the sync process and notify the user
-  return async () => {
+  return async (user: User) => {
     /**
      * The recursive function that will loop towards the given `nextPendingAssets` data,
      * to upload them one by one.
@@ -51,7 +51,7 @@ export function useSyncPendingAssets() {
 
       // Chain the pending asset synchronization with the uploadAsset service, for reusability and consistent behavior
       // as if the user uploads the asset manually
-      const result = await uploadAsset(file, pendingAsset.criteria);
+      const result = await uploadAsset(file, pendingAsset.criteria, user);
       if (!result) {
         throw new Error("Failed to upload pending asset");
       }

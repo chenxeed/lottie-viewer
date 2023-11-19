@@ -3,6 +3,7 @@ import { CREATE_USER } from "../repo/server-graphql/graph";
 import { useMutation } from "@apollo/client";
 import { useStateSetNotification } from "../store/notification";
 import { client } from "../repo/server-graphql/client";
+import { User } from "../store/types";
 
 /**
  * Service to sync the user local ID to the server.
@@ -25,15 +26,15 @@ export function useSyncUser() {
   // 1. Check if the user is already sync or not, based on the `isSync` flag
   // 2. If already sync, do nothing and user can proceed to their flow
   // 3. If not sync, create the user to the server
-  return async () => {
-    if (!user) {
-      // There's no user to sync with, skipping the process
-      return;
+  return async (newUser?: User): Promise<User> => {
+    const checkUser = newUser || user;
+    if (!checkUser) {
+      throw new Error("SyncUser: User is not set");
     }
 
-    if (user.isSync) {
+    if (checkUser.isSync) {
       // The user has already sync to the server
-      return;
+      return checkUser;
     }
 
     // Sync the user
@@ -42,23 +43,26 @@ export function useSyncUser() {
     try {
       const result = await createUser({
         variables: {
-          name: user.name,
+          name: checkUser.name,
         },
       });
       const data = result.data;
       if (!data) {
         throw new Error("No created user data returned from the server");
       }
-      setUser({
+      const newUser = {
         id: Number(data.createUser.id),
         name: data.createUser.name,
         isSync: true,
-      });
+      };
+      setUser(newUser);
+      return newUser;
     } catch (error) {
       setNotification({
         severity: "info",
         message: "Unable sync to the server. You are in offline mode",
       });
+      return checkUser;
     }
   };
 }

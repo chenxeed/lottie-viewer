@@ -26,7 +26,6 @@ export const CreateUserModal = () => {
 
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [shouldSync, setShouldSync] = useState(false);
   const [playerJSON, setPlayerJSON] =
     useState<Record<string, any>>(arrowDownJSON);
   const [preloading, setPreloading] = useState(false);
@@ -62,13 +61,6 @@ export const CreateUserModal = () => {
     }
   }, [open]);
 
-  // Sync the user to the server, once the user has set locally
-  useEffect(() => {
-    if (shouldSync) {
-      syncUser();
-    }
-  }, [shouldSync]);
-
   // Event Listener
 
   function onChangeUsername(e: React.ChangeEvent<HTMLInputElement>) {
@@ -87,7 +79,7 @@ export const CreateUserModal = () => {
         isSync: false,
       };
       setUser(user);
-      setShouldSync(true);
+      syncUser(user);
     }, 2000); // Delay 2s to show the animation
   }
 

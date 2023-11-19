@@ -8,8 +8,9 @@ import {
 } from "../store/assets";
 import { uploadFileToBucket } from "./fileBucket";
 import { readFile } from "../helper/fileReader";
-import { Criteria } from "../store/types";
+import { Criteria, User } from "../store/types";
 import { useStateSetNotification } from "../store/notification";
+import { useRef } from "react";
 
 interface UploadAssetOption {
   /**
@@ -27,8 +28,6 @@ export function useUploadAsset(option?: UploadAssetOption) {
 
   // Shared state
 
-  const user = useStateUser();
-
   const setNotification = useStateSetNotification();
 
   const pendingAssets = useStatePendingAssets();
@@ -37,7 +36,7 @@ export function useUploadAsset(option?: UploadAssetOption) {
   const [createAsset] = useMutation(CREATE_ASSET, { client });
 
   // Service Hooks for the components
-  return async (file: File, criteria: Criteria) => {
+  return async (file: File, criteria: Criteria, user: User) => {
     /**
      * Function to save the selected assets to the local storage, in case the server is not available or user is not eligible.
      */

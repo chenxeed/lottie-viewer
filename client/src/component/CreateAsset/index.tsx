@@ -13,6 +13,7 @@ import { fetchFileFromPublicURL } from "../../service/fileBucket";
 import { useStateCriteria } from "../../store/assets";
 import { Modal } from "../../atoms/Modal";
 import { Select } from "../../atoms/Select";
+import { useStateUser } from "../../store/user";
 
 const criteriaOption = [
   Criteria.GAME,
@@ -77,7 +78,7 @@ export const CreateAsset = () => {
   };
 
   // The process of submission will require user to
-  // 1. Sync the user to the server
+  // 1. Sync the user to the server, to make sure the user is created on the server for the table relationship
   // 2. Upload the file to the server
   // If the user failed to do either way, the file will be saved offline
   const onClickSubmit = async () => {
@@ -91,9 +92,9 @@ export const CreateAsset = () => {
     setLoadingCreate(true);
 
     try {
-      await syncUser();
+      const authUser = await syncUser();
 
-      const data = await uploadAsset(chosenFile, selectedCriteria);
+      const data = await uploadAsset(chosenFile, selectedCriteria, authUser);
       if (data) {
         // Sync the latest assets from the server, by checking the last sync status
         await syncAssets();

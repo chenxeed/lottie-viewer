@@ -9,6 +9,7 @@ import { SyncState } from "../store/types";
 import { useStateSetNotification } from "../store/notification";
 import { ellipsisText } from "../helper/ellipsisText";
 import { Button } from "../atoms/Button";
+import { useStateUser } from "../store/user";
 
 export const SyncStatus = () => {
   // Shared state
@@ -78,10 +79,12 @@ export const SyncStatus = () => {
     setIsLoading(true);
     try {
       // Sync the user state, in case the user was created during offline mode
-      await syncUser();
+      const authUser = await syncUser();
 
-      // Sync the pending assets, in case the user created assets during offline mode
-      await syncPendingAssets();
+      // Sync the pending assets, in case the user has created assets during offline mode
+      if (authUser.isSync) {
+        await syncPendingAssets(authUser);
+      }
 
       // Sync the latest assets from the server, by checking the last sync status
       await syncAssets();

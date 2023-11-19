@@ -95,12 +95,16 @@ export function useSyncAssets() {
       return;
     }
     // At this point, user has updated their data with the server
+    // Reverse the order because we retrieve it from the eldest to newest,
+    // while our `assets` are ordered from newest to eldest.
 
-    const latestAssets = assetsResult.data.assets.nodes.filter(
-      (asset) =>
-        criteriaRef.current === Criteria.ALL ||
-        asset.criteria === criteriaRef.current,
-    );
+    const latestAssets = assetsResult.data.assets.nodes
+      .reverse()
+      .filter(
+        (asset) =>
+          criteriaRef.current === Criteria.ALL ||
+          asset.criteria === criteriaRef.current,
+      );
     setAssets([
       ...latestAssets.map((asset) => ({
         id: asset.id,
