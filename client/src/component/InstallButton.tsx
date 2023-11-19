@@ -27,12 +27,12 @@ export const InstallButton = () => {
   return (
     <div
       className={clsx(
-        "fixed bottom-4 right-4 z-30",
+        "fixed bottom-4 right-4 z-30 animate-bounce",
         !installPrompt && "hidden",
       )}
     >
       <Button variant="outline-primary" onClick={onInstallApp}>
-        Install
+        Install!
       </Button>
     </div>
   );

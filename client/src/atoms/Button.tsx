@@ -52,7 +52,7 @@ export const Button: FunctionComponent<
       case "dark":
         return "bg-dark text-white focus:ring-dark";
       case "outline-primary":
-        return "bg-transparent text-primary border-primary focus:ring-primary";
+        return "bg-light text-primary border-primary focus:ring-primary";
     }
   }, [variant]);
 
