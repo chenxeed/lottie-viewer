@@ -7,9 +7,13 @@ import { Criteria } from "../store/types";
 
 interface PreloadCallbacks {
   onStart: () => void;
-  onProgress: (progress: number, total: number) => void;
-  onDone: (progress: number, total: number) => void;
+  onProgress: (progress: number, total: number, fail: number) => void;
+  onDone: (progress: number, total: number, fail: number) => void;
+  onError?: (progress: number, total: number, fail: number) => void;
 }
+
+// Determine how long the user shall wait before they can continue the app, in case the preload takes too long
+const PRELOAD_TIMEOUT = 5000;
 
 /**
  * Preload the lottie public animations library for offline use.
@@ -19,14 +23,15 @@ export const preloadResources = (cb: PreloadCallbacks): void => {
   cb.onStart();
   let progress = 0;
   let total = 0;
+  let fail = 0;
   let lottieClientOnProgress = false;
   let serverAssetsOnProgress = false;
   let timeout: ReturnType<typeof setTimeout>;
 
   // In case, this may takes too long, we'll let the user go to explore the app anyway. Time limit is 30s
   timeout = setTimeout(() => {
-    checkIfDone();
-  }, 30000);
+    cb.onDone(progress, total, fail);
+  }, PRELOAD_TIMEOUT);
 
   function checkIfDone() {
     if (
@@ -35,8 +40,18 @@ export const preloadResources = (cb: PreloadCallbacks): void => {
       progress === total
     ) {
       clearTimeout(timeout);
-      cb.onDone(progress, total);
+      cb.onDone(progress, total, fail);
     }
+  }
+
+  function updateProgress(newProgress = 1) {
+    progress += newProgress;
+    cb.onProgress(progress, total, fail);
+  }
+
+  function updateFail() {
+    fail++;
+    cb.onError?.(progress, total, fail);
   }
 
   // Preload the featured public animations from LottieFiles GraphQL API
@@ -48,15 +63,19 @@ export const preloadResources = (cb: PreloadCallbacks): void => {
     .then((result) => {
       lottieClientOnProgress = true;
       total += result.data.featuredPublicAnimations.edges.length;
-      cb.onProgress(progress, total);
+      updateProgress(0);
+      checkIfDone();
       // Fetch all the
       result.data.featuredPublicAnimations.edges.forEach((edge: any) => {
-        fetch(edge.node.lottieUrl).then(() => {
-          cb.onProgress(progress++, total);
-          checkIfDone();
-        });
+        fetch(edge.node.lottieUrl)
+          .then(() => {
+            updateProgress(1);
+            checkIfDone();
+          })
+          .catch(updateFail);
       });
-    });
+    })
+    .catch(updateFail);
 
   // Preload the assets by each category, so user can search by category offline
   [
@@ -80,13 +99,17 @@ export const preloadResources = (cb: PreloadCallbacks): void => {
       .then((result) => {
         serverAssetsOnProgress = true;
         total += result.data.assets.nodes.length;
-        cb.onProgress(progress, total);
+        updateProgress(0);
+        checkIfDone();
         result.data.assets.nodes.forEach((asset) => {
-          fetch(asset.file).then(() => {
-            cb.onProgress(progress++, total);
-            checkIfDone();
-          });
+          fetch(asset.file)
+            .then(() => {
+              updateProgress(1);
+              checkIfDone();
+            })
+            .catch(updateFail);
         });
-      });
+      })
+      .catch(updateFail);
   });
 };
