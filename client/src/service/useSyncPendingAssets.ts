@@ -84,7 +84,6 @@ export function useSyncPendingAssets() {
     try {
       return recursiveUploadPendingAsset(latestPendingAssets);
     } catch (error) {
-      console.error("syncPendingAssets: Failed to upload pending asset", error);
       setNotification({
         severity: "error",
         message: "Failed to upload pending asset",

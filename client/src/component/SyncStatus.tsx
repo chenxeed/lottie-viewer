@@ -90,7 +90,6 @@ export const SyncStatus = () => {
         severity: "warning",
         message: "Fail to synchronize. Please ensure you are online.",
       });
-      console.error("Fail to synchronize", e);
     } finally {
       setIsLoading(false);
     }

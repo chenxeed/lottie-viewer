@@ -55,7 +55,6 @@ export function useSyncUser() {
         isSync: true,
       });
     } catch (error) {
-      console.error("Failed to sync user", error);
       setNotification({
         severity: "info",
         message: "Unable sync to the server. You are in offline mode",

@@ -200,9 +200,8 @@ export const AssetViewer = ({ scrollDOMRef }: AssetViewerProps) => {
         limit: ASSET_PER_PAGE,
       },
     }).catch((e) => {
-      console.error("AssetViewer: Fail to fetch more assets", e);
       setNotification({
-        severity: "error",
+        severity: "warning",
         message:
           "Fail to retrieve more assets. Please check your internet connection and try again.",
       });
@@ -229,8 +228,8 @@ export const AssetViewer = ({ scrollDOMRef }: AssetViewerProps) => {
   useEffect(() => {
     if (error) {
       setNotification({
-        severity: "error",
-        message: "Fail to retrieve assets. Please try again.",
+        severity: "warning",
+        message: "Fail to retrieve assets from the server",
       });
     }
   }, [error, setNotification]);

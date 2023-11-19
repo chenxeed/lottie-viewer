@@ -100,7 +100,6 @@ export const CreateAsset = () => {
       }
       onClose();
     } catch (e) {
-      console.error("Fail to upload", e);
       setNotification({
         severity: "error",
         message: "Fail to upload. Please try again.",

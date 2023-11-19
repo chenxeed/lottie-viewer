@@ -39,7 +39,6 @@ export function register(config?: Config) {
       }
 
       window.addEventListener("load", () => {
-        console.log("ServiceWorkerRegistration: Getting sw.js");
         const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
         if (isLocalhost) {
@@ -49,15 +48,10 @@ export function register(config?: Config) {
           // Add some additional logging to localhost, pointing developers to the
           // service worker/PWA documentation.
           navigator.serviceWorker.ready.then(() => {
-            console.log(
-              "This web app is being served cache-first by a service " +
-                "worker. To learn more, visit https://cra.link/PWA",
-            );
             resolve(true);
           });
         } else {
           // Is not localhost. Just register service worker
-          console.log("ServiceWorkerRegistration: RegisterValidSW");
           registerValidSW(swUrl, config).then(() => resolve(true));
         }
       });
@@ -76,24 +70,12 @@ function registerValidSW(swUrl: string, config?: Config) {
         if (installingWorker == null) {
           return;
         }
-        console.log(
-          "ServiceWorkerRegistration: installing",
-          installingWorker.state,
-        );
         installingWorker.onstatechange = () => {
-          console.log(
-            "ServiceWorkerRegistration: stat change",
-            installingWorker.state,
-          );
           if (installingWorker.state === "installed") {
             if (navigator.serviceWorker.controller) {
               // At this point, the updated precached content has been fetched,
               // but the previous service worker will still serve the older
               // content until all client tabs are closed.
-              console.log(
-                "New content is available and will be used when all " +
-                  "tabs for this page are closed. See https://cra.link/PWA.",
-              );
 
               // Execute callback
               if (config && config.onUpdate) {
@@ -103,7 +85,6 @@ function registerValidSW(swUrl: string, config?: Config) {
               // At this point, everything has been precached.
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
-              console.log("Content is cached for offline use.");
 
               // Execute callback
               if (config && config.onSuccess) {
