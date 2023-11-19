@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useStateNotification } from "../store/notification";
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 export const NotificationCard = () => {
   // Shared State
@@ -41,10 +42,10 @@ export const NotificationCard = () => {
     }
   }, [notification]);
 
-  return (
+  return createPortal(
     <div
       className={clsx(
-        "fixed z-50 md:right-4 w-64 md:w:80 transition-all overflow-hidden",
+        "fixed z-50 md:right-8 w-64 md:w:80 transition-all overflow-hidden",
         open ? "w-64 h-36 top-20 right-2" : "w-0 h-0 -top-60 -right-60",
       )}
     >
@@ -68,6 +69,7 @@ export const NotificationCard = () => {
           </svg>
         </span>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

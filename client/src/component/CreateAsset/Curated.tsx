@@ -2,16 +2,29 @@ import { useQuery } from "@apollo/client";
 import { FEATURED_PUBLIC_ANIMATIONS } from "../../repo/lottie-graphql/graph";
 import { lottieClient } from "../../repo/lottie-graphql/client";
 import { IntersectionElement } from "../IntersectionElement";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { LottieCard } from "../LottieCard";
 import { Button } from "../../atoms/Button";
 import { Skeleton } from "../../atoms/Skeleton";
 import { DotLottiePlayer } from "@dotlottie/react-player";
 import { useVisiblePlayer } from "../../service/useVisiblePlayer";
+import { useStateSetNotification } from "../../store/notification";
 
 export const Curated = (props: {
   onChooseLottieUrl: (lottieUrl: string, slugName: string) => void;
 }) => {
+  // Shared state
+
+  const setNotification = useStateSetNotification();
+
+  // Local state
+
+  // NOTE: Currently there's a bug on `fetchMore`, when there's network error, it doesn't update the `error` state.
+  // This causes the infinite scroll to keep trying to fetch more data, which causes the app to request the same data over and over again.
+  // Thus, we need to use this state to force stop the infinite scroll.
+  // Issue: https://github.com/apollographql/apollo-client/issues/6857
+  const [forceStopLoading, setForceStopLoading] = useState(false);
+
   // Service Hooks
 
   const scrollDOMRef = useRef<HTMLDivElement>(null);
@@ -24,8 +37,9 @@ export const Curated = (props: {
     FEATURED_PUBLIC_ANIMATIONS,
     {
       client: lottieClient,
-      fetchPolicy: "cache-first",
+      fetchPolicy: "cache-first", // cache-first so user can get smooth experience of preloading the assets if it's already cached
       notifyOnNetworkStatusChange: true,
+      errorPolicy: "ignore",
     },
   );
 
@@ -36,16 +50,42 @@ export const Curated = (props: {
   dataRef.current = data;
   const loadingRef = useRef(loading);
   loadingRef.current = loading;
+  const errorRef = useRef(error);
+  errorRef.current = error;
   const onScrollToBottom = useCallback(() => {
-    if (loadingRef.current) {
+    if (loadingRef.current || errorRef.current) {
       return;
     }
     fetchMore({
       variables: {
         after: dataRef.current?.featuredPublicAnimations.pageInfo.endCursor,
       },
+    }).catch(() => {
+      // NOTE: We don't want to show the error to the user, since it's not critical.
+      setNotification({
+        message: "Fail to load more featured public animations.",
+        severity: "error",
+      });
+      setForceStopLoading(true);
     });
-  }, [fetchMore]);
+  }, [fetchMore, setNotification]);
+
+  // Event Listener
+
+  const onRetry = () => {
+    refetch()
+      .then(() => {
+        setForceStopLoading(false);
+      })
+      .catch(() => {
+        // NOTE: We don't want to show the error to the user, since it's not critical.
+        setNotification({
+          message: "Fail to retry featured public animations.",
+          severity: "error",
+        });
+        setForceStopLoading(true);
+      });
+  };
 
   return (
     <>
@@ -87,21 +127,22 @@ export const Curated = (props: {
               )}
             </LottieCard>
           ))}
-
-          {!loading && error && (
+          {((!loading && error) || forceStopLoading) && (
             <div className="text-danger">
               Fail to load featured public animations. Please check your
               internet connection and try again.
-              <Button variant="info" onClick={() => refetch()}>
+              <Button variant="info" onClick={onRetry}>
                 Retry
               </Button>
             </div>
           )}
 
-          {loading ? (
+          {loading && !error ? (
             <Skeleton width={"100%"} height={150} />
           ) : (
-            <IntersectionElement onIntersect={onScrollToBottom} />
+            !forceStopLoading && (
+              <IntersectionElement onIntersect={onScrollToBottom} />
+            )
           )}
         </div>
       </div>
