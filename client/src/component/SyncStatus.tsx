@@ -87,8 +87,8 @@ export const SyncStatus = () => {
       await syncAssets();
     } catch (e) {
       setNotification({
-        severity: "error",
-        message: "Fail to synchronize. Please try again.",
+        severity: "warning",
+        message: "Fail to synchronize. Please ensure you are online.",
       });
       console.error("Fail to synchronize", e);
     } finally {

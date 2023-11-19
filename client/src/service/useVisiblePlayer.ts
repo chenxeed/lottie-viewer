@@ -37,12 +37,13 @@ export const useVisiblePlayer = ({
   const dotLottiePlayers = useRef<(DotLottieCommonPlayer | null)[]>([]);
   // NOTE: the assets index starts from 0, so -1 means it is not playing anything
   const currentlyPlayingRef = useRef<[number, number]>([-1, -1]);
-  const scrollDOM = scrollDOMRef.current;
-  const gridDOM = gridDOMRef.current;
 
   // Side Effects
 
   useEffect(() => {
+    const scrollDOM = scrollDOMRef.current;
+    const gridDOM = gridDOMRef.current;
+
     const onScrollEvent = () => {
       if (
         scrollDOM === null ||
@@ -57,21 +58,28 @@ export const useVisiblePlayer = ({
         return;
       }
 
+      // Read the current parent's DOM that can determine each assets position
+
       const containerVisibleHeight = scrollDOM.clientHeight;
       const containerScrollTop = scrollDOM.scrollTop;
       const cardHeight = cardDom.clientHeight;
+
       // Determine the grid factors that determine the gap between each assets and number of columns
+
       const gridDOMComputedStyle = getComputedStyle(gridDOM);
       const rowGap = parseInt(gridDOMComputedStyle.rowGap);
       const numberOfVisibleColumns =
         gridDOMComputedStyle.gridTemplateColumns.split(" ").length;
 
       // Determine the possible position of assets that is currently within viewport based on the scrollTop position
+
       const cardHeightSpace = cardHeight + rowGap;
       const visibleRowPosition = Math.floor(
         containerScrollTop / cardHeightSpace,
       );
+
       // Determine the number of assets that can be displayed in the viewport
+
       const numberOfVisibleRows = Math.ceil(
         containerVisibleHeight / cardHeightSpace,
       );
@@ -99,7 +107,7 @@ export const useVisiblePlayer = ({
         possibleStartPosition,
         possibleEndPosition,
       ];
-      // Pause and play the affeced assets
+
       toBePaused.forEach((i) => {
         if (dotLottiePlayers.current[i]) {
           dotLottiePlayers.current[i]?.pause();
@@ -112,9 +120,8 @@ export const useVisiblePlayer = ({
       });
     };
 
-    if (scrollDOM && gridDOM) {
+    if (scrollDOM) {
       scrollDOM.addEventListener("scroll", onScrollEvent);
-      console.log("Visible Player Optimization is activated on", scrollDOM);
     }
 
     return () => {
@@ -122,7 +129,7 @@ export const useVisiblePlayer = ({
         scrollDOM.removeEventListener("scroll", onScrollEvent);
       }
     };
-  }, [gridDOM, scrollDOM]);
+  }, []);
 
   return { dotLottiePlayers, currentlyPlayingRef };
 };

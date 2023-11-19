@@ -9,7 +9,6 @@ export function findInAndOut(
   old: [number, number],
   newVal: [number, number],
 ): { in: number[]; out: number[] } {
-  const ins = [];
   const out = [];
   const oldStart = old[0];
   const oldFinish = old[1];
@@ -28,17 +27,12 @@ export function findInAndOut(
       out.push(i);
     }
   }
-  const findIn1 = oldStart - newStart;
-  if (findIn1 > 0) {
-    for (let i = newStart; i < oldStart; i++) {
-      ins.push(i);
-    }
-  }
-  const findIn2 = newFinish - oldFinish;
-  if (findIn2 > 0) {
-    for (let i = oldFinish + 1; i <= newFinish; i++) {
-      ins.push(i);
-    }
-  }
+
+  // The ins are basically the new range
+  const ins = Array.from(
+    { length: newVal[1] - newVal[0] + 1 },
+    (_, i) => i + newVal[0],
+  );
+
   return { in: ins, out };
 }

@@ -66,7 +66,7 @@ export function useSyncAssets() {
 
     const syncStatus = syncStatusResult.data.lastSyncStatus[0];
     if (!syncStatus) {
-      // This could be the very first time when there's no sync status yet, thus back to original state
+      // This could be the very first time when there's no one upload any assets yet, thus back to original state
       setSyncState(SyncState.NO_SYNC);
       return;
     }
@@ -77,7 +77,7 @@ export function useSyncAssets() {
       return;
     }
 
-    // At this point, user has outdated data, so we need to sync with the server.
+    // At this point, user has outdated assets, so we need to sync with the server.
 
     const assetsResult = await getAssets({
       variables: {

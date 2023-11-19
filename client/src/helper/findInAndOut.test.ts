@@ -3,35 +3,35 @@ import { findInAndOut } from "./findInAndOut";
 describe("helper - findInAndOut", () => {
   it("can find the correct in and out on further range", () => {
     expect(findInAndOut([0, 5], [3, 8])).toEqual({
-      in: [6, 7, 8],
+      in: [3, 4, 5, 6, 7, 8],
       out: [0, 1, 2],
     });
   });
 
   it("can find the correct in and out on closer range", () => {
     expect(findInAndOut([3, 8], [0, 5])).toEqual({
-      in: [0, 1, 2],
+      in: [0, 1, 2, 3, 4, 5],
       out: [6, 7, 8],
     });
   });
 
   it("can find the correct out if the first range is bigger than newer one", () => {
     expect(findInAndOut([0, 8], [3, 5])).toEqual({
-      in: [],
+      in: [3, 4, 5],
       out: [0, 1, 2, 6, 7, 8],
     });
   });
 
   it("can find the correct ins if the second range is bigger than older one", () => {
     expect(findInAndOut([3, 5], [0, 9])).toEqual({
-      in: [0, 1, 2, 6, 7, 8, 9],
+      in: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
       out: [],
     });
   });
 
   it("can give nothing if both range are the same", () => {
     expect(findInAndOut([9999, 10005], [9999, 10005])).toEqual({
-      in: [],
+      in: [9999, 10000, 10001, 10002, 10003, 10004, 10005],
       out: [],
     });
   });

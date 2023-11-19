@@ -66,14 +66,17 @@ export function useUploadAsset(option?: UploadAssetOption) {
       setNotification({
         severity: "info",
         message:
-          "Your animation has uploaded into your device. Once you're online, press SYNC to synchronize to the server.",
+          "Your animation has uploaded into your device. Once online, press SYNC to upload to the server.",
       });
     }
 
     // If the user hasn't sync yet, we can't upload the asset as it'll trigger NULL on the user relationship query.
     // Thus, we hold the asset to pending state first.
     if (!user?.isSync) {
-      return fallbackPendingAsset(file, criteria);
+      if (fallback) {
+        fallbackPendingAsset(file, criteria);
+      }
+      return;
     }
 
     // Upload the file to the server bucket, to retrieve the URL.

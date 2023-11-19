@@ -169,7 +169,7 @@ export const CreateUserModal = () => {
                     {!preloading && !preloadConfirmed && (
                       <div className="flex justify-evenly items-center mt-2">
                         <Button
-                          size="sm"
+                          size="lg"
                           variant="warning"
                           onClick={onSkipPreload}
                         >
@@ -178,6 +178,7 @@ export const CreateUserModal = () => {
                         <Button
                           size="lg"
                           variant="success"
+                          className="animate-bounce"
                           onClick={onSubmitPreload}
                         >
                           Download

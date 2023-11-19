@@ -166,11 +166,11 @@ export const CreateAsset = () => {
       */}
 
       <Modal open={openModal} size="lg" onClose={onClose}>
-        <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+        <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 min-h-[480px]">
           <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
             <div className="flex items-center border-b-2 border-emerald-300 pb-2">
               <h3 className="text-base font-semibold leading-6 text-gray-900">
-                Upload new asset
+                Add new asset
               </h3>
             </div>
             <div>
@@ -234,22 +234,39 @@ export const CreateAsset = () => {
                     <Preview source={lottieSource} />
                     <div className="flex items-center border-b-2 mt-2">
                       <h3 className="text-base font-semibold leading-6 text-gray-900">
-                        Select the criteria
+                        Select the criteria before saving it
                       </h3>
                     </div>
-                    <Select
-                      value={selectedCriteria}
-                      onChange={onChangeCriteria}
-                      options={criteriaOption}
-                    />
-                    <div className="mt-4">
-                      <Button
-                        variant="primary"
-                        onClick={onClickSubmit}
-                        disabled={loadingCreate}
-                      >
-                        {loadingCreate ? "Uploading..." : "Submit!"}
-                      </Button>
+                    <div className="flex px-2 py-4">
+                      {loadingCreate ? (
+                        <>
+                          <div className="flex flex-col items-center w-full">
+                            Submitting... Please wait.
+                            <img
+                              src="/logo192.png"
+                              className="animate-spin w-12 h-12 mt-2"
+                              alt="loading"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <Select
+                            className="w-28"
+                            value={selectedCriteria}
+                            onChange={onChangeCriteria}
+                            options={criteriaOption}
+                          />
+                          <Button
+                            variant="primary"
+                            onClick={onClickSubmit}
+                            disabled={loadingCreate}
+                            className="ml-4"
+                          >
+                            Submit!
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </>
                 )}

@@ -19,7 +19,7 @@ export const AccountDropdown = () => {
   };
 
   return (
-    <Dropdown btnContent={user?.name || ""}>
+    <Dropdown btnVariant="outline-primary" btnContent={user?.name || ""}>
       <Button onClick={signOut}>Logout</Button>
     </Dropdown>
   );

@@ -38,7 +38,7 @@ export const Modal: FunctionComponent<ModalProps & PropsWithChildren> = ({
             <div
               className={clsx(
                 "relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl",
-                size === "lg" && "lg:max-w-4xl min-h-[95vh] min-w-[320px]",
+                size === "lg" && "lg:max-w-4xl max-h-[95vh] min-w-[320px]",
               )}
             >
               <div className="absolute top-2 right-2">
