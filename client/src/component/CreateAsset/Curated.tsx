@@ -63,8 +63,8 @@ export const Curated = (props: {
     }).catch(() => {
       // NOTE: We don't want to show the error to the user, since it's not critical.
       setNotification({
-        message: "Fail to load more featured public animations.",
-        severity: "error",
+        message: "Fail to to load more animation.",
+        severity: "warning",
       });
       setForceStopLoading(true);
     });
@@ -81,7 +81,7 @@ export const Curated = (props: {
         // NOTE: We don't want to show the error to the user, since it's not critical.
         setNotification({
           message: "Fail to retry featured public animations.",
-          severity: "error",
+          severity: "warning",
         });
         setForceStopLoading(true);
       });
@@ -140,7 +140,8 @@ export const Curated = (props: {
           {loading && !error ? (
             <Skeleton width={"100%"} height={150} />
           ) : (
-            !forceStopLoading && (
+            !forceStopLoading &&
+            data?.featuredPublicAnimations.edges.length && (
               <IntersectionElement onIntersect={onScrollToBottom} />
             )
           )}
