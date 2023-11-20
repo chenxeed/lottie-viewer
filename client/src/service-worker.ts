@@ -58,7 +58,7 @@ registerRoute(
 // Cache any retrieved JSON files, to be accessible again during offline mode
 registerRoute(
   ({ url }) => {
-    if (url.origin === self.location.origin && url.pathname.endsWith(".json")) {
+    if (url.pathname.endsWith(".json")) {
       return true;
     }
   },
@@ -70,10 +70,7 @@ registerRoute(
 // Cache any retrieved dotLottie files, to be accessible again during offline mode
 registerRoute(
   ({ url }) => {
-    if (
-      url.origin === self.location.origin &&
-      url.pathname.endsWith(".lottie")
-    ) {
+    if (url.pathname.endsWith(".lottie")) {
       return true;
     }
   },
@@ -115,7 +112,7 @@ const store = createStore("lottieGraphQL", "PostResponses");
 self.addEventListener("fetch", (ev) => {
   const request = ev.request;
   const { url, method } = request;
-  const validateUrl = new RegExp("/graphql(/)?");
+  const validateUrl = new RegExp("/graphql?");
   if (validateUrl.test(url) && method === "POST") {
     ev.respondWith(cacheGraphQLResponse(ev));
   }
