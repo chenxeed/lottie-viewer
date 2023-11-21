@@ -36,10 +36,6 @@ export interface State {
    */
   notification: Notification | null;
   /**
-   * Check whether user needs to preload the resource first
-   */
-  preload: boolean;
-  /**
    * Store the last action that triggers the state change, for debugging or subscription purpose
    */
   action: StateAction | null;
@@ -56,7 +52,6 @@ export interface State {
   setLocalSyncStatus: (data: SyncStatus) => void;
   setSyncState: (state: SyncState) => void;
   setNotification: (notification: Notification | null) => void;
-  setPreload: (preload: boolean) => void;
 }
 
 export interface User {
@@ -83,7 +78,6 @@ export enum LottieStorage {
   USER = "lottie-user",
   PENDING_ASSETS = "lottie-pending-assets",
   LOCAL_SYNC_STATUS = "lottie-local-sync-status",
-  PRELOAD = "lottie-preload",
 }
 
 export interface PendingLottie {
@@ -124,7 +118,6 @@ export enum StateAction {
   SET_LOCAL_SYNC_STATUS = "setLocalSyncStatus",
   SET_SYNC_STATE = "setSyncState",
   SET_NOTIFICATION = "setNotification",
-  SET_PRELOAD = "setPreload",
 }
 
 export enum Criteria {

@@ -39,7 +39,6 @@ export const useStore = create<State>((set) => ({
   },
   syncState: SyncState.NO_SYNC,
   notification: null,
-  preload: false,
   action: null,
   setUser: (user: User | null) => {
     set({ user, action: StateAction.SET_USER });
@@ -64,8 +63,5 @@ export const useStore = create<State>((set) => ({
   },
   setNotification(notification) {
     set({ notification, action: StateAction.SET_NOTIFICATION });
-  },
-  setPreload(preload) {
-    set({ preload, action: StateAction.SET_PRELOAD });
   },
 }));

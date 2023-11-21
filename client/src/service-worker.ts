@@ -58,27 +58,35 @@ registerRoute(
 // Cache any retrieved JSON files, to be accessible again during offline mode
 registerRoute(
   ({ url }) => {
-    if (url.origin === self.location.origin && url.pathname.endsWith(".json")) {
+    if (url.pathname.endsWith(".json")) {
       return true;
     }
   },
   new CacheFirst({
     cacheName: "assetsJSON",
+    plugins: [
+      // Ensure that once this runtime cache reaches a maximum size the
+      // least-recently used JSON are removed.
+      new ExpirationPlugin({ maxEntries: 500 }),
+    ],
   }),
 );
 
 // Cache any retrieved dotLottie files, to be accessible again during offline mode
+// We use a CacheFirst strategy because the assets are unlikely changed
 registerRoute(
   ({ url }) => {
-    if (
-      url.origin === self.location.origin &&
-      url.pathname.endsWith(".lottie")
-    ) {
+    if (url.pathname.endsWith(".lottie")) {
       return true;
     }
   },
   new CacheFirst({
     cacheName: "assetsLottie",
+    plugins: [
+      // Ensure that once this runtime cache reaches a maximum size the
+      // least-recently used dotLottie are removed.
+      new ExpirationPlugin({ maxEntries: 1000 }),
+    ],
   }),
 );
 
@@ -108,14 +116,12 @@ self.addEventListener("message", (event) => {
   }
 });
 
-// Any other custom service worker logic can go here.
-
 // Cache GraphQL API
 const store = createStore("lottieGraphQL", "PostResponses");
 self.addEventListener("fetch", (ev) => {
   const request = ev.request;
   const { url, method } = request;
-  const validateUrl = new RegExp("/graphql(/)?");
+  const validateUrl = new RegExp("/graphql?");
   if (validateUrl.test(url) && method === "POST") {
     ev.respondWith(cacheGraphQLResponse(ev));
   }
@@ -154,13 +160,17 @@ async function serializeResponse(response: Response) {
   return serialized;
 }
 
+function getGraphQLQueryID(query: string, variables: Record<string, unknown>) {
+  return md5(query + JSON.stringify(variables)).toString();
+}
+
 async function setGraphQLCache(request: Request, response: Response) {
   const body = await request.json();
   // Only cache query requests. Do not cache mutation requests.
   if (!(body.query as string).startsWith("query")) {
     return;
   }
-  const id = md5(body.query + JSON.stringify(body.variables)).toString();
+  const id = getGraphQLQueryID(body.query, body.variables);
 
   var entry = {
     query: body.query,
@@ -173,7 +183,7 @@ async function setGraphQLCache(request: Request, response: Response) {
 async function getGraphQLCache(request: Request) {
   try {
     const body = await request.json();
-    const id = md5(body.query + JSON.stringify(body.variables)).toString();
+    const id = getGraphQLQueryID(body.query, body.variables);
     const data = await get(id, store);
     if (!data) {
       return null;
@@ -181,8 +191,8 @@ async function getGraphQLCache(request: Request) {
 
     // Check cache max age.
     const cacheControl = request.headers.get("Cache-Control");
-    const maxAge = cacheControl ? parseInt(cacheControl.split("=")[1]) : 3600;
-    if (Date.now() - data.timestamp > maxAge * 1000) {
+    const maxAge = cacheControl ? parseInt(cacheControl.split("=")[1]) : "";
+    if (maxAge && Date.now() - data.timestamp > maxAge * 1000) {
       return null;
     }
 
