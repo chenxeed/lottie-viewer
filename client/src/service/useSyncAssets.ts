@@ -12,7 +12,6 @@ import {
   useStateSetAssets,
 } from "../store/assets";
 import { useRef } from "react";
-import { client } from "../repo/server-graphql/client";
 import { ServiceResult } from "./types";
 
 /**
@@ -29,7 +28,6 @@ export function useSyncAssets() {
   localSyncStatusRef.current = localSyncStatus;
   const setLocalSyncStatus = useStateSetLocalSyncStatus();
   const [getSyncStatus] = useLazyQuery(GET_LAST_SYNC_STATUS, {
-    client,
     fetchPolicy: "no-cache",
   });
 
@@ -43,7 +41,6 @@ export function useSyncAssets() {
   const setAssets = useStateSetAssets();
   const setSyncState = useStateSetSyncState();
   const [getAssets] = useLazyQuery(GET_ASSETS, {
-    client,
     // Prevent cache to ensure the sync with latest data on server.
     // If the user is offline, expect the sync to fail and notify the user that they're not sync yet
     fetchPolicy: "no-cache",

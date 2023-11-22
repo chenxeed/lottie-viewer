@@ -2,7 +2,6 @@ import { uploadFileToBucket } from "./fileBucket";
 import { Criteria, Lottie, User } from "../store/types";
 import { useMutation } from "@apollo/client";
 import { CREATE_ASSET } from "../repo/server-graphql/graph";
-import { client } from "../repo/server-graphql/client";
 import { ServiceResult } from "./types";
 
 /**
@@ -10,7 +9,7 @@ import { ServiceResult } from "./types";
  * @param fallback If true, will save the asset locally if the server is not available.
  */
 export function useUploadAsset() {
-  const [createAsset] = useMutation(CREATE_ASSET, { client });
+  const [createAsset] = useMutation(CREATE_ASSET);
 
   // Service Hooks for the components
   return async (

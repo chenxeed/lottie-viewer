@@ -1,7 +1,6 @@
 import { useStateSetUser, useStateUser } from "../store/user";
 import { CREATE_USER } from "../repo/server-graphql/graph";
 import { useMutation } from "@apollo/client";
-import { client } from "../repo/server-graphql/client";
 import { User } from "../store/types";
 import { ServiceResult } from "./types";
 
@@ -17,7 +16,7 @@ export function useSyncUser() {
 
   const user = useStateUser();
   const setUser = useStateSetUser();
-  const [createUser] = useMutation(CREATE_USER, { client });
+  const [createUser] = useMutation(CREATE_USER);
 
   // Service hooks for the components
   // Here's the process:
