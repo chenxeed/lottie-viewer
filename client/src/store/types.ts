@@ -69,7 +69,7 @@ export interface Lottie {
   id: number;
   title: string;
   file: string;
-  criteria: Criteria;
+  criteria: string;
   createdAt: string;
   user: string;
 }
@@ -105,6 +105,7 @@ export interface ViewLottie {
 export interface Notification {
   severity: AlertColor;
   message: string;
+  errorString?: string;
 }
 
 export enum SyncState {

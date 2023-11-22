@@ -53,6 +53,10 @@ export const CREATE_ASSET = gql(`
       file
       criteria
       createdAt
+      user {
+        id
+        name
+      }
     }
   }
 `);

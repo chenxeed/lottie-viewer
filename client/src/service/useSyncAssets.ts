@@ -5,7 +5,7 @@ import {
   useStateSetLocalSyncStatus,
   useStateSetSyncState,
 } from "../store/syncStatus";
-import { Criteria, SyncState } from "../store/types";
+import { Criteria, Lottie, SyncState } from "../store/types";
 import {
   useStateAssets,
   useStateCriteria,
@@ -13,6 +13,7 @@ import {
 } from "../store/assets";
 import { useRef } from "react";
 import { client } from "../repo/server-graphql/client";
+import { ServiceResult } from "./types";
 
 /**
  * Service to synchronize local assets with the server.
@@ -54,27 +55,36 @@ export function useSyncAssets() {
   // 2. If outdated, use the last asset's ID as the cursor to get the newer list.
   // 3. To limit the response load, we only request 20 items at a time.
 
-  return async () => {
+  return async (): Promise<ServiceResult<Lottie[] | null>> => {
     setSyncState(SyncState.SYNCING);
 
     const syncStatusResult = await getSyncStatus();
     if (!syncStatusResult.data) {
       // User might be offline
       setSyncState(SyncState.FAIL_TO_SYNC);
-      return;
+      return {
+        data: null,
+        error: new Error("Could not get sync status"),
+      };
     }
 
     const syncStatus = syncStatusResult.data.lastSyncStatus[0];
     if (!syncStatus) {
       // This could be the very first time when there's no one upload any assets yet, thus back to original state
       setSyncState(SyncState.NO_SYNC);
-      return;
+      return {
+        data: null,
+        error: new Error("No sync data found"),
+      };
     }
 
     if (syncStatus.lastUpdate === localSyncStatusRef.current.lastUpdate) {
       // User has already sync with the latest data
       setSyncState(SyncState.UP_TO_DATE);
-      return;
+      return {
+        data: null,
+        error: null,
+      };
     }
 
     // At this point, user has outdated assets, so we need to sync with the server.
@@ -92,28 +102,32 @@ export function useSyncAssets() {
     if (!assetsResult.data) {
       // Fail to get the assets, user might be offline
       setSyncState(SyncState.FAIL_TO_SYNC);
-      return;
+      return {
+        data: null,
+        error: assetsResult.error || new Error("Fail to get assets"),
+      };
     }
     // At this point, user has updated their data with the server
     // Reverse the order because we retrieve it from the eldest to newest,
     // while our `assets` are ordered from newest to eldest.
 
-    const latestAssets = assetsResult.data.assets.nodes
+    const latestAssets: Lottie[] = assetsResult.data.assets.nodes
       .reverse()
       .filter(
         (asset) =>
           criteriaRef.current === Criteria.ALL ||
           asset.criteria === criteriaRef.current,
-      );
-    setAssets([
-      ...latestAssets.map((asset) => ({
+      )
+      .map((asset) => ({
         id: asset.id,
         title: asset.title,
         file: asset.file,
         criteria: asset.criteria as Criteria,
         createdAt: asset.createdAt,
         user: asset.user?.name || "",
-      })),
+      }));
+    setAssets([
+      ...latestAssets,
       ...(assetsRef.current.length ? assetsRef.current : []),
     ]);
 
@@ -133,5 +147,9 @@ export function useSyncAssets() {
       });
       setSyncState(SyncState.UP_TO_DATE);
     }
+    return {
+      data: latestAssets,
+      error: null,
+    };
   };
 }
