@@ -11,6 +11,19 @@ import { MockedProvider } from "@apollo/client/testing";
 import { CREATE_ASSET } from "../../../repo/server-graphql/graph";
 import { Criteria } from "../../../store/types";
 import { FEATURED_PUBLIC_ANIMATIONS } from "../../../repo/lottie-graphql/graph";
+import { TypedDocumentNode } from "@graphql-typed-document-node/core";
+import {
+  CreateAssetMutation,
+  CreateAssetMutationVariables,
+  Exact,
+  Mutation,
+} from "../../../repo/server-graphql/__generated__/graphql";
+import {
+  FeaturedPublicAnimationsQuery,
+  FeaturedPublicAnimationsQueryVariables,
+  InputMaybe,
+  Query as LottieQuery,
+} from "../../../repo/lottie-graphql/__generated__/graphql";
 
 // Mock the libraries used in this component
 
@@ -54,7 +67,40 @@ jest.mock("../../../service/fileBucket", () => ({
     ),
 }));
 
-const mocks = [
+type Mocks = [
+  {
+    request: {
+      query: TypedDocumentNode<
+        CreateAssetMutation,
+        Exact<{ userId: number; title: string; file: string; criteria: string }>
+      >;
+      variables: CreateAssetMutationVariables;
+    };
+    result: {
+      data: {
+        createAsset: Mutation["createAsset"];
+      };
+    };
+  },
+  {
+    request: {
+      query: TypedDocumentNode<
+        FeaturedPublicAnimationsQuery,
+        Exact<{
+          after?: InputMaybe<string> | undefined;
+        }>
+      >;
+      variables: FeaturedPublicAnimationsQueryVariables;
+    };
+    result: {
+      data: {
+        featuredPublicAnimations: LottieQuery["featuredPublicAnimations"];
+      };
+    };
+  },
+];
+
+const mocks: Mocks = [
   {
     request: {
       query: CREATE_ASSET,
@@ -75,6 +121,7 @@ const mocks = [
           user: {
             id: 1,
             name: "user",
+            assets: [],
           },
           createdAt: "createdAt",
         },
@@ -97,13 +144,21 @@ const mocks = [
                 lottieUrl:
                   "https://assets-v2.lottiefiles.com/a/327ab14e-64a4-11ee-a4e0-db1e90efd329/LNhtKhpo3I.lottie",
                 name: "Lottie Node",
+                commentsCount: 0,
+                createdAt: "2021-07-07T09:00:00.000Z",
+                createdByUserId: "1",
+                isLiked: false,
+                likesCount: 0,
               },
+              cursor: "abc123",
             },
           ],
           pageInfo: {
             endCursor: "def456",
             hasNextPage: false,
+            hasPreviousPage: false,
           },
+          totalCount: 1,
         },
       },
     },

@@ -3,13 +3,39 @@ import { act, renderHook } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { CREATE_ASSET } from "../../repo/server-graphql/graph";
 import { Criteria } from "../../store/types";
+import { TypedDocumentNode } from "@graphql-typed-document-node/core";
+import {
+  CreateAssetMutation,
+  CreateAssetMutationVariables,
+  Exact,
+  Mutation,
+} from "../../repo/server-graphql/__generated__/graphql";
+
+// Mock the libraries used
 
 jest.mock("../fileBucket", () => ({
   uploadFileToBucket: () =>
     new Promise((res) => res({ filename: "12345-file", originalname: "file" })),
 }));
 
-const mocks = [
+type Mocks = [
+  {
+    request: {
+      query: TypedDocumentNode<
+        CreateAssetMutation,
+        Exact<{ userId: number; title: string; file: string; criteria: string }>
+      >;
+      variables: CreateAssetMutationVariables;
+    };
+    result: {
+      data: {
+        createAsset: Mutation["createAsset"];
+      };
+    };
+  },
+];
+
+const mocks: Mocks = [
   {
     request: {
       query: CREATE_ASSET,
@@ -27,11 +53,12 @@ const mocks = [
           file: "12345-file",
           criteria: "criteria",
           title: "file",
+          createdAt: "createdAt",
           user: {
             id: 1,
-            name: "user",
+            name: "username",
+            assets: [],
           },
-          createdAt: "createdAt",
         },
       },
     },
@@ -60,7 +87,7 @@ describe("useUploadAsset", () => {
       });
       expect(uploadResult.data).toEqual({
         ...mocks[0].result.data.createAsset,
-        user: mocks[0].result.data.createAsset.user.name,
+        user: mocks[0].result.data.createAsset.user?.name,
       });
     });
   });
