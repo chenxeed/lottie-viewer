@@ -3,6 +3,8 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  act,
+  cleanup,
 } from "@testing-library/react";
 import { CreateAsset } from "../";
 import userEvent from "@testing-library/user-event";
@@ -64,6 +66,8 @@ jest.mock("../../../helper/fileUpload", () => {
   };
 });
 
+afterEach(cleanup);
+
 describe("CreateAsset", () => {
   test("submit uploaded JSON data", async () => {
     // Arrange
@@ -78,12 +82,15 @@ describe("CreateAsset", () => {
     // Act
 
     userEvent.click(screen.getByText("Choose a File"));
+
     await waitFor(() => screen.findByText("Preview your animation"));
+
     userEvent.click(screen.getByText("Submit!"));
+
+    await waitForElementToBeRemoved(() => screen.queryByText("Submit!"));
 
     // Assert
 
-    await waitForElementToBeRemoved(() => screen.queryByText("Submit!"));
     await waitFor(() => {
       expect(screen.queryByText("Submit")).toBeNull();
     });
