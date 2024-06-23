@@ -26,7 +26,6 @@ import { useQuery } from "@apollo/client";
 import { GET_ASSETS } from "../repo/server-graphql/graph";
 import { useStateSetNotification } from "../store/notification";
 import { IntersectionElement } from "./IntersectionElement";
-import { client } from "../repo/server-graphql/client";
 import { LottieCard } from "./LottieCard";
 import { Skeleton } from "../atoms/Skeleton";
 import { useVisiblePlayer } from "../service/useVisiblePlayer";
@@ -176,7 +175,6 @@ export const AssetViewer = ({ scrollDOMRef }: AssetViewerProps) => {
       before: 0,
       limit: ASSET_PER_PAGE,
     },
-    client,
     fetchPolicy: "network-only", // Always try to retrieve the latest first
     notifyOnNetworkStatusChange: true,
     refetchWritePolicy: "merge",

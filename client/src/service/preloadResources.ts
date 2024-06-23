@@ -1,6 +1,5 @@
-import { lottieClient } from "../repo/lottie-graphql/client";
 import { FEATURED_PUBLIC_ANIMATIONS } from "../repo/lottie-graphql/graph";
-import { client } from "../repo/server-graphql/client";
+import { client } from "../repo/client";
 import { GET_ASSETS } from "../repo/server-graphql/graph";
 import { ASSET_PER_PAGE } from "../store/assets";
 import { Criteria } from "../store/types";
@@ -56,9 +55,10 @@ export const preloadResources = (cb: PreloadCallbacks): void => {
 
   // Preload the featured public animations from LottieFiles GraphQL API
 
-  lottieClient
+  client
     .query({
       query: FEATURED_PUBLIC_ANIMATIONS,
+      context: { clientName: "lottie" },
     })
     .then((result) => {
       lottieClientOnProgress = true;

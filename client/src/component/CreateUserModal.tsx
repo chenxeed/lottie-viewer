@@ -72,7 +72,7 @@ export const CreateUserModal = () => {
     setLoading(true);
     setPlayerJSON(fingerSnapJSON);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       // Do optimistic sync by saving the user state locally first before sync to the server
       const user = {
         id: Date.now(), // Random ID, to be replaced with real ID once the user is sync
@@ -80,7 +80,13 @@ export const CreateUserModal = () => {
         isSync: false,
       };
       setUser(user);
-      syncUser(user);
+      const result = await syncUser(user);
+      if (result.error) {
+        setNotification({
+          severity: "info",
+          message: "User is in Offline mode",
+        });
+      }
     }, 2000); // Delay 2s to show the animation
   }
 
