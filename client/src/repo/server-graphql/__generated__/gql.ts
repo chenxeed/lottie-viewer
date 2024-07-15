@@ -15,7 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 const documents = {
     "\n  query Assets($before: Int, $limit: Int, $after: Int, $criteria: String) {\n    assets(before: $before, limit: $limit, after: $after, criteria: $criteria) {\n      nodes {\n        createdAt\n        criteria\n        file\n        id\n        title\n        user {\n          name\n        }\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n        hasPreviousPage\n        startCursor\n      }\n    }\n  }\n": types.AssetsDocument,
     "\n  query LastSyncStatus {\n    lastSyncStatus {\n      id\n      lastUpdate\n      user {\n        name\n      }\n    }\n  }\n": types.LastSyncStatusDocument,
-    "\n  mutation CreateAsset(\n    $userId: Int!\n    $title: String!\n    $file: String!\n    $criteria: String!\n  ) {\n    createAsset(\n      userId: $userId\n      title: $title\n      file: $file\n      criteria: $criteria\n    ) {\n      id\n      title\n      file\n      criteria\n      createdAt\n    }\n  }\n": types.CreateAssetDocument,
+    "\n  mutation CreateAsset(\n    $userId: Int!\n    $title: String!\n    $file: String!\n    $criteria: String!\n  ) {\n    createAsset(\n      userId: $userId\n      title: $title\n      file: $file\n      criteria: $criteria\n    ) {\n      id\n      title\n      file\n      criteria\n      createdAt\n      user {\n        id\n        name\n      }\n    }\n  }\n": types.CreateAssetDocument,
     "\n  mutation CreateUser($name: String!) {\n    createUser(name: $name) {\n      id\n      name\n    }\n  }\n": types.CreateUserDocument,
 };
 
@@ -44,7 +44,7 @@ export function gql(source: "\n  query LastSyncStatus {\n    lastSyncStatus {\n 
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  mutation CreateAsset(\n    $userId: Int!\n    $title: String!\n    $file: String!\n    $criteria: String!\n  ) {\n    createAsset(\n      userId: $userId\n      title: $title\n      file: $file\n      criteria: $criteria\n    ) {\n      id\n      title\n      file\n      criteria\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  mutation CreateAsset(\n    $userId: Int!\n    $title: String!\n    $file: String!\n    $criteria: String!\n  ) {\n    createAsset(\n      userId: $userId\n      title: $title\n      file: $file\n      criteria: $criteria\n    ) {\n      id\n      title\n      file\n      criteria\n      createdAt\n    }\n  }\n"];
+export function gql(source: "\n  mutation CreateAsset(\n    $userId: Int!\n    $title: String!\n    $file: String!\n    $criteria: String!\n  ) {\n    createAsset(\n      userId: $userId\n      title: $title\n      file: $file\n      criteria: $criteria\n    ) {\n      id\n      title\n      file\n      criteria\n      createdAt\n      user {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateAsset(\n    $userId: Int!\n    $title: String!\n    $file: String!\n    $criteria: String!\n  ) {\n    createAsset(\n      userId: $userId\n      title: $title\n      file: $file\n      criteria: $criteria\n    ) {\n      id\n      title\n      file\n      criteria\n      createdAt\n      user {\n        id\n        name\n      }\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

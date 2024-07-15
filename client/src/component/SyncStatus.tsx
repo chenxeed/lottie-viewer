@@ -9,7 +9,6 @@ import { SyncState } from "../store/types";
 import { useStateSetNotification } from "../store/notification";
 import { ellipsisText } from "../helper/ellipsisText";
 import { Button } from "../atoms/Button";
-import { useStateUser } from "../store/user";
 
 export const SyncStatus = () => {
   // Shared state
@@ -45,7 +44,9 @@ export const SyncStatus = () => {
         return <span className="text-secondary">No update yet.</span>;
       case SyncState.FAIL_TO_SYNC:
         return (
-          <span className="text-danger">Fail to sync. Please try again.</span>
+          <span className="text-danger">
+            Fail to sync. Check your internet connection.
+          </span>
         );
       case SyncState.NEED_UPDATE:
         return (
@@ -79,19 +80,26 @@ export const SyncStatus = () => {
     setIsLoading(true);
     try {
       // Sync the user state, in case the user was created during offline mode
-      const authUser = await syncUser();
+      const { data: authUser } = await syncUser();
 
       // Sync the pending assets, in case the user has created assets during offline mode
       if (authUser.isSync) {
-        await syncPendingAssets(authUser);
+        const result = await syncPendingAssets(authUser);
+        if (result.error) {
+          throw result.error;
+        }
       }
 
       // Sync the latest assets from the server, by checking the last sync status
-      await syncAssets();
+      const result = await syncAssets();
+      if (result.error) {
+        throw result.error;
+      }
     } catch (e) {
       setNotification({
         severity: "warning",
         message: "Fail to synchronize. Please ensure you are online.",
+        errorString: `${e}`,
       });
     } finally {
       setIsLoading(false);

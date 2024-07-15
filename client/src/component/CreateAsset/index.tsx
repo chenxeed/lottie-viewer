@@ -13,7 +13,7 @@ import { fetchFileFromPublicURL } from "../../service/fileBucket";
 import { useStateCriteria } from "../../store/assets";
 import { Modal } from "../../atoms/Modal";
 import { Select } from "../../atoms/Select";
-import { useStateUser } from "../../store/user";
+import { useCreatePendingAsset } from "../../service/useCreatePendingAsset";
 
 const criteriaOption = [
   Criteria.GAME,
@@ -44,8 +44,10 @@ export const CreateAsset = () => {
   // Service hooks
 
   const syncUser = useSyncUser();
-  const uploadAsset = useUploadAsset({ fallback: true });
+
+  const uploadAsset = useUploadAsset();
   const syncAssets = useSyncAssets();
+  const createPendingAsset = useCreatePendingAsset();
 
   // Event Listeners
 
@@ -59,7 +61,7 @@ export const CreateAsset = () => {
     setLottieSource(null);
   };
 
-  const onChooseLottieUrl = async (url: string, slugName: string) => {
+  const onChooseLottieUrl = async (url: string) => {
     setShowCurated(false);
     setLoadingLottie(true);
     const file = await fetchFileFromPublicURL(url);
@@ -81,6 +83,7 @@ export const CreateAsset = () => {
   // 1. Sync the user to the server, to make sure the user is created on the server for the table relationship
   // 2. Upload the file to the server
   // If the user failed to do either way, the file will be saved offline
+  // Once user uploaded the file to the server, it'll trigger asset sync to show the latest assets
   const onClickSubmit = async () => {
     if (!chosenFile || !selectedCriteria) {
       setNotification({
@@ -92,21 +95,60 @@ export const CreateAsset = () => {
     setLoadingCreate(true);
 
     try {
-      const authUser = await syncUser();
+      const { data: authUser } = await syncUser();
+      let shouldCreatePending = false;
 
-      const data = await uploadAsset(chosenFile, selectedCriteria, authUser);
-      if (data) {
-        // Sync the latest assets from the server, by checking the last sync status
-        await syncAssets();
+      if (authUser.isSync) {
+        const uploadResult = await uploadAsset(
+          chosenFile,
+          selectedCriteria,
+          authUser,
+        );
+        if (uploadResult.error) {
+          shouldCreatePending = true;
+        } else if (uploadResult.data) {
+          const result = await syncAssets();
+          if (result.error) {
+            setNotification({
+              severity: "warning",
+              message:
+                "Fail to synchronize. Please try again by clicking SYNC button to see the uploaded assets.",
+              errorString: `${result.error}`,
+            });
+          }
+        }
+      } else {
+        shouldCreatePending = true;
       }
+
+      if (shouldCreatePending) {
+        const result = await createPendingAsset(
+          chosenFile,
+          selectedCriteria,
+          authUser,
+        );
+        if (result.data) {
+          setNotification({
+            severity: "info",
+            message:
+              "Your animation has uploaded into your device. Once online, press SYNC to upload to the server.",
+          });
+        } else if (result.error) {
+          // When the last resort to save the file offline also failed, we throw the error to warn the user
+          throw result.error;
+        }
+      }
+
       onClose();
     } catch (e) {
       setNotification({
         severity: "error",
         message: "Fail to upload. Please try again.",
+        errorString: `${e}`,
       });
+    } finally {
+      setLoadingCreate(false);
     }
-    setLoadingCreate(false);
   };
 
   const onChangeCriteria = (ev: ChangeEvent) => {

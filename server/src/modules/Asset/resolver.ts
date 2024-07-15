@@ -27,7 +27,7 @@ type Asset {
   id: Int!
   title: String!
   file: String!
-  criteria: String
+  criteria: String!
   createdAt: Date!
   user: User
 }

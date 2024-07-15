@@ -1,4 +1,4 @@
-import { StateAction, LottieStorage, Criteria } from "./types";
+import { StateAction, LottieStorage, Criteria, PendingLottie } from "./types";
 import { useStore } from ".";
 
 const SEARCH_PARAM_CRITERIA = "criteria";
@@ -51,6 +51,10 @@ export const useStatePendingAssetsByCriteria = () =>
   );
 export const useStateSetPendingAssets = () =>
   useStore((state) => state.setPendingAssets);
+export const useStateAppendPendingAssets = () =>
+  useStore((state) => (pendingAsset: PendingLottie) => {
+    state.setPendingAssets([pendingAsset, ...state.pendingAssets]);
+  });
 export const useStateViewAsset = () => useStore((state) => state.viewAsset);
 export const useStateSetViewAsset = () =>
   useStore((state) => state.setViewAsset);

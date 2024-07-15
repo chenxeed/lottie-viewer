@@ -1,6 +1,5 @@
 import { useQuery } from "@apollo/client";
 import { FEATURED_PUBLIC_ANIMATIONS } from "../../repo/lottie-graphql/graph";
-import { lottieClient } from "../../repo/lottie-graphql/client";
 import { IntersectionElement } from "../IntersectionElement";
 import { useCallback, useRef, useState } from "react";
 import { LottieCard } from "../LottieCard";
@@ -36,10 +35,10 @@ export const Curated = (props: {
   const { data, loading, error, refetch, fetchMore } = useQuery(
     FEATURED_PUBLIC_ANIMATIONS,
     {
-      client: lottieClient,
       fetchPolicy: "cache-first", // cache-first so user can get smooth experience of preloading the assets if it's already cached
       notifyOnNetworkStatusChange: true,
       errorPolicy: "ignore",
+      context: { clientName: "lottie" },
     },
   );
 
@@ -104,10 +103,10 @@ export const Curated = (props: {
             <LottieCard
               key={edge.node.id}
               title={edge.node.name}
-              onClick={() =>
+              onClick={() => {
                 edge.node.lottieUrl &&
-                props.onChooseLottieUrl(edge.node.lottieUrl, edge.node.slug)
-              }
+                  props.onChooseLottieUrl(edge.node.lottieUrl, edge.node.slug);
+              }}
             >
               {edge.node.lottieUrl ? (
                 <DotLottiePlayer
