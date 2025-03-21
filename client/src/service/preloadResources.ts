@@ -79,7 +79,7 @@ export const preloadResources = (cb: PreloadCallbacks): void => {
 
   // Preload the assets by each category, so user can search by category offline
   [
-    undefined,
+    undefined, // All Criteria
     Criteria.GAME,
     Criteria.NATURE,
     Criteria.PEOPLE,
